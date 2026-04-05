@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import type { ReactNode } from "react";
 import { useEffect, useMemo, useState } from "react";
 
@@ -254,6 +255,7 @@ export function CharacterShell() {
               isLoading={isLoading}
               onCreateCharacter={handleCreateCharacter}
               onOpenImport={() => setIsImportOpen(true)}
+              onSaveCharacter={handleSaveCharacter}
             />
 
             <div className="grid flex-1 grid-cols-1 gap-x-4 gap-y-3 md:grid-cols-2 xl:grid-cols-3">
@@ -413,27 +415,68 @@ function WorkspaceHeader({
   isLoading,
   onCreateCharacter,
   onOpenImport,
+  onSaveCharacter,
 }: {
   character: Character | null;
   errorMessage: string;
   isLoading: boolean;
   onCreateCharacter: () => Promise<void>;
   onOpenImport: () => void;
+  onSaveCharacter: (character: Character) => Promise<void>;
 }) {
+  async function handleSummaryBlur(
+    field: "worships" | "family" | "patron" | "occupation",
+    value: string,
+  ) {
+    if (!character) {
+      return;
+    }
+
+    await onSaveCharacter({
+      ...character,
+      [field]: value,
+    });
+  }
+
   return (
     <header className="rounded-[16px] border border-panel-border bg-panel p-3 shadow-sm backdrop-blur">
       <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
         <div className="min-w-0">
-          <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-stone-500">
-            Workspace
-          </p>
-          <h2 className="mt-1.5 text-2xl font-semibold tracking-tight">
+          <h2 className="text-2xl font-semibold tracking-tight">
             {isLoading
               ? "Loading..."
               : character
                 ? getDisplayName(character)
                 : "No character selected"}
           </h2>
+          {character ? (
+            <div className="mt-2 grid gap-x-6 gap-y-1 text-sm text-stone-600 md:grid-cols-2 dark:text-stone-300">
+              <HeaderSummaryField
+                field="worships"
+                label="Worships"
+                onBlur={handleSummaryBlur}
+                value={character.worships}
+              />
+              <HeaderSummaryField
+                field="family"
+                label="Family"
+                onBlur={handleSummaryBlur}
+                value={character.family}
+              />
+              <HeaderSummaryField
+                field="patron"
+                label="Patron"
+                onBlur={handleSummaryBlur}
+                value={character.patron}
+              />
+              <HeaderSummaryField
+                field="occupation"
+                label="Occupation"
+                onBlur={handleSummaryBlur}
+                value={character.occupation}
+              />
+            </div>
+          ) : null}
           {errorMessage.length > 0 ? (
             <p className="mt-2 text-sm text-red-700 dark:text-red-300">
               {errorMessage}
@@ -470,11 +513,6 @@ function IdentityCard({
   onSaveCharacter: (character: Character) => Promise<void>;
 }) {
   const [draft, setDraft] = useState({
-    name: "",
-    worships: "",
-    family: "",
-    patron: "",
-    occupation: "",
     str: "10",
     con: "10",
     siz: "10",
@@ -489,11 +527,6 @@ function IdentityCard({
 
   useEffect(() => {
     setDraft({
-      name: character?.name ?? "",
-      worships: character?.worships ?? "",
-      family: character?.family ?? "",
-      patron: character?.patron ?? "",
-      occupation: character?.occupation ?? "",
       str: String(character?.str ?? 10),
       con: String(character?.con ?? 10),
       siz: String(character?.siz ?? 10),
@@ -517,7 +550,6 @@ function IdentityCard({
     try {
       await onSaveCharacter({
         ...character,
-        ...draft,
         str: parseNumberDraft(draft.str, character.str),
         con: parseNumberDraft(draft.con, character.con),
         siz: parseNumberDraft(draft.siz, character.siz),
@@ -537,50 +569,9 @@ function IdentityCard({
   }
 
   return (
-    <DashboardCard title="Identity" eyebrow="Core">
+    <DashboardCard>
       {character ? (
         <div className="space-y-2.5">
-          <div className="p-0.5">
-            <div className="grid gap-2.5 lg:grid-cols-2">
-              <EditableField
-                label="Name"
-                onChange={(value) =>
-                  setDraft((current) => ({ ...current, name: value }))
-                }
-                value={draft.name}
-              />
-              <EditableField
-                label="Worships"
-                onChange={(value) =>
-                  setDraft((current) => ({ ...current, worships: value }))
-                }
-                value={draft.worships}
-              />
-              <EditableField
-                label="Family"
-                onChange={(value) =>
-                  setDraft((current) => ({ ...current, family: value }))
-                }
-                value={draft.family}
-              />
-              <EditableField
-                label="Patron"
-                onChange={(value) =>
-                  setDraft((current) => ({ ...current, patron: value }))
-                }
-                value={draft.patron}
-              />
-              <div className="lg:col-span-2">
-                <EditableField
-                  label="Occupation"
-                  onChange={(value) =>
-                    setDraft((current) => ({ ...current, occupation: value }))
-                  }
-                  value={draft.occupation}
-                />
-              </div>
-            </div>
-          </div>
           <div className="pt-1">
             <div className="flex items-center justify-between gap-3">
               <h4 className="text-sm font-semibold uppercase tracking-[0.18em] text-stone-500">
@@ -699,7 +690,7 @@ function CombatCard({
   }
 
   return (
-    <DashboardCard title="Combat" eyebrow="Play">
+    <DashboardCard>
       {character ? (
         <div className="space-y-2.5">
           <div className="grid grid-cols-3 gap-x-3 gap-y-1 text-sm sm:grid-cols-2 xl:grid-cols-3">
@@ -796,15 +787,19 @@ function HitLocationBodyLayout({
 
   return (
     <div className="relative mx-auto aspect-[0.76] w-full max-w-[332px]">
-      <div className="absolute left-1/2 top-[10%] h-[18%] w-[16%] -translate-x-1/2 rounded-full border border-panel-border bg-black/[0.03] dark:bg-white/[0.03]" />
-      <div className="absolute left-1/2 top-[26%] h-[26%] w-[26%] -translate-x-1/2 rounded-[36%] border border-panel-border bg-black/[0.03] dark:bg-white/[0.03]" />
-      <div className="absolute left-[27%] top-[28%] h-[18%] w-[12%] rounded-full border border-panel-border bg-black/[0.03] dark:bg-white/[0.03]" />
-      <div className="absolute right-[27%] top-[28%] h-[18%] w-[12%] rounded-full border border-panel-border bg-black/[0.03] dark:bg-white/[0.03]" />
-      <div className="absolute left-[35%] top-[53%] h-[25%] w-[10%] rounded-full border border-panel-border bg-black/[0.03] dark:bg-white/[0.03]" />
-      <div className="absolute right-[35%] top-[53%] h-[25%] w-[10%] rounded-full border border-panel-border bg-black/[0.03] dark:bg-white/[0.03]" />
+      <div className="absolute inset-[5%_16%_4%_16%] flex items-center justify-center">
+        <Image
+          alt=""
+          aria-hidden="true"
+          className="h-full w-full object-contain opacity-20 grayscale dark:opacity-16"
+          draggable="false"
+          fill
+          src="/rune-man.png"
+        />
+      </div>
 
       <HitLocationBadge
-        className="left-1/2 top-[7%] -translate-x-1/2"
+        className="left-1/2 top-[8%] -translate-x-1/2"
         currentHPValue={draft.head?.currentHP ?? String(byKey.head?.currentHP ?? 0)}
         armourValue={draft.head?.armour ?? String(byKey.head?.armour ?? 0)}
         location={byKey.head}
@@ -812,7 +807,7 @@ function HitLocationBodyLayout({
         onCurrentHPChange={(value) => onCurrentHPChange("head", value)}
       />
       <HitLocationBadge
-        className="left-1/2 top-[31%] -translate-x-1/2"
+        className="left-1/2 top-[34%] -translate-x-1/2"
         currentHPValue={draft.chest?.currentHP ?? String(byKey.chest?.currentHP ?? 0)}
         armourValue={draft.chest?.armour ?? String(byKey.chest?.armour ?? 0)}
         location={byKey.chest}
@@ -820,7 +815,7 @@ function HitLocationBodyLayout({
         onCurrentHPChange={(value) => onCurrentHPChange("chest", value)}
       />
       <HitLocationBadge
-        className="left-1/2 top-[49%] -translate-x-1/2"
+        className="left-1/2 top-[55%] -translate-x-1/2"
         currentHPValue={
           draft.abdomen?.currentHP ?? String(byKey.abdomen?.currentHP ?? 0)
         }
@@ -830,7 +825,7 @@ function HitLocationBodyLayout({
         onCurrentHPChange={(value) => onCurrentHPChange("abdomen", value)}
       />
       <HitLocationBadge
-        className="left-[3%] top-[32%]"
+        className="left-[2%] top-[34%]"
         currentHPValue={
           draft.rightArm?.currentHP ?? String(byKey.rightArm?.currentHP ?? 0)
         }
@@ -840,7 +835,7 @@ function HitLocationBodyLayout({
         onCurrentHPChange={(value) => onCurrentHPChange("rightArm", value)}
       />
       <HitLocationBadge
-        className="right-[3%] top-[32%]"
+        className="right-[2%] top-[34%]"
         currentHPValue={
           draft.leftArm?.currentHP ?? String(byKey.leftArm?.currentHP ?? 0)
         }
@@ -850,7 +845,7 @@ function HitLocationBodyLayout({
         onCurrentHPChange={(value) => onCurrentHPChange("leftArm", value)}
       />
       <HitLocationBadge
-        className="left-[9%] top-[75%]"
+        className="left-[8%] top-[71%]"
         currentHPValue={
           draft.rightLeg?.currentHP ?? String(byKey.rightLeg?.currentHP ?? 0)
         }
@@ -860,7 +855,7 @@ function HitLocationBodyLayout({
         onCurrentHPChange={(value) => onCurrentHPChange("rightLeg", value)}
       />
       <HitLocationBadge
-        className="right-[9%] top-[75%]"
+        className="right-[8%] top-[71%]"
         currentHPValue={
           draft.leftLeg?.currentHP ?? String(byKey.leftLeg?.currentHP ?? 0)
         }
@@ -966,7 +961,7 @@ function RunesMagicCard({
   }
 
   return (
-    <DashboardCard title="Runes, Magic, Equipment" eyebrow="Tools">
+    <DashboardCard>
       {character ? (
         <div className="space-y-2.5">
           <div className="grid grid-cols-2 gap-x-3 gap-y-1 text-sm">
@@ -1198,23 +1193,11 @@ function formatSectionLabel(section: string): string {
 }
 
 function DashboardCard({
-  title,
-  eyebrow,
   children,
 }: {
-  title: string;
-  eyebrow: string;
   children: ReactNode;
 }) {
-  return (
-    <article className="min-w-0 px-1 py-1">
-      <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-stone-500">
-        {eyebrow}
-      </p>
-      <h3 className="mt-1.5 text-[1.2rem] font-semibold tracking-tight">{title}</h3>
-      <div className="mt-3">{children}</div>
-    </article>
-  );
+  return <article className="min-w-0 px-1 py-1">{children}</article>;
 }
 
 function CompactMetric({
@@ -1232,22 +1215,31 @@ function CompactMetric({
   );
 }
 
-function EditableField({
+function HeaderSummaryField({
+  field,
   label,
-  onChange,
+  onBlur,
   value,
 }: {
+  field: "worships" | "family" | "patron" | "occupation";
   label: string;
-  onChange: (value: string) => void;
+  onBlur: (
+    field: "worships" | "family" | "patron" | "occupation",
+    value: string,
+  ) => Promise<void>;
   value: string;
 }) {
   return (
-    <label className="block">
-      <span className="mb-2 block text-sm font-medium">{label}</span>
+    <label className="flex min-w-0 items-baseline gap-2">
+      <span className="shrink-0 text-[11px] font-semibold uppercase tracking-[0.14em] text-stone-500">
+        {label}:
+      </span>
       <input
-        className="min-h-9 w-full rounded-[8px] bg-black/[0.035] px-2.5 py-1.5 text-sm outline-none dark:bg-white/[0.04]"
-        onChange={(event) => onChange(event.target.value)}
-        value={value}
+        className="min-w-0 flex-1 bg-transparent text-sm text-foreground outline-none placeholder:text-stone-400"
+        defaultValue={value}
+        key={`${field}-${value}`}
+        onBlur={(event) => void onBlur(field, event.target.value)}
+        placeholder="—"
       />
     </label>
   );
