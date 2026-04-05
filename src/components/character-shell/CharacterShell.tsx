@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import type { ReactNode } from "react";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 import {
   getDamageBonusText,
@@ -226,16 +226,19 @@ export function CharacterShell() {
               />
             ) : null}
 
-            <div className="grid flex-1 grid-cols-1 gap-x-4 gap-y-3 md:grid-cols-2 xl:grid-cols-3">
+            <div className="ml-12 grid flex-1 grid-cols-1 gap-x-4 gap-y-3 md:grid-cols-2 xl:grid-cols-3">
               <IdentityCard
+                key={`identity-${selectedCharacter?.id ?? "empty"}`}
                 character={selectedCharacter}
                 onSaveCharacter={handleSaveCharacter}
               />
               <CombatCard
+                key={`combat-${selectedCharacter?.id ?? "empty"}`}
                 character={selectedCharacter}
                 onSaveCharacter={handleSaveCharacter}
               />
               <RunesMagicCard
+                key={`runes-${selectedCharacter?.id ?? "empty"}`}
                 character={selectedCharacter}
                 onSaveCharacter={handleSaveCharacter}
               />
@@ -375,7 +378,7 @@ function WorkspaceHeader({
   onSaveCharacter: (character: Character) => Promise<void>;
 }) {
   async function handleSummaryBlur(
-    field: "worships" | "family" | "patron" | "occupation",
+    field: "name" | "worships" | "family" | "patron" | "occupation",
     value: string,
   ) {
     if (!character) {
@@ -391,13 +394,15 @@ function WorkspaceHeader({
   return (
     <header className="ml-12 rounded-[16px] border border-panel-border bg-panel p-3 shadow-sm backdrop-blur">
       <div className="min-w-0">
-        <h2 className="text-2xl font-semibold tracking-tight">
-          {isLoading
-            ? "Loading..."
-            : character
-              ? getDisplayName(character)
-              : "No character selected"}
-        </h2>
+        {isLoading ? (
+          <h2 className="text-2xl font-semibold tracking-tight">Loading...</h2>
+        ) : character ? (
+          <HeaderNameField onBlur={handleSummaryBlur} value={character.name} />
+        ) : (
+          <h2 className="text-2xl font-semibold tracking-tight">
+            No character selected
+          </h2>
+        )}
         {character ? (
           <div className="mt-2 grid gap-x-6 gap-y-1 text-sm text-stone-600 md:grid-cols-2 dark:text-stone-300">
             <HeaderSummaryField
@@ -494,61 +499,74 @@ function IdentityCard({
   character: Character | null;
   onSaveCharacter: (character: Character) => Promise<void>;
 }) {
-  const [draft, setDraft] = useState({
-    str: "10",
-    con: "10",
-    siz: "10",
-    dex: "10",
-    int: "10",
-    pow: "10",
-    powExperienceCheck: false,
-    cha: "10",
-    currentMagicPoints: "10",
-  });
-  const [isSaving, setIsSaving] = useState(false);
+  const [draft, setDraft] = useState(() => ({
+    str: String(character?.str ?? 10),
+    con: String(character?.con ?? 10),
+    siz: String(character?.siz ?? 10),
+    dex: String(character?.dex ?? 10),
+    int: String(character?.int ?? 10),
+    pow: String(character?.pow ?? 10),
+    powExperienceCheck: character?.powExperienceCheck ?? false,
+    cha: String(character?.cha ?? 10),
+    currentMagicPoints: String(character?.currentMagicPoints ?? 10),
+  }));
+  const lastSavedKeyRef = useRef("");
 
   useEffect(() => {
-    setDraft({
-      str: String(character?.str ?? 10),
-      con: String(character?.con ?? 10),
-      siz: String(character?.siz ?? 10),
-      dex: String(character?.dex ?? 10),
-      int: String(character?.int ?? 10),
-      pow: String(character?.pow ?? 10),
-      powExperienceCheck: character?.powExperienceCheck ?? false,
-      cha: String(character?.cha ?? 10),
-      currentMagicPoints: String(character?.currentMagicPoints ?? 10),
-    });
-  }, [character]);
-
-  async function handleSave() {
     if (!character) {
       return;
     }
 
     const nextPow = parseNumberDraft(draft.pow, character.pow);
+    const nextCharacter = {
+      ...character,
+      str: parseNumberDraft(draft.str, character.str),
+      con: parseNumberDraft(draft.con, character.con),
+      siz: parseNumberDraft(draft.siz, character.siz),
+      dex: parseNumberDraft(draft.dex, character.dex),
+      int: parseNumberDraft(draft.int, character.int),
+      pow: nextPow,
+      powExperienceCheck: draft.powExperienceCheck,
+      cha: parseNumberDraft(draft.cha, character.cha),
+      currentMagicPoints: parseNumberDraft(
+        draft.currentMagicPoints,
+        Math.min(character.currentMagicPoints, nextPow),
+      ),
+    };
+    const saveKey = JSON.stringify([
+      nextCharacter.str,
+      nextCharacter.con,
+      nextCharacter.siz,
+      nextCharacter.dex,
+      nextCharacter.int,
+      nextCharacter.pow,
+      nextCharacter.powExperienceCheck,
+      nextCharacter.cha,
+      nextCharacter.currentMagicPoints,
+    ]);
+    const currentKey = JSON.stringify([
+      character.str,
+      character.con,
+      character.siz,
+      character.dex,
+      character.int,
+      character.pow,
+      character.powExperienceCheck,
+      character.cha,
+      character.currentMagicPoints,
+    ]);
 
-    setIsSaving(true);
-    try {
-      await onSaveCharacter({
-        ...character,
-        str: parseNumberDraft(draft.str, character.str),
-        con: parseNumberDraft(draft.con, character.con),
-        siz: parseNumberDraft(draft.siz, character.siz),
-        dex: parseNumberDraft(draft.dex, character.dex),
-        int: parseNumberDraft(draft.int, character.int),
-        pow: nextPow,
-        powExperienceCheck: draft.powExperienceCheck,
-        cha: parseNumberDraft(draft.cha, character.cha),
-        currentMagicPoints: parseNumberDraft(
-          draft.currentMagicPoints,
-          Math.min(character.currentMagicPoints, nextPow),
-        ),
-      });
-    } finally {
-      setIsSaving(false);
+    if (saveKey === currentKey || saveKey === lastSavedKeyRef.current) {
+      return;
     }
-  }
+
+    const timeoutId = window.setTimeout(() => {
+      lastSavedKeyRef.current = saveKey;
+      void onSaveCharacter(nextCharacter);
+    }, 250);
+
+    return () => window.clearTimeout(timeoutId);
+  }, [character, draft, onSaveCharacter]);
 
   return (
     <DashboardCard>
@@ -603,14 +621,6 @@ function IdentityCard({
               Max MP <span className="ml-2 font-semibold text-foreground">{getMaxMagicPoints(character)}</span>
             </div>
           </div>
-          <button
-            className="min-h-10 w-full rounded-[10px] bg-stone-900 px-4 py-2.5 text-sm font-medium text-stone-50 disabled:opacity-50 dark:bg-stone-100 dark:text-stone-950"
-            disabled={isSaving}
-            onClick={() => void handleSave()}
-            type="button"
-          >
-            {isSaving ? "Saving..." : "Save Details"}
-          </button>
         </div>
       ) : (
         <EmptyCardMessage text="Select or create a character to see the workspace." />
@@ -628,48 +638,61 @@ function CombatCard({
 }) {
   const [hitLocationDraft, setHitLocationDraft] = useState<
     Record<string, { armour: string; currentHP: string }>
-  >({});
-  const [isSavingCombat, setIsSavingCombat] = useState(false);
+  >(() =>
+    Object.fromEntries(
+      (character?.hitLocations ?? []).map((location) => [
+        location.key,
+        {
+          armour: String(location.armour),
+          currentHP: String(location.currentHP),
+        },
+      ]),
+    ),
+  );
+  const lastSavedCombatKeyRef = useRef("");
 
   useEffect(() => {
-    setHitLocationDraft(
-      Object.fromEntries(
-        (character?.hitLocations ?? []).map((location) => [
-          location.key,
-          {
-            armour: String(location.armour),
-            currentHP: String(location.currentHP),
-          },
-        ]),
-      ),
-    );
-  }, [character]);
-
-  async function handleSaveCombat() {
     if (!character) {
       return;
     }
 
-    setIsSavingCombat(true);
-    try {
-      await onSaveCharacter({
-        ...character,
-        hitLocations: character.hitLocations.map((location) => {
-          const draft = hitLocationDraft[location.key];
-          return {
-            ...location,
-            armour: parseNumberDraft(draft?.armour ?? "", location.armour),
-            currentHP: parseNumberDraft(
-              draft?.currentHP ?? "",
-              location.currentHP,
-            ),
-          };
-        }),
-      });
-    } finally {
-      setIsSavingCombat(false);
+    const nextHitLocations = character.hitLocations.map((location) => {
+      const draft = hitLocationDraft[location.key];
+      return {
+        ...location,
+        armour: parseNumberDraft(draft?.armour ?? "", location.armour),
+        currentHP: parseNumberDraft(draft?.currentHP ?? "", location.currentHP),
+      };
+    });
+    const saveKey = JSON.stringify(
+      nextHitLocations.map((location) => [
+        location.key,
+        location.armour,
+        location.currentHP,
+      ]),
+    );
+    const currentKey = JSON.stringify(
+      character.hitLocations.map((location) => [
+        location.key,
+        location.armour,
+        location.currentHP,
+      ]),
+    );
+
+    if (saveKey === currentKey || saveKey === lastSavedCombatKeyRef.current) {
+      return;
     }
-  }
+
+    const timeoutId = window.setTimeout(() => {
+      lastSavedCombatKeyRef.current = saveKey;
+      void onSaveCharacter({
+        ...character,
+        hitLocations: nextHitLocations,
+      });
+    }, 250);
+
+    return () => window.clearTimeout(timeoutId);
+  }, [character, hitLocationDraft, onSaveCharacter]);
 
   return (
     <DashboardCard>
@@ -713,14 +736,6 @@ function CombatCard({
               />
             </div>
           </div>
-          <button
-            className="min-h-10 w-full rounded-[10px] bg-black/[0.04] px-4 py-2.5 text-sm font-medium disabled:opacity-50 dark:bg-white/[0.06]"
-            disabled={isSavingCombat}
-            onClick={() => void handleSaveCombat()}
-            type="button"
-          >
-            {isSavingCombat ? "Saving..." : "Save Combat"}
-          </button>
           {character.weapons.length > 0 ? (
             <div className="pt-1">
               <h4 className="text-sm font-semibold">Imported Weapons</h4>
@@ -919,28 +934,31 @@ function RunesMagicCard({
   character: Character | null;
   onSaveCharacter: (character: Character) => Promise<void>;
 }) {
-  const [notesDraft, setNotesDraft] = useState("");
-  const [isSavingNotes, setIsSavingNotes] = useState(false);
+  const [notesDraft, setNotesDraft] = useState(character?.notes ?? "");
+  const lastSavedNotesRef = useRef("");
 
   useEffect(() => {
-    setNotesDraft(character?.notes ?? "");
-  }, [character]);
-
-  async function handleSaveNotes() {
     if (!character) {
       return;
     }
 
-    setIsSavingNotes(true);
-    try {
-      await onSaveCharacter({
+    if (
+      notesDraft === character.notes ||
+      notesDraft === lastSavedNotesRef.current
+    ) {
+      return;
+    }
+
+    const timeoutId = window.setTimeout(() => {
+      lastSavedNotesRef.current = notesDraft;
+      void onSaveCharacter({
         ...character,
         notes: notesDraft,
       });
-    } finally {
-      setIsSavingNotes(false);
-    }
-  }
+    }, 300);
+
+    return () => window.clearTimeout(timeoutId);
+  }, [character, notesDraft, onSaveCharacter]);
 
   return (
     <DashboardCard>
@@ -991,14 +1009,6 @@ function RunesMagicCard({
               placeholder="Add notes for this character..."
               value={notesDraft}
             />
-            <button
-              className="mt-2 min-h-10 rounded-[10px] bg-black/[0.04] px-3 py-2 text-sm font-medium disabled:opacity-50 dark:bg-white/[0.06]"
-              disabled={isSavingNotes}
-              onClick={() => void handleSaveNotes()}
-              type="button"
-            >
-              {isSavingNotes ? "Saving..." : "Save Notes"}
-            </button>
           </div>
         </div>
       ) : (
@@ -1224,6 +1234,27 @@ function HeaderSummaryField({
         placeholder="—"
       />
     </label>
+  );
+}
+
+function HeaderNameField({
+  onBlur,
+  value,
+}: {
+  onBlur: (
+    field: "name" | "worships" | "family" | "patron" | "occupation",
+    value: string,
+  ) => Promise<void>;
+  value: string;
+}) {
+  return (
+    <input
+      className="w-full bg-transparent text-2xl font-semibold tracking-tight outline-none placeholder:text-stone-400"
+      defaultValue={value}
+      key={`name-${value}`}
+      onBlur={(event) => void onBlur("name", event.target.value)}
+      placeholder="Unnamed Character"
+    />
   );
 }
 
