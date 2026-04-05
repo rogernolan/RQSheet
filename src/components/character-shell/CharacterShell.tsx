@@ -23,6 +23,7 @@ export function CharacterShell() {
   const [isLoading, setIsLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState("");
   const [isImportOpen, setIsImportOpen] = useState(false);
+  const [isCharacterMenuOpen, setIsCharacterMenuOpen] = useState(false);
 
   const selectedCharacter = useMemo(
     () =>
@@ -84,6 +85,7 @@ export function CharacterShell() {
 
       setCharacters((current) => sortCharacters([...current, nextCharacter]));
       setSelectedCharacterId(nextCharacter.id);
+      setIsCharacterMenuOpen(false);
       setErrorMessage("");
     } catch (error) {
       setErrorMessage(
@@ -96,6 +98,7 @@ export function CharacterShell() {
 
   function handleSelectCharacter(characterId: string) {
     setSelectedCharacterId(characterId);
+    setIsCharacterMenuOpen(false);
   }
 
   async function handleDeleteCharacter(characterId: string) {
@@ -124,6 +127,7 @@ export function CharacterShell() {
 
         return nextCharacters;
       });
+      setIsCharacterMenuOpen(false);
       setErrorMessage("");
     } catch (error) {
       setErrorMessage(
@@ -144,6 +148,7 @@ export function CharacterShell() {
       setCharacters((current) => sortCharacters([...current, importedCharacter]));
       setSelectedCharacterId(importedCharacter.id);
       setErrorMessage("");
+      setIsCharacterMenuOpen(false);
       setIsImportOpen(false);
     } catch (error) {
       setErrorMessage(
@@ -175,88 +180,51 @@ export function CharacterShell() {
   return (
     <>
       <main className="min-h-screen px-2 py-2 text-foreground sm:px-3 sm:py-3 lg:px-4 lg:py-4">
-        <div className="mx-auto flex min-h-[calc(100vh-1rem)] w-full max-w-[1680px] gap-3 lg:gap-4">
-          <aside className="hidden w-[280px] shrink-0 flex-col rounded-[16px] border border-panel-border bg-panel p-3 shadow-sm backdrop-blur md:flex">
-            <SidebarHeader />
-
-            <button
-              className="min-h-10 rounded-xl bg-stone-900 px-3 py-2.5 text-left text-sm font-medium text-stone-50 shadow-sm transition-transform active:scale-[0.99] dark:bg-stone-100 dark:text-stone-950"
-              onClick={() => void handleCreateCharacter()}
-              type="button"
-            >
-              New Character
-            </button>
-
-            <button
-              className="mt-2 min-h-10 rounded-xl border border-panel-border px-3 py-2.5 text-left text-sm font-medium"
-              onClick={() => setIsImportOpen(true)}
-              type="button"
-            >
-              Import Character
-            </button>
-
-            <div className="mt-3 flex-1 overflow-hidden rounded-[14px] border border-panel-border">
-              <CharacterList
-                characters={characters}
-                errorMessage={errorMessage}
-                isLoading={isLoading}
-                selectedCharacterId={selectedCharacterId}
-                onDeleteCharacter={handleDeleteCharacter}
-                onSelectCharacter={handleSelectCharacter}
+        <div className="mx-auto min-h-[calc(100vh-1rem)] w-full max-w-[1680px]">
+          <section className="relative flex min-w-0 flex-1 flex-col gap-3">
+            {isCharacterMenuOpen ? (
+              <button
+                aria-label="Close character menu"
+                className="fixed inset-0 z-20 bg-transparent"
+                onClick={() => setIsCharacterMenuOpen(false)}
+                type="button"
               />
-            </div>
-          </aside>
-
-          <section className="flex min-w-0 flex-1 flex-col gap-3">
-            <header className="rounded-[16px] border border-panel-border bg-panel p-3 shadow-sm backdrop-blur md:hidden">
-              <div className="flex items-center justify-between gap-3">
-                <div>
-                  <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-stone-500">
-                    RQSheetWeb
-                  </p>
-                  <h1 className="mt-1 text-xl font-semibold tracking-tight">
-                    Character Menu
-                  </h1>
-                </div>
-                <button
-                  className="min-h-10 rounded-xl bg-stone-900 px-3 py-2 text-sm font-medium text-stone-50 dark:bg-stone-100 dark:text-stone-950"
-                  onClick={() => void handleCreateCharacter()}
-                  type="button"
-                >
-                  New
-                </button>
-              </div>
-
-              <div className="mt-2 flex gap-2">
-                <button
-                  className="min-h-10 rounded-xl border border-panel-border px-3 py-2 text-sm font-medium"
-                  onClick={() => setIsImportOpen(true)}
-                  type="button"
-                >
-                  Import
-                </button>
-              </div>
-
-              <div className="mt-3 max-h-56 overflow-hidden rounded-[18px] border border-panel-border">
-                <CharacterList
-                  characters={characters}
-                  errorMessage={errorMessage}
-                  isLoading={isLoading}
-                  selectedCharacterId={selectedCharacterId}
-                  onDeleteCharacter={handleDeleteCharacter}
-                  onSelectCharacter={handleSelectCharacter}
-                />
-              </div>
-            </header>
-
+            ) : null}
+            <button
+              aria-label="Open character menu"
+              className="absolute left-0 top-0 z-30 flex h-10 w-10 items-center justify-center rounded-[10px] border border-panel-border bg-panel shadow-sm backdrop-blur"
+              onClick={() => setIsCharacterMenuOpen((current) => !current)}
+              type="button"
+            >
+              <Image
+                alt=""
+                aria-hidden="true"
+                className="h-6 w-6 object-contain opacity-75"
+                draggable="false"
+                height={24}
+                src="/rune-man.png"
+                width={24}
+              />
+            </button>
             <WorkspaceHeader
               character={selectedCharacter}
               errorMessage={errorMessage}
               isLoading={isLoading}
-              onCreateCharacter={handleCreateCharacter}
-              onOpenImport={() => setIsImportOpen(true)}
               onSaveCharacter={handleSaveCharacter}
             />
+
+            {isCharacterMenuOpen ? (
+              <CharacterMenuPopup
+                characters={characters}
+                errorMessage={errorMessage}
+                isLoading={isLoading}
+                selectedCharacterId={selectedCharacterId}
+                onCreateCharacter={handleCreateCharacter}
+                onDeleteCharacter={handleDeleteCharacter}
+                onImportCharacter={() => setIsImportOpen(true)}
+                onSelectCharacter={handleSelectCharacter}
+              />
+            ) : null}
 
             <div className="grid flex-1 grid-cols-1 gap-x-4 gap-y-3 md:grid-cols-2 xl:grid-cols-3">
               <IdentityCard
@@ -283,20 +251,6 @@ export function CharacterShell() {
         />
       ) : null}
     </>
-  );
-}
-
-function SidebarHeader() {
-  return (
-    <div className="mb-4">
-      <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-stone-500">
-        RQSheetWeb
-      </p>
-      <h1 className="mt-2 text-xl font-semibold tracking-tight">Characters</h1>
-      <p className="mt-1.5 text-sm leading-5 text-stone-600 dark:text-stone-300">
-        Local-first workspace shell with touch-friendly selection and CRUD.
-      </p>
-    </div>
   );
 }
 
@@ -395,11 +349,11 @@ function CharacterList({
                 </div>
               </button>
               <button
-                className="min-h-9 rounded-xl border border-panel-border px-2.5 py-1.5 text-[11px] font-medium text-stone-500 transition hover:bg-black/5 dark:hover:bg-white/5"
+                className="min-h-9 rounded-[8px] px-2 py-1 text-[11px] font-medium text-stone-400 transition hover:bg-black/5 hover:text-stone-700 dark:hover:bg-white/5 dark:hover:text-stone-200"
                 onClick={() => void onDeleteCharacter(character.id)}
                 type="button"
               >
-                Delete
+                Remove
               </button>
             </div>
           );
@@ -413,15 +367,11 @@ function WorkspaceHeader({
   character,
   errorMessage,
   isLoading,
-  onCreateCharacter,
-  onOpenImport,
   onSaveCharacter,
 }: {
   character: Character | null;
   errorMessage: string;
   isLoading: boolean;
-  onCreateCharacter: () => Promise<void>;
-  onOpenImport: () => void;
   onSaveCharacter: (character: Character) => Promise<void>;
 }) {
   async function handleSummaryBlur(
@@ -439,69 +389,101 @@ function WorkspaceHeader({
   }
 
   return (
-    <header className="rounded-[16px] border border-panel-border bg-panel p-3 shadow-sm backdrop-blur">
-      <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
-        <div className="min-w-0">
-          <h2 className="text-2xl font-semibold tracking-tight">
-            {isLoading
-              ? "Loading..."
-              : character
-                ? getDisplayName(character)
-                : "No character selected"}
-          </h2>
-          {character ? (
-            <div className="mt-2 grid gap-x-6 gap-y-1 text-sm text-stone-600 md:grid-cols-2 dark:text-stone-300">
-              <HeaderSummaryField
-                field="worships"
-                label="Worships"
-                onBlur={handleSummaryBlur}
-                value={character.worships}
-              />
-              <HeaderSummaryField
-                field="family"
-                label="Family"
-                onBlur={handleSummaryBlur}
-                value={character.family}
-              />
-              <HeaderSummaryField
-                field="patron"
-                label="Patron"
-                onBlur={handleSummaryBlur}
-                value={character.patron}
-              />
-              <HeaderSummaryField
-                field="occupation"
-                label="Occupation"
-                onBlur={handleSummaryBlur}
-                value={character.occupation}
-              />
-            </div>
-          ) : null}
-          {errorMessage.length > 0 ? (
-            <p className="mt-2 text-sm text-red-700 dark:text-red-300">
-              {errorMessage}
-            </p>
-          ) : null}
-        </div>
-
-        <div className="flex flex-wrap gap-2">
-          <button
-            className="min-h-10 rounded-xl border border-panel-border px-3 py-2 text-sm font-medium"
-            onClick={() => void onCreateCharacter()}
-            type="button"
-          >
-            Create Character
-          </button>
-          <button
-            className="min-h-10 rounded-xl bg-stone-900 px-3 py-2 text-sm font-medium text-stone-50 dark:bg-stone-100 dark:text-stone-950"
-            onClick={onOpenImport}
-            type="button"
-          >
-            Import Character
-          </button>
-        </div>
+    <header className="ml-12 rounded-[16px] border border-panel-border bg-panel p-3 shadow-sm backdrop-blur">
+      <div className="min-w-0">
+        <h2 className="text-2xl font-semibold tracking-tight">
+          {isLoading
+            ? "Loading..."
+            : character
+              ? getDisplayName(character)
+              : "No character selected"}
+        </h2>
+        {character ? (
+          <div className="mt-2 grid gap-x-6 gap-y-1 text-sm text-stone-600 md:grid-cols-2 dark:text-stone-300">
+            <HeaderSummaryField
+              field="worships"
+              label="Worships"
+              onBlur={handleSummaryBlur}
+              value={character.worships}
+            />
+            <HeaderSummaryField
+              field="family"
+              label="Family"
+              onBlur={handleSummaryBlur}
+              value={character.family}
+            />
+            <HeaderSummaryField
+              field="patron"
+              label="Patron"
+              onBlur={handleSummaryBlur}
+              value={character.patron}
+            />
+            <HeaderSummaryField
+              field="occupation"
+              label="Occupation"
+              onBlur={handleSummaryBlur}
+              value={character.occupation}
+            />
+          </div>
+        ) : null}
+        {errorMessage.length > 0 ? (
+          <p className="mt-2 text-sm text-red-700 dark:text-red-300">
+            {errorMessage}
+          </p>
+        ) : null}
       </div>
     </header>
+  );
+}
+
+function CharacterMenuPopup({
+  characters,
+  errorMessage,
+  isLoading,
+  selectedCharacterId,
+  onCreateCharacter,
+  onDeleteCharacter,
+  onImportCharacter,
+  onSelectCharacter,
+}: {
+  characters: Character[];
+  errorMessage: string;
+  isLoading: boolean;
+  selectedCharacterId: string;
+  onCreateCharacter: () => Promise<void>;
+  onDeleteCharacter: (characterId: string) => Promise<void>;
+  onImportCharacter: () => void;
+  onSelectCharacter: (characterId: string) => void;
+}) {
+  return (
+    <div className="character-menu-pop absolute left-0 top-[4.25rem] z-30 w-full max-w-[360px] origin-top-left rounded-[14px] border border-panel-border bg-panel p-2 shadow-xl backdrop-blur">
+      <div className="max-h-[min(60vh,28rem)] overflow-hidden rounded-[10px] bg-black/[0.02] dark:bg-white/[0.03]">
+        <CharacterList
+          characters={characters}
+          errorMessage={errorMessage}
+          isLoading={isLoading}
+          selectedCharacterId={selectedCharacterId}
+          onDeleteCharacter={onDeleteCharacter}
+          onSelectCharacter={onSelectCharacter}
+        />
+      </div>
+      <div className="mt-2 grid grid-cols-2 gap-2 border-t border-panel-border pt-2">
+        <button
+          className="min-h-10 rounded-[10px] bg-black/[0.04] px-3 py-2 text-left text-sm font-medium dark:bg-white/[0.06]"
+          onClick={() => void onCreateCharacter()}
+          type="button"
+        >
+          New Character
+        </button>
+        <button
+          className="min-h-10 rounded-[10px] bg-black/[0.04] px-3 py-2 text-left text-sm font-medium dark:bg-white/[0.06]"
+          onClick={onImportCharacter}
+          type="button"
+        >
+          Import Character
+        </button>
+      </div>
+    </div>
   );
 }
 

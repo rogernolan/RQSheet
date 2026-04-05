@@ -46,3 +46,19 @@ a {
   color: inherit;
   text-decoration: none;
 }
+
+@keyframes character-menu-pop {
+  from {
+    opacity: 0;
+    transform: translateY(-6px) scale(0.96);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.character-menu-pop {
+  animation: character-menu-pop 160ms ease-out;
+}
