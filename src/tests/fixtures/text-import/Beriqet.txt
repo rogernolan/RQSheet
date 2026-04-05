@@ -1,0 +1,212 @@
+Name: Beriqet the Wineface   Family: Lorionaeo   Patron House: Marele   Born: Microbadge: Glorantha fan: Spirit rune day, Microbadge: Glorantha fan: Harmony rune week, Microbadge: Glorantha fan: Water rune season, 1604
+
+Reputation: 12%  Occupation: Merchant   SoL: Free  Income: Special  Ransom: 500 L
+
+Cult: Initiate of Issaries Microbadge: Glorantha fan: Communication runeMicrobadge: Glorantha fan: Harmony runeMicrobadge: Glorantha fan: Motion rune
+
+Wildday +2 MP | Waterday and Clayday -1 MP
+
+Characteristics  
+STR: 10
+INT: 17
+SIZ: 14
+DEX: 14
+CON: 11
+POW: 16 [ ]
+CHA: 17
+Elemental Runes    
+Air:       00 [ ]
+Fire/Sky:  45 [ ]
+Darkness:  55 [ ]
+Water:     65 [ ]
+Earth:     00 [ ]
+Moon:     ~15 [ ]
+ Wildday: +10
+ Waterday: -5
+ Clayday:  -5
+Power Rune Affinities               
+[ ] 50     Beast | Man      50 [ ]
+[ ] 50 Fertility | Death    50 [ ]
+[x] 75  Harmony* | Disorder 25 [ ]
+[x] 75     Truth | Illusion 25 [ ]
+[ ] 45    Stasis | Movement 55 [ ]
+   Paired runes must total 100%
++10% Harmony on Clayday of Harmony week
+Passions                         
+Honor:                    70% [ ]
+Devotion (Issaries):      70% [ ]
+Love (family):            70% [ ]
+Loyalty (ancestors):      60% [ ]
+Loyalty (Issaries tmpl):  60% [ ]
+Loyalty (Lorionaeo):      65% [ ]
+Loyalty (Samastina):      60% [ ]
+Loyalty (Asrelia tmpl):   60% [ ]
+Loyalty (Nochet):         60% [ ]
+Hate (Brown Men):         60% [ ]
+Hate (Caladraland):       60% [ ]
+Hate (ducks):             60% [ ]
+Hate (Manirians):         60% [ ]
+Hate (Wolf Pirates):      60% [ ]
+Fear (the Wild Hunt)      60% [ ]
+ 
+
+             12 HP Total / currently: 12
+
+19-20: Head  1 AP / 4 HP / currently: __    
+16-18: L Arm 1 AP / 3 HP / currently: __
+13-15: R Arm 1 AP / 3 HP / currently: __
+12:    Chest 3 AP / 5 HP / currently: __
+09-11: Abdmn 3 AP / 4 HP / currently: __
+05-08: L Leg 1 AP / 4 HP / currently: __
+01-04: R Leg 1 AP / 4 HP / currently: __
+
+Healing Rate: 2/week
+Dex SR: 2  Siz SR: 2  +15% Manip Bonus   Damage Bonus: +0d0
+
+Weapon           SR    Hit%     Damage   Range  HP/curr
+1H Short Spear    6    15% [ ]  1d6+1             / 
+Dagger            8    25% [ ]  1d4+2             /
+Fist              8    45% [ ]  1d4+2             /
+Grapple           8    30% [ ]  special           /
+Rapier            6    25% [ ]  1d6+1             /
+Thrown Dagger     2    15% [ ]  1d4       20      / 
+Medium Shield     8    25% [ ]  1d4               /
+Self Bow         2/9   15% [ ]  1d6+1     80      /
+
+
+
+Agility            +05%
+Boat                20% [ ]
+Climb               40% [ ]
+Dodge               38% [ ]
+Drive Chariot       05% [ ]
+Jump                42% [ ]
+Ride Mule           15% [ ]
+Ride ____           05% [ ]
+Swim                15% [ ]
+
+
+Communication      +15%        
+Act                 05% [ ]
+Art                 05% [ ]
+Bargain             85% [ ]
+Charm               15% [ ]
+Courtesan           05% [ ]
+Dance               20% [ ]
+Disguise            05% [ ]
+Fast Talk           15% [ ]
+Intimidate          15% [ ]
+Intrigue            05% [ ]
+Orate               10% [ ]
+Sing                25% [ ]
+Speak Esrolian      50% [ ]
+Speak Tradetalk     60% [ ]
+Speak Darktongue    30% [x]
+Voice Mimicry       05% [ ]
+Knowledge             +10%      
+Alchemy                --%
+Animal Lore            05%
+Battle                 20% [ ]
+Bureaucracy            --%
+Celestial Lore         05%
+Cult Lore: Issaries    20%
+Customs: Esrolia       25% [ ]
+Customs: Troll         10% [ ]
+Elder Race Lore Troll  20%
+Evaluate               65% [ ]
+Farm                   10% [ ]
+First Aid              15% [ ]
+Game                   15% [ ]
+Herd                   05% [ ]
+Homeland Lore (local)  30%
+Homeland Lore: _____   --%
+Library Use            --%
+Lore (EWF)             10%
+Lore (Glorantha)       15%
+Martial Art            25% [ ]
+Manage Household       40% [ ]
+Mineral Lore           05%
+Peaceful Cut           10% [ ]
+Plant Lore             05%
+Read/Write Esrolian    40%
+Streetwise             30% [ ]
+Survival               15% [ ]
+Treat Disease          05% [ ]
+Treat Poison           05% [ ]     
+Magic                 +10%      
+Meditate               05% [ ]
+Prepare Corpse         10% [ ]
+Spirit Travel          10% [ ]
+Worship (deity)        50% [ ]
+
+Manipulation          +15%      
+Conceal                05% [ ]
+Craft _____            10% [ ]
+Devise                 05% [ ]
+Feign Death            10% [ ]
+Play _____             05% [ ]
+Sleight                05% [ ]
+
+Perception            +10%      
+Insight: Human         60% [ ]
+Insight: Troll         10% [ ]
+Listen                 25% [x]
+Scan                   25% [ ]
+Search                 25% [ ]
+Track                  05% [ ]
+
+Stealth               +10%      
+Hide                   10% [ ]
+Move Quietly           10% [ ]
+Shadowing              10% [ ]
+
+
+
+Rune Magic                   
+Cult: Issaries 
+Rune Points:         3/3
+
+Issaries Spells     (RPs)
+Analyze Magic        (1)
+Create Market        (3)
+Lock                 (1)
+
+Common Rune Spells  (RPs)
+Command Cult Spirit  (2)
+Dismiss Magic        (1)
+Divination           (1)
+Extension            (1)
+Find Enemy           (1)
+Heal Wound           (1)
+Multispell           (1)
+Sanctify             (1)
+Soul Sight           (1)
+Spirit Block         (1)
+Summon Cult Spirit  (1–3)
+Warding              (1)
+
+Spirit Magic            
+Casting @ POW×5  80%
+CHA Spell Limit:  17
+
+Spells in Mind  (pts)
+Countermagic 2   (2)
+Detect Enemies   (1)
+Detect Magic     (1)
+Repair 1         (1)
+
+Matrix Spells   (pts)
+________________ (_)
+
+Spirit Combat           
+Magic Points:  16
+Current MPs:   16   
+Recover 4/6 hrs.
+
+SR12 
+Magic Bonus  +10%  
+Attack        10% [ ] 
+Damage:     1d6+3
+Sorcery         
+Free INT: __
+

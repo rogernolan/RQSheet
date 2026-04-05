@@ -1,0 +1,227 @@
+Name: SELINA   House: LORIONAEO   Patron House: MARELE   Original House IRNILHA  Born: Microbadge: Glorantha fan: Earth rune day, Microbadge: Glorantha fan: Truth rune week, Microbadge: Glorantha fan: Fire/Sky rune season, 1604
+
+Reputation: 12%  Occupation: OVERSEER  SoL: Free  Income: 80 L  Ransom: 500 L   NOW : 
+
+Cult: Initiate of ISSARIES Microbadge: Glorantha fan: Light runeMicrobadge: Glorantha fan: Truth rune
+Cult: Initiate of LANBRIL
+
+
+CHARACTERISTICS  
+STR: 12
+INT: 18
+SIZ: 08
+DEX: 19
+CON: 10
+POW: 12 [ ]
+CHA: 20
+ELEMENTAL RUNE     
+Air:      00 [ ]
+Fire/Sky: 00 [x]
+Darkness: 60 [ ]
+Water:    65 [ ]
+Earth:    70 [ ] 
+Moon:     00 [ ]
+
+POWER RUNE             
+[ ] 50     Beast | Man      50 [ ]
+[ ] 50 Fertility | Death    50 [ ]
+[ ] 25   Harmony | Disorder 75 [ ]
+[ ] 50     Truth | Illusion 50 [ ]
+[ ] 15    Stasis | Movement 85 [ ]
+   Paired runes must total 100%
+
+PASSIONS                   
+Honor:                    80% [ ] ???
+Devotion Lanbril:         60% [ ]
+Loyalty House Marele :    60% [ ]
+Loyalty House Lorionaeo:  60% [ ]
+Loyalty Samistina:        60% [ ]
+Loyalty Trolls:           60% [ ]
+Loyalty Argrath:          60% [ ]
+Hate Sarly Mob:           60% [ ]
+Hate Green Pot Clan:      60% [ ]
+Seek Vengeance:           60% [ ]
+Fear Wildfire:            62% [ ]
+Fear the Wild Hunt        60% [ ]
+
+
+ 
+
+           10 HP Total / currently: 10
+
+19-20: Head  00 AP / 4 HP / currently: __    
+16-18: L Arm 1 AP / 3 HP / currently: __
+13-15: R Arm 1 AP / 3 HP / currently: __
+12:    Chest 2 AP / 5 HP / currently: __
+09-11: Abdmn 2 AP / 4 HP / currently: __
+05-08: L Leg 1 AP / 4 HP / currently: __
+01-04: R Leg 1 AP / 4 HP / currently: __
+
+Healing Rate: 2/week
+Dex SR: 0  Siz SR: 2  +20% Manip Bonus   Damage Bonus: +0
+
+WEAPON           SR    Hit%     Damage   Range  HP/curr
+1H Short Spear    2    35% [ ]  1d6+1             /     
+Dagger            4    95% [ ]  1d4+2             /      
+1H Battle Axe     3    30% [ ]  1d8+2             /    
+Medium Shield     4    45% [ ]  1d4               /   
+Rapier                 55% [ ]
+Thrown Dagger          60% [ ]
+Self Bow               35% [ ]  1d8+1       80     /   
+Javelin                30% [ ]  1d8+1       20     /  
+
+Fist                   55% [ ]
+Grapple                50% [ ]
+
+
+
+ALL % ARE WITH CATEGORY MODIFIERS ALREADY ADDED
+
+AGILITY            +10%
+Boat                15% [ ]
+Climb               50% [ ]
+Dodge               93% [ ]
+Drive Chariot       15% [ ]
+Jump                67% [ ]
+Ride horse          15% [ ]
+Ride ____           15% [ ]
+Swim                25% [ ]
+
+
+COMMUNICATION      +15%        
+Act                 20% [ ]
+Art                 20% [ ]
+Bargain             30% [ ]
+Charm               30% [ ]
+Courtesan           05% [ ]
+Dance               35% [ ] 
+Disguise            35% [ ]
+Fast Talk           95% [x]
+Intimidate          30% [ ]
+Intrigue            20% [ ]
+Orate               25% [ ]
+Sing                30% [ ] 
+Speak Own           65% [ ]
+Speak Tradetalk     55% [ ]
+Speak Troll         35% [ ]
+Speak Thief Argot   15% [ ]
+KNOWLEDGE            +10%      
+Alchemy               --%
+Animal Lore           15%
+Battle                25% [ ]
+Bureaucracy           --%
+Celestial Lore        15%
+Cult Lore: Issaries : 45%
+Cult Lore Lanbril  :  45% [ ]
+Customs: Nochet       70% [ ]
+Customs:   Esrolia    40% [ ] 
+Elder Race Lore       15%
+Evaluate              20% [ ]
+Farm                  20% [ ] 
+First Aid             25% [ ]
+Game                  25% [ ]
+Herd                  15% [ ] 
+Homeland Lore (local) 40%
+Troll Lore:           20% [ ]
+Library Use           --%
+Manage Household      20% [ ]
+Mineral Lore          15%
+Peaceful Cut          20% [ ]
+Plant Lore            15%
+Read/Write Esrolian  30%
+Shiphandling          --% [ ]
+Streetwise            90% [x]
+Survival              25% [ ]
+Treat Disease         15% [ ]
+Treat Poison          15% [ ]     
+MAGIC                 +10%      
+Meditate               20% [ ]
+Prepare Corpse         20% [ ]
+Spirit Travel          15% [ ]
+Understand Herd Beast  --% [ ]
+Worship Issaries       50% [ ]
+Worship Lanbril        50% [ ]
+Spirit combat          45% [ ]
+
+MANIPULATION          +20%      
+Conceal                25% [ ]
+Craft _____            30% [ ]
+Devise                 55% [ ]
+Feign Death            30% [ ]
+Kuschile Archery       --% [ ]
+Play  Percussion       25% [ ]
+Sleight                55% [ ]
+
+PERCEPTION            +10%      
+Insight: Human         45% [ ]
+Insight: _____         --% [ ]
+Listen                 35% [ ]
+Scan                   35% [ ]
+Search                 35% [ ]
+Track                  15% [ ] 
+
+STEALTH               +25%      
+Hide                   55% [ ]
+Move Quietly           70% [ ]
+Shadowing              75% [ ]
+
+
+
+RUNE MAGIC               
+Cult: ______ 
+Rune Points:        4/4
+
+ISSARIES Spells      (3)
+  Path Watch         (2)
+  Passage            (1)
+  Clever Tongue      (1)
+
+LANBRIL Spells       (1)
+  Divination Block   (1)
+    
+
+Common Rune Spells (RPs)
+Command Cult Spirit (2)
+Dismiss Magic       (1)
+Divination          (1)
+Extension           (1)
+Find Enemy          (1)
+Heal Wound          (1)
+Multispell          (1)
+Sanctify            (1)
+Soul Sight          (1)
+Spirit Block        (1)
+Summon Cult Spirit (1–3)
+Warding             (1)
+
+SPIRIT MAGIC           
+Casting @ POWx5 65%
+CHA Spell Limit: 20
+
+Spells in Mind (pts)
+  Face of Lanbril  (2)
+  Maladroit (1)
+  Mobility (1)
+  Glue (1)
+
+Matrix Spells  (pts)
+_______________ (_)
+
+Spells Known  BUBA (cat) (pts) INT 14   POW 17
+Dispel Magic 2
+Ignite (1)
+
+Spirit Combat      
+Magic Points: ##
+Current MPs:  ##   
+Recover #/6 hrs.
+
+SR12 
+Magic Bonus +10%  
+Attack       40% [ ] 
+Damage:      1d#
+Sorcery        
+Free INT: __
+
+1
+Give GeekGold

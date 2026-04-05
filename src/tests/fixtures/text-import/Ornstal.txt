@@ -1,0 +1,266 @@
+I know the books contain knowledge but I’m interested in the real world - we should be out there discovering new knowledge, not sitting in here copying the words people already know. Did I ever tell you about my time in Prax? I learnt to ride a llama as tall as that cistern!
+
+Name: Ornstal the Quick   Family: Lorionaeo   Patron House: Marele   Born: Microbadge: Glorantha fan: Motion rune Microbadge: Glorantha fan: Truth rune Microbadge: Glorantha fan: Fire/Sky rune 1604 SR
+Reputation: 12%  Occupation: Scribe  SoL: Free  Income: 120L  Ransom: 1000L   MOV: 9
+Cult: Initiate of LHANKOR MHY Microbadge: Glorantha fan: Truth runeMicrobadge: Glorantha fan: Stasis rune
+Characteristics  
+STR: 12
+INT: 14
+SIZ: 16
+DEX: 12
+CON: 14
+POW: 17 [ ]
+CHA: 14
+Elemental Runes     
+Air:      00 [ ]
+Fire/Sky: 80 [ ]
+Darkness: 00 [ ]
+Water:    30 [ ]
+Earth:    70 [ ]
+Moon:     00 [ ]
+
+Power Rune Affinities               
+[ ] 50     Beast | Man      50 [ ]
+[ ] 50 Fertility | Death    50 [ ]
+[ ] 50   Harmony | Disorder 50 [ ]
+[ ] 75     Truth | Illusion 25 [ ]
+[ ] 25    Stasis | Movement 75 [ ]
+   Paired runes must total 100%
+
+Passions                   
+Honor:                        60% [ ]
+Love (family):                60%
+Loyalty (Nochet):             65%
+Loyalty (House):              60%
+Loyalty (Lankhor Mhy Nochet): 65%
+Loyalty (Samastina):          30%
+Hate (House Vralaeo):         60%
+Hate (Lunar Brown Men):       60%
+Devotion (Issaries):          60%
+ 
+
+             16 HP Total / currently: 16
+19-20: Head    5 AP / 6 HP / currently: __    
+16-18: L Arm   0 AP / 5 HP / currently: __
+13-15: R Arm   0 AP / 5 HP / currently: __
+12:    Chest   5 AP / 7 HP / currently: __
+09-11: Abdmn   5 AP / 6 HP / currently: __
+05-08: L Leg   0 AP / 6 HP / currently: __
+01-04: R Leg   0 AP / 6 HP / currently: __
+Armour points show enchanted aluminium armour which is not normally worn in town.
+
+Healing Rate: 3/week
+Dex SR: 3  Siz SR: 1  +10% Manip Bonus   Damage Bonus: +1d4
+
+Weapon           SR    Hit%     Damage   Range  HP/curr
+Rapier            2.   30% [ ]  1d6+1           8 /  
+1H Spear          2    25% [ ]  1d6+1          10 / 
+Dagger            4    45% [ ]  1d4+2           6 /
+Grapple           4    50% [ ]   *                - 
+Fist              4.   45% [ ]  1d3               -
+Medium Shield     4    35% [ ]  1d4            12 /
+Thrown Dagger    S/MR  20% [ ]  1d4       20   12 /
+Self Bow         S/MR  35% [ ]  1d8+1     80    5 /
+Javelin          1/MR. 20% [ ]  1d8+1     20    8 /
+
+
+
+Agility             +05%
+Boat                10% [ ]
+Climb               45% [ ]
+Dodge               49% [ ]
+Drive Chariot       15% [ ]
+Jump                36% [ ]
+Ride horse          20% [ ]
+Ride high llama     10% [ ]
+Swim                35% [ ]
+
+
+Communication      +10%        
+Act                  15% [ ]
+Art                  15% [ ]
+Bargain              25% [ ]
+Charm                25% [ ]
+Courtesan            15% [ ]
+Dance                30% [ ]
+Disguise             15% [ ]
+Fast Talk            40% [ ]
+Intimidate           25% [ ]
+Intrigue             35% [ ]
+Orate                30% [ ]
+Sing                 10% [ ]
+Speak Esrolian       60% [ ]
+R/W Esrolian         35% [ ]
+Speak Tradetalk      35% [ ]
+R/W Tradetalk        50% [ ]
+Speak Darktongue     35% [ ]
+Voice Mimicry        15% [ ]
+
+Knowledge            +10%      
+Animal Lore           15%
+Battle                20% [ ]
+Bureaucracy           40%
+Celestial Lore        15%
+Cult Lore: ___        05%
+Lore (Nochet):        35%
+Lore (Esrolia):       40%
+Lore (Prax):          15%
+Customs: Nochet       65% [ ]
+Customs: Esrolian     25% [ ]
+Customs: Prax         15% [ ]
+Evaluate              33% [ ]
+Farm                  10% [ ]
+First Aid             25% [ ]
+Game                  25% [ ]
+Herd                  05% [ ]
+Homeland Lore (local) 30%
+Homeland Lore: _____  --%
+Library Use           35%
+Manage Household      10% [ ]
+Mineral Lore          05%
+Peaceful Cut          10% [ ]
+Plant Lore            05%
+Streetwise            35% [ ]
+Survival              15% [ ]
+Treat Disease         05% [ ]
+Treat Poison          05% [ ]     
+
+Magic                 +10%      
+Meditate              00% [ ]
+Prepare Corpse        20% [ ]
+Sense Assassin        --% [ ]
+Sense Chaos           --% [ ]
+Spirit Dance          --% [ ]
+Spirit Lore           --% [ ]
+Spirit Travel         20% [ ]
+Worship (deity)       05% [ ]
+
+Manipulation          +10%      
+Conceal                05% [ ]
+Devise                 20% [ ]
+Feign Death            20% [ ]
+Sleight                15% [ ]
+
+Perception            +10%      
+Insight: Human         30% [ ]
+Listen                 35% [ ]
+Scan                   35% [ ]
+Search                 35% [x]
+Track                  15% [ ]
+
+Stealth               -05%      
+Hide                   05% [ ]
+Move Quietly           05% [ ]
+Shadowing              05% [ ]
+
+
+
+Rune Magic                  
+Cult: Lankhor Mhy
+Rune Points:        3/3
+
+Lankhor Mhy Spells (RPs) 
+Analyze Magic       (1)
+Translate           (1)
+Knowledge           (2)
+
+Common Rune Spells (RPs)
+Command Cult Spirit (2)
+Dismiss Magic       (1)
+Divination          (1)
+Extension           (1)
+Find Enemy          (1)
+Heal Wound          (1)
+Multispell          (1)
+Sanctify            (1)
+Soul Sight          (1)
+Spirit Block        (1)
+Summon Cult Spirit (1–3)
+Warding             (1)
+
+Spirit Magic            
+Casting @ POWx5 85%
+CHA Spell Limit: 14
+
+Spells in Mind (pts)
+Detect Magic     (1)
+Detect Life      (1)
+Detect Enemy     (1)
+Farsee           (2)
+
+Matrix Spells  (pts)
+_______________ (_)
+
+Spells Known   (pts)
+_______________ (_)
+
+Spirit Combat      
+Magic Points: 17
+Current MPs:  17   
+Recover 4/6 hrs.
+
+SR12 
+Magic Bonus +10%  
+Attack       30% [ ] 
+Damage:      1d6+1
+Sorcery        
+Free INT: __
+
+
+
+Equipment
+Writing implements and materials (with small wooden carrying case)
+Three bundles of reports and notes worth 100 L
+Blank parchments worth 50 L
+A tin disk carved with the calendar
+An old letter of introduction from Lankhor Mhy temple Nochet.
+A short suit of enchanted aluminium plate and open helmet.
+
+
+Ornstal had a auspicion birth. Mastakos himself paused his passage across the sky and visited the child. He marked him with a movement run and to this day, Ornstal is the fastest runner in Nochet, possibly all of Esrolia.
+
+Despite this auspicious birth, Ornstal was not the first born and to his dismay was apprenticed to his father Bruveldt the house scribe rather than his mother. Ornstal was sent to the temple to learn the ways of books. He tried to suppress his desire to travel and became a passable scribe if not something his father could be proud of. After the siege in 1623 Ornstal accompanied Queen Samastina to the Paps. He befriended a young llama rider who taught him to ride a llama (badly). He looks back on this time as a high point in his life.
+
+Since returning to Nochet, Ornstal has been preparing to submit himself to the blue sages and learn more about the world and how he might see more of it. His parents do not know about this but his friends and cousins do. To prepare for the day he travels he has been studying skills he believes will help in in the wider world, self defence, first aid and new languages.
+
+Ornstal looks up to his elder brother but he’s also a little peeved that he has things so easy. Not only is he the family favourite but he seems blessed by the gods - even though Mastakos left his mark on Ornstal, not Terano.
+
+Ornstals mother has noticed the friction with his father and has been taking him away from scribe duties to work at the Spare Grain Temple
+
+Major events in Ornstal’s life
+1621-1622 ST: The Great Winter
+Led by the Earth Temple priestesses, descended into the Deep Earth caves to sleep with Ernalda. Awakened by Voria when the Great Winter ended. Gain Loyalty (Earth temples).
+
+1623 ST: Civil War and Siege : Fought in the Siege of Nochet and barely escaped being buried alive by dark Earth magics. Gain Hate (Old Earth Alliance) and Devise +5%
+
+16241 ST: After the Siege Ornstal was chosen to accompany Queen Samastina to the Paps. Gain Customs (Prax) +5%, Prax Lore +5%, Ride (choose mount) +5%, Loyalty (Samastina), and Reputation +1D3%. 1D3 = 2
+
+One of the three sprits present at Ornstal’s birth was d10 = 5 Mastakos.
+You are marked with the movement rune and are faster than normal +1 mov.
+
+Family Heirloom: pieces of aluminium armour.
+
+Key Relationships
+Best Friend: Mylanth the Scribe - he and Ornstal were sent together to the Lhankor Mhy temple to learn the trade. Mylanth keeps the records at the cistern.
+Primary Contact: Voudilessa Hard-broom, the proprietor of the Inn, and his aunt.
+Current Mentor: his mother Terinalda, who is Keeper of the Scales for the House and a priestess at the Spare Grain temple.
+Current or prior love interest: none
+Greatest Rival: Terano the Lucky his brother, who always seems to have it easy, who always seems lucky in love and coin, etc.
+Worst Foe: Sure-eye Fethel He sees it like it is and says so, and knows where to go to get results. I will think further about who this foe is..., but is also Hadrian's worst foe, so a well-known figure in Tershis
+Biggest Pain: Friendly Usareen Eskora a cousin on his father's side, she's a pain to many in the neighborhood (including Selina, too)
+Overbearing Father: Scribe Bruveldt his own father is a thorn in Ornstal's side - and of course favors his brother Terano!
+
+Grandmother: Auntie Estrinala Twice-widowed
+The youngest daughter of Old Grandmother Aranvala, now an often forgetful woman given to bitter tirades and devotion to the goddesses.
+After coming of age, she had to forsake her much-lamented "true love" for an arranged marriage to a tedious scholar of House Lengoraeo from the Green Rest neighborhood.
+Her most hated rival, who stole the heart of her "true love" came from House Vralaeo, and Estrinala has long held a grudge against both that rival and that House. Optionally, add Hate (Vralaeo) at 60%
+Estrinala never got the "good" positions in the House, but always had to deal with the drudgery: managing the launderers, managing the water bearers, serving as "go-fer" for her sister Valingala when the latter was raised as Blessed Mother, and then later to be Grandmother of House Lorionaeo.
+And then her tedious husband got himself killed in the Scholar's Riots by one of the Lunar "Brown Men". She's hated the Lunars ever since. Optionally, add Hate (Brown Men) at 60%
+Of course, she married again, this time to one of the Quick Arrow militia patrol leaders, Sestos from House Lyksala. He proved more interested in spending his tending practicing his archery skills and going fishing then anything else. When the Queen sent militia along to fight the Lion King, Sestos met his death. Estrinala has not remarried, but spends her time in devotions at the shrine to Ernalda Many-treasures, spinning and weaving at the Serpents of the Loom Sorority, or talking with her daughter Voudilessa at the inn.
+
+Mother: Terinalda the Balancer
+Elder daughter of Estrinala, Terinalda like her mother had a typical arranged marriage, though she was far happier with Scribe Bruveldt of House Eskora then her mother ever was with her husbands. Terinalda trained early in the ways of Issaries and holds an honorable position at the Spare Grain Temple [T61] by the Whippost Market. She has good insight into the day-to-day supplies of grain in the city. Gain Evaluate +3%
+During the early tensions with the barbarians of Maniria, Terinalda was involved in plans to stockpile grain in the city in the event of major raids or even war, encouraged by the Asrelia priestesses. Optionally, gain Loyalty (Earth temples) at 60% or +5%
+During the Evil Year (1616), Terinalda led services in the House to Issaries, the Lightbringers, and the household spirits to help keep bad spirits at bay. Gain Devotion (deity) or Loyalty (House) at 60% or +5%
+In 1618, Terinalda was part of the visitation to the City of Wonders that aided the Purple Sages in bringing works from there back to Nochet. Gain Devotion (Lhankor Mhy) at 60% or +5%
+During the Great Winter, Terinalda was constantly at the Spare Grain temple where she doled out the daily food rations to help keep folk fed. Gain Loyalty (Nochet) at 60% or +5%

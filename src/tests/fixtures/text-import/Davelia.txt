@@ -1,0 +1,227 @@
+Davelia Sof-Voice 
+
+
+
+
+Nochet House: Lorionaeo Patron House: Marele Born: 1605
+
+Reputation: 15% Occupation: Assistant Priestess SoL: Noble Income: ? Ransom: 1000 L
+
+Initiate of Ernalda (Talosa) 
+
+Characteristics 
+STR: 9 INT: 17 SIZ: 12 DEX: 13
+CON: 9 POW: 17 [ ] CHA: 20
+
+Air: 10 [ ]
+Fire/Sky: 20 [ ]
+Darkness: 10 [ ]
+Water: 60 [ ]
+Earth: 75 [ ]
+Moon: 5 [ ]
+
+[ ] 50 Beast | Man 50 [ ]
+[ ] 75 Fertility | Death 25 [ ]
+[ ] 40 Harmony | Disorder 60 [ ]
+[ ] 25 Truth | Illusion 75 [ ]
+[ ] 50 Stasis | Movement 50 [ ]
+
+She is sensual, pragmatic, manipulative and warm.
+
+Passions 
+Honor: 60% [ ]
+Devotion (Lyksos): 60% [ ]
+Loyalty (Talosa Temple): 90% [ ]
+Loyalty (Brenta): 60% [ ]
+Loyalty (Bruvala): 60% [ ]
+Loyalty (House Marele): 80% [ ]
+Love (Snakes): 60% [ ]
+Love (Hazeel): 60% [ ]
+Hate (Delaeos): 70% [ ]
+Fear (Death): 60% [ ]
+Fear (Wolf Pirates): 65% [ ]
+Loyalty (River Temple): 60% [ ]
+
+
+10 HP Total / currently: 10: __ 
+
+19-20: Head 0 AP / 4 HP / currently: __ 
+16-18: L Arm 0 AP / 3 HP / currently: __
+13-15: R Arm 0 AP / 3 HP / currently: __
+12: Chest 0 AP / 5 HP / currently: __
+09-11: Abdmn 0 AP / 4 HP / currently: __
+05-08: L Leg 0 AP / 4 HP / currently: __
+01-04: R Leg 0 AP / 4 HP / currently: __
+
+Healing Rate: 2/week
+Dex SR: 2 Siz SR: 2 Damage Bonus: 0
+
+Weapon SR Hit% Damage Range HP/curr
+Dagger 8 70% [ ] 1d4+2 - 6/6
+Rapier 6 40% [ ] 1d6+1 - 8/8
+Medium Shield 8 45% [ ] 1d4 - 12/12
+Self Bow 2 60% [ ] 1d6+1 ? 5/ 5
+
+
+
+Agility +10%
+Boat 25% [ ]
+Climb 50% [ ]
+Dodge 46% [ ]
+Drive Chariot 15% [ ]
+Jump 49% [ ]
+Ride ____ 15% [ ]
+Ride ____ 15% [ ]
+Swim 25% [ ]
+
+Communication +20% 
+Act 25% [ ]
+Art 25% [ ]
+Bargain 35% [ ]
+Charm 80% [x]
+Courtesan 25% [ ]
+Dance 70% [ ]
+Disguise 25% [ ]
+Fast Talk 50% [x]
+Intimidate 35% [ ]
+Intrigue 30% [ ]
+Orate 50% [ ]
+Sing 75% [ ]
+Speak Own 70% [ ]
+Speak Tradetalk 40% [ ]
+Speak Earthtongue 40% [ ]
+
+Knowledge +15% 
+Alchemy --%
+Animal Lore 20%
+Battle 25% [ ]
+Bureaucracy --%
+Celestial Lore 20%
+Cult Lore (Ernalda) 65%
+Customs: Esrolian 35% [ ]
+Customs: Other --% [ ]
+Elder Race Lore (___) 20%
+Evaluate 25% [ ]
+Farm 25% [ ]
+First Aid 40% [ ]
+Game 30% [ ]
+Herd 20% [ ]
+Homeland Lore (local) 30%
+Homeland Lore: _____ --%
+Library Use --%
+Manage Household 35% [ ]
+Mineral Lore 20%
+Peaceful Cut 25% [ ]
+Plant Lore 20%
+Read/Write Esrolian 30%
+Shiphandling --% [ ]
+Streetwise 35% [ ]
+Survival 30% [ ]
+Treat Disease 20% [ ]
+Treat Poison 20% [ ] 
+
+Magic +15% 
+Meditate 30% [ ]
+Prepare Corpse 10% [ ]
+Spirit Combat 55% [ ]
+Spirit Dance 0% [ ]
+Spirit Lore 0% [ ]
+Spirit Travel 10% [ ]
+Understand Herd Beast 0% [ ]
+Understand Snakes 40% [ ]
+Worship (Ernalda) 70% [ ]
+
+Manipulation +20% 
+Conceal 25% [ ]
+Craft _____ 30% [ ]
+Devise 25% [ ]
+Play (Pipes) 40% [ ]
+Sleight 25% [ ]
+
+Perception +15% 
+Insight: Human 45% [ ]
+Insight: _____ --% [ ]
+Listen 40% [ ]
+Scan 40% [ ]
+Search 40% [ ]
+Track 20% [ ]
+
+Stealth +10% 
+Hide 20% [ ]
+Move Quietly 20% [ ]
+
+Rune Magic 
+Cult: Ernalda Talosa
+Rune Points: 3/3
+
+Ernalda Spells
+Call Snakes (1), Summon Household Guardian (1), Summon Snake Daughter (1), Command Cult Spirit (2), Dismiss Magic (1), Divination (1), Extension (1), Find Enemy (1), Heal Wound (1), Multispell (1), Sanctify (1), Soul Sight (1), Spirit Block (1), Summon Cult Spirit (1–3), Warding (1)
+
+Spirit Magic 
+Control Snakes (1), Detect Snake (1), Heal-1, Befuddle (2)
+
+Spirit Combat 55% Damage: 1d6+3
+
+Backstory:
+
+Davelia is the younger daughter of Aranda, born into House Lorionaero. Like her mother before her, and following the path already taken by her elder sister Serenalda Serpentwitch, she was dedicated to Ernalda Talosa from an early age.
+
+She is known as Soft-Voiced, not for weakness, but because people often find themselves agreeing with her before they realize they have done so.
+
+During the last year’s Sacred Time rituals, as Davelia stood in quiet attendance at the altar, a slender green-brown serpent emerged from beneath the roots entwined around the sacred stone. It coiled gently around her wrist. It did not bite. It did not threaten. It simply stayed.
+
+The elders declared it a blessing.
+
+Her sister Serenalda did not. She called it coincidence, her jealousy barely concealed—for it was she, not the younger sister, who believed herself destined to be chosen by the serpent mysteries. Why should Davelia be marked, when Serenalda had walked the path longer, had visions, and claimed the name Serpentwitch as her own?
+
+Her maternal grandmother is Auntie Ernamerala, Mistress of the Chambers and sister of Grandmother Valingala. Alongside her sister, Auntie Ernamerala regularly attends the Matron’s Hall and Court of Tershis. She is an influential figure, well versed in the city’s ancient customs and power structures.
+
+Her maternal grandfather is Old Irinesh, formerly of House Eskora and once the Keeper of the Ovens. House Eskora is known as a difficult and quarrelsome House, frequently entangled in disputes with neighboring Houses. Irinesh, who later worked as the baker at the Virtuous Ale Inn, carried the reputation of his House with him.
+During childhood, one of her grandparents suffered a crippling leg injury. Though the wound was healed during initiation, it may still have affected how desirable they were considered as a marriage match.
+
+Her mother, Aranda, is a minor priestess of the Ernalda Talosa temple. Davelia appears to be following in her mother’s footsteps within the Earth Temple, and her mother’s influence on her life and worldview is clear.
+
+Her father, Lorionos Lyksalos, is dead, having fallen during the Siege of Nochet. House Lyksalos belongs to the Back-of-the-Chain Houses and maintains close ties with House Lorionaeo. These Houses intermarry frequently, and their relationships are largely political and economic in nature.
+
+The tradition of House Lyksalos tells that its founder aided Great Queen Bruvala in recovering the Obsidian Pearl, also known as the Eye of Kimanorel, from the murky depths of the Lyksos River. As a reward, Queen Bruvala offered him a choice between three great honors:
+the Bounty of the River, Command of the Lyksos Watch, or the Right of Collector of the Backwater Dues.
+To the disappointment of both his mother and his wife, he chose the Bounty of the River. As a result, the House was blessed with abundant fishing and plentiful catches, but wealth and political prestige flowed elsewhere in Tershis.
+
+Because Lorionos belonged to House Lyksalos, his mother did as well. She was most likely a fisher, as fishing is the House’s primary livelihood.
+During the 1570s, a rival House—House Agrala—eclipsed House Lyksalos in influence, giving rise to a feud that continues to this day.
+
+According to the tale of House Agrala, when Lyksalos the Diver chose the Bounty of the River, Queen Bruvala offered the Right of Collector of the Backwater Dues to Grandmother Belvarna of Hall Agrala. She accepted, and from that day forward House Agrala grew immensely wealthy, supporting the Issaries temples of the Back-of-the-Chain and controlling the collection of dues from all ships, boats, and barges arriving at the Backwater Docks.
+
+Around the year 1580, the Lyksalos grandmother encountered Dormal the Sailor, but considered him a deranged and foolish God Learner.
+In the 1590s, she became involved in inter-House power struggles as sea trade eclipsed the old trade roads and competition for control of river commerce intensified. This ultimately led to the marriage of her son into House Lorionaeo.
+She survived both the Scholar’s Riots and the dangers posed by pirate activity along the coast.
+
+It remains unclear whether this grandmother is still alive and whether she continues to influence Davelia’s life. Although Davelia’s ties to her father’s House appear weak, House Lorionaeo’s strong connections to the River Temple may provide a lingering thread. The River Temple priestess Dorisyr may attempt to use this connection—even if tenuous—to draw Davelia into the temple’s affairs.
+
+Davelia’s sister Serenalda, to her mother Aranda’s great dismay, has fallen under the influence of vision-seekers. Serenalda regularly smokes hazia, practices fortune-telling, hustles people to support her habit, and frequents disreputable places such as the Kafl Leaf Inn in Deresagar. She is even accompanied by a hulking, monstrous great troll as a bodyguard.
+
+Davelia’s relationship with her sister shifts constantly: Serenalda is at times a friend, a mentor, a rival, a foe, and occasionally nothing more than an irritating burden. Davelia’s feelings toward her sister may range from love to rivalry to outright hatred, depending on the moment. Serenalda’s feelings toward Davelia are likewise a mixture of familial love and envy.
+
+At one time, both of Davelia’s paternal grandparents were exiled. Exile, however, is not a permanent state, and they later returned to the city. The cause may have been local political intrigue, during which they were accused of wrongdoing. At the same time, a drowning occurred in the river—an event whose true circumstances remain shrouded in mystery.
+
+Best Friend:
+Bruvala Firstborn - first-born daughter of Blessed Mother Valisa, she was dedicated from birth to the River Temple. She can influence both her mother as well as her aunt Dorisyr who leads the River Temple.
+
+Primary Contact: ?
+
+Current Mentor: 
+Brenta Brentirasdottir Marele, Priestess of Ernalda Talosa.
+
+Prior Love Interest: 
+Hazeel of Teshnos - a rogue, flirt, and mercenary who hails from distant Teshnos. Skilled in spear and bow, he can provide muscle and also has contacts at the Fire Temple.
+
+Greatest Rival: d100 = 81
+Harandar the Blessed
+
+Worst Foe: d100 = 67
+Pure Imarjarva 
+
+Biggest Pain: d100 = 18
+Holy Nerestana
+
+(While Samastina led us out of the Great Winter and through the Siege, she abandoned us for distant Prax when we needed her again. Our city has been stalked and plundered by Wolf Pirates and turned upside down by unruly mobs.)

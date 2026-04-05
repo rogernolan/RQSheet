@@ -1,0 +1,327 @@
+Name: Voraneva Slip-Wake   Nochet House: Lorionaeo   Patron House: Marele
+Born: Godday, Movement week, Sea season, 1604
+
+Reputation: 05%  Occupation: Warrior/Marine  SoL: Free  Income: 60 L  Ransom: 500 L
+
+Cult: Microbadge: Glorantha fan: Water runeMicrobadge: Glorantha fan: Motion runeInitiate of Lyksos  Microbadge: Glorantha fan: Water runeMicrobadge: Glorantha fan: Motion rune
+Microbadge: Glorantha fan: Luck rune Gift:  
+Microbadge: Glorantha fan: Fate rune Geas:  
+
+Characteristics  
+STR: 13
+INT: 13
+SIZ: 15
+DEX: 16
+CON: 11
+POW: 12 [ ]
+CHA: 14
+Elemental Runes     
+Air:      10 [ ]
+Fire/Sky: 00 [ ]
+Darkness: 20 [ ]
+Water:    75 [ ]
+Earth:    60 [ ]
+Moon:     00 [ ]
+
+Power Rune Affinities               
+[ ] 60     Beast | Man      40 [ ]
+[ ] 25 Fertility | Death    75 [ ]
+[x] 50   Harmony | Disorder 50 [ ]
+[ ] 60     Truth | Illusion 40 [ ]
+[ ] 25    Stasis | Movement 75 [ ]
+   Paired runes must total 100%
+
+Passions                   
+Honor:               70% [ ]
+Devotion (Lyksos):   70% [ ]
+Devotion (Lodril):   60% [ ]
+Loyalty (leader):    60% [ ]
+Loyalty (regiment):  60% [ ]
+Loyalty (Temple of
+     Lyksos/Nochet): 60% [ ]
+Loyalty (Nochet):    60% [ ]
+Loyalty (Lorionaeo): 60% [ ]
+Loyalty (Samastina): 70% [ ]
+Love (Family):       60% [ ]
+Love (Rustleaf):
+    my fox friend!   60% [ ]
+Hate (ice demons):   60% [ ]
+Fear (night demons): 60% [ ]
+Fear (the wild hunt):60% [ ] 
+
+
+           12 HP Total / currently: 12
+
+19-20: Head  3 AP / 4 HP / currently: 4    
+16-18: L Arm 3 AP / 3 HP / currently: 3
+13-15: R Arm 3 AP / 3 HP / currently: 3
+12:    Chest 3 AP / 5 HP / currently: 5
+09-11: Abdmn 3 AP / 4 HP / currently: 4
+05-08: L Leg 3 AP / 4 HP / currently: 4
+01-04: R Leg 3 AP / 4 HP / currently: 4
+
+Healing Rate: 2/week
+Dex SR: 1  Siz SR: 1  +10% Manip Bonus   Damage Bonus: +1d4
+
+Weapon           SR    Hit%     Damage   Range  HP/curr
+1H Battle Axe     3    50% [ ]  1d8+2            8/ 8
+Combat Net        2    30% [ ]  special         15/15
+Javelin        1/MR    35% [ ]  1d10     20      8/ 8
+Dagger            4    25% [ ]  1d4+2            6/ 6 
+Fist              4    35% [ ]  1d3              arm
+Grapple           4    40% [ ]  special          arm
+
+
+Agility            +05%
+Boat                25% [ ]
+Climb               50% [ ]
+Dodge               52% [ ]
+Drive Chariot       05% [ ]
+Jump                58% [ ]
+Ride ____           05% [ ]
+Ride ____           05% [ ]
+Swim                55% [ ]
+
+
+Communication      +05%        
+Act                 05% [ ]
+Art                 05% [ ]
+Bargain             15% [ ]
+Charm               15% [ ]
+Courtesan           05% [ ]
+Dance               35% [ ]
+Disguise            05% [ ]
+Fast Talk           15% [ ]
+Intimidate          15% [ ]
+Intrigue            05% [ ]
+Orate               10% [ ]
+Sing                25% [ ]
+Speak Esrolian      50% [ ]
+Speak Tradetalk     20% [ ]
+Voice Mimicry       05% [ ]
+Knowledge            +05%      
+Alchemy               --%
+Animal Lore           15%
+Battle                30% [ ]
+Bureaucracy           --%
+Celestial Lore        05%
+Cult Lore: ___        05%
+Customs: Local        25% [ ]
+Customs (Esrolian)    25% [ ]
+Elder Race Lore (___) 05%
+Evaluate              10% [ ]
+Farm                  10% [ ]
+First Aid             30% [ ]
+Game                  15% [ ]
+Herd                  05% [ ]
+Homeland Lore (local) 30%
+Homeland Lore: _____  --%
+Library Use           --%
+Manage Household      10% [ ]
+Mineral Lore          05%
+Peaceful Cut          10% [ ]
+Plant Lore            05%
+Read/Write Esrolian   05%
+Shiphandling          --% [ ]
+Streetwise            30% [ ]
+Survival              15% [ ]
+Treat Disease         05% [ ]
+Treat Poison          05% [ ]     
+Magic                 +00%      
+Meditate               00% [ ]
+Prepare Corpse         10% [ ]
+Sense Assassin         --% [ ]
+Sense Chaos            --% [ ]
+Spirit Dance           --% [ ]
+Spirit Lore            --% [ ]
+Spirit Travel          10% [ ]
+Understand Herd Beast  --% [ ]
+Worship (deity)        05% [ ]
+
+Manipulation          +10%      
+Conceal                05% [ ]
+Craft _____            10% [ ]
+Devise                 05% [ ]
+Feign Death            10% [ ]
+Kuschile Archery       --% [ ]
+Play _____             05% [ ]
+Sleight                05% [ ]
+
+Perception            +05%      
+Insight: Human         25% [ ]
+Insight: _____         --% [ ]
+Listen                 25% [ ]
+Scan                   35% [ ]
+Search                 25% [ ]
+Track                  05% [ ]
+
+Stealth               +05%      
+Hide                   10% [ ]
+Move Quietly           10% [ ]
+Shadowing              10% [ ]
+
+
+
+Rune Magic                  
+Cult: Lyksos 
+Rune Points:        3/3
+
+Lyksos Spells      (RPs)
+Breate Air/Water    (1)
+Leap                (1)
+Strongnet           (1)
+
+Common Rune Spells (RPs)
+Command Cult Spirit (2)
+Dismiss Magic       (1)
+Divination          (1)
+Extension           (1)
+Find Enemy          (1)
+Heal Wound          (1)
+Multispell          (1)
+Sanctify            (1)
+Soul Sight          (1)
+Spirit Block        (1)
+Summon Cult Spirit (1–3)
+Warding             (1)
+
+Spirit Magic            
+Casting @ POWx5 60%
+CHA Spell Limit: 14
+
+Spells in Mind (pts)
+Detect Enemy           (1)
+Detect Magic           (1)
+Extinguish             (1)
+Rivereyes              (1)
+Strength               (2)
+Heal                   (1)
+Matrix Spells  (pts)
+_______________ (_)
+
+Spells Known   (pts)
+_______________ (_)
+
+Spirit Combat      
+Magic Points: 16
+Current MPs:  15
+Recover 3MP/6 hrs.
+
+SR12 
+Magic Bonus +00%  
+Attack       30% [ ] 
+Damage:      1d6
+Sorcery        
+Free INT: __
+
+Equipment
+🎲Linothorax (3 pts. protection), cuirboilli greaves and vambraces (3 pts. protection), composite helm
+(3 pts. protection)
+🎲1H battle axe, combat net, javelin, dagger.
+🎲sleeping roll
+🎲good clothing
+🎲small statuette of Dormal (worth 60 L)
+🎲Heirloom: d20 = 8 The skull of a small demon with a gem of Arkatite set in its 3rd eye socket. The gem appears bright green in daylight and glows red by firelight or magical light. The skull is of unknown value, but when held in the hand it increases the
+chance of casting a Summoning spell by +10%.
+🎲 Total Coin: 266 L
+Notes
+🎲 1d3 = 1 scars.
+🎲 I have a faithful fox friend and companion named Rustleaf.
+🎲 I have a mentor at the Deresagar house, a residence down in Deresagar where several of the local elurae (i.e. fox women) live.
+Hysha: the self-styled “grande dame of Deresagar” is the Keeper of the Keys, advocate for the Fox House, and the only halfway respectable member of the household. She has helped me understand and better care for, understand, and love her fox companion, Rustleaf.
+🎲 My Bestie is Aren Salt-tongue - one of the night watch for the House, he's cynical since his wife died but has a young daughter. He can provide added muscle if needed.
+🎲 war booty worth 2*d100 = 166 L
+
+Grandparent History
+wrote:
+Grandmother Veskara Old‑Wake, Sailor
+
+Early Life Event d20img ->  no caption = 12
+They participated in a Famed Contest that is still well-remembered. Roll 1D6. 1d6img ->  no caption = 5
+1-2: They were bested and embarrassed by their Greatest Rival. Gain Hate (Greatest Rival).
+3-4: They were attacked by a hostile spirit or demon during the contest. They survived but gain Fear (wraith or
+demon).
+5-6: Aided by their Best Friend, they overcame their Greatest Rival. Gain Loyalty (Best Friend).
+If Adventurer Event, gain Reputation +1D3%. Roll on the Common Character Table p.110 to identify the
+Greatest Rival and, if relevant, Best Friend.
+
+1550-79: Esrolia Divided d20 = 2
+Joined Tarkalor Trollkiller’s Wars; d20 = 13 Fought in the conflicts but survived.
+
+1580-5: Dormal and the Discovery Years d20 = 13
+Dormal the Sailor opened the seas and merchants ventured beyond the Mirrorsea. Soon sailors reached the coasts of Maniria, Slontos, and Seshnela, and great trade and wealth flowed into the Holy Country. d20-5 = 5
+Encountered Dormal the Sailor d20 = 13; Joined the great ceremony to bless the ship of
+Dormal as it first set sail. Gain Devotion (Dormal).
+
+1586-9: Colonization and the Dragon’s Curse  d20-3 = 9
+Touched by the Tournament of Luck and Death. d20 = 7 Joined the Cruel God on a raid into Inora's Ice Palace. d6 = 6 Insulted Inora – frozen and turned into an ice mummy to eternally guard Inora's realm. Gain Fear (Inora).
+
+RIP Grandmother!
+Mother History
+wrote:
+Loratha Oar‑Bright, River Patrol Marine
+
+Early Life d20 = 8
+They were particularly prone to diseases in childhood (and nearly died!). They may have had a nickname as a
+consequence. Gain Fear (disease spirits). Her nickname is “Soft‑Shell”.
+
+1605: The Building Wall d20 = 15
+Fought at the Building Wall Battle.  d20+3 = 22 Sacrificed self to strengthen the Building Wall as
+part of the Palisade of Shields. Gain Loyalty (God-king) and Love (family).
+
+1609-11: Red Queen and Storm Kings d20 = 15
+Experienced the Shifts to New Alliances. d20 = 2 The Manirians raided your lands and took your
+treasures. Gain Hate (Manirians).
+
+1614: The Blessed Year d20 = 11
+A normal year. Gain Customs (Esrolian) +1%.
+
+1616: The Evil Year d20 = 11
+Survived despite the ill omens and untamed spirits due to your House’s sacrifices to the gods. Gain Loyalty (House) or
+Devotion (deity).
+
+1618: The Lion King Roars d20+5 = 14
+Fought in Greymane’s Great Raid. d20+5 = 8 If Nochet, feuded with refugees crowding into the
+city. Gain Hate (rival House).
+
+1619-20: The Years of Discord d20-5 = 13
+If Nochet, rioted against the sorcerous westerners. Gain Hate (Seshnegi).
+Mother/Me
+wrote:
+1621-2: The Great Winter d20 = 1
+Mother: d6 = 1 slain by Ice Demons while protecting their family. Gain Hate (Ice Demons).
+RIP Mother!
+Me: Rescued from Ice Demons by d6 = 1 Caladralander priest from the Vent. Gain Devotion (Lodril).
+Me
+wrote:
+Birth day: d8 = 7 Godday, Movement week, Sea Season.
+
+Early Life d20 = 11
+I rescued and befriended a d8 = 4 fox, who I named Rustleaf, and became a faithful Friend and Companion. Gain Love (fox). Gain +10% to either Animal Lore or Understand (beast type) and add +5% to Beast Rune. Determine whether the animal is still living: if so, gain Love (companion) and give the animal a Name.
+
+1621-2: The Great Winter (shared with mother, see above section)
+
+1623: The Siege of Nochet d20 = 19
+Fought with great glory alongside King Broyan. Gain Honor, Devotion (deity), Battle +5%, one melee weapon +5%, and + 1d3 = 2% Reputation.
+Battle of Pennel Ford: d20+3 = 20 Fought with great glory protecting Samastina and Broyan. Gain Honor, Loyalty (Samastina), Battle +10%, one melee weapon +5%, and + d6 = 3% Reputation.
+Sacking the City of Wonders: d20 = 13 Gain d6 * 100 = 100 L worth of plunder.
+
+1624: After the Siege GM suggested the event
+Raising of the Boat Planet d20 = 5
+Dragged overboard by the Xentha’s demonic servants and cast out of the quest during the Sky
+Rise. Gain Fear (Night demons).
+Quote:
+Voraneva has 2 Primary Contacts:
+- for her day-to-day activities it is Vogarthan Strongarm, the Noble Husband of House Lorionaeo (spouse of Blessed Mother Valisa). He handles the daily "duty roster" for the household guards, so when Voraneva is not active for riverine-related duties, she is assigned to various guard duty around the House or neighborhood.
+- for her river-related activities it is Bruvala First-born (best friend of Davelia, and a love interest of Hadrian), the daughter of Blessed Mother Valisa and a priestess-in-training at the River Temple. Bruvala calls upon Voraneva for various ceremonies involving the House's river boat/floating shrine named
+Eyes of Lorion .
+
+Voraneva's Greatest Rival: Ungar of the Nine Lives
+Who is he? He is another Marine from the river boats and is part of House Floraeo (a closely allied House). However, Ungar always seems to be as lucky and graceful as a shadowcat. You know he's lazy, which is why it's even more annoying that he regularly bests you in getting the premier guard duties at the temple. He even completed the Boat Planet quest when you were forced out by the Night Demons! Still, it was you who was honored for great deeds at Pennel Ford, not Ungar....
+
+Voraneva's Worst Foe: Esrolakar the Arrogant (from House Eskora originally, and married into House Desara)
+Who is he? In his 30s, he is the former Keeper of the Chain Tower and the Chain. Former because his House Desara were clients of House Norinel and Queen Hendira and they were stripped of their positions when Samastina took power. He (and his House) still bitterly complain about this change and regularly petition the Queen to restore their privileges. That's unlikely as the privileges were given to House Satavara, a client of House Delaeos (i.e. Samastina's House).
+But why is he Voraneva's Foe? It goes back to the Great Winter when you and your mother were trying to bring a ship filled with refugees downriver to Nochet but the ship was stuck in the Ice. If only the Chain was lowered, the river could have pushed the ice along and out to sea and allowed more boats to reach Nochet. But Esrolakar refused to lower the chain as he claimed that doing so would allow the Ice Demons to reach the city. Because of his refusal, your mother (and other refugees onboard) died at the hands of the Ice Demons. You remember this well (though you were pleased by his fall from power).
+
+Voraneva's Biggest Pain: The Lady Everin - a ghost!
+Who was she? A woman who died centuries ago who is "trapped" in the Tershis district. The priestesses have been unable to banish her. She only appears sporadically, and only to some people. However, Voraneva's one of those people and the Lady Everin is often demanding when she appears (she wants a drink of pure water, she wants new clothes, she wants flowers - usually out-of-season as she does not keep track of Time, she wants to hear poems or songs, etc.). It's very annoying when a ghost suddenly pops up and starts giving you orders.
