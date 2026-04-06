@@ -6,11 +6,11 @@ type GroupedSkills = Record<SkillGroupName, CharacterSkillRecord[]>;
 
 const groupOrder: SkillGroupName[] = [
   "agility",
+  "manipulation",
+  "perception",
   "communication",
   "knowledge",
-  "manipulation",
   "magic",
-  "perception",
   "stealth",
 ];
 

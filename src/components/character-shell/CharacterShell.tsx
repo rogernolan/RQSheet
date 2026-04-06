@@ -685,6 +685,19 @@ function SkillsList({
     () => Object.fromEntries(getSkillGroupOrder().map((group) => [group, false])),
   );
   const lastSavedSkillsRef = useRef("");
+  const leftColumnGroups = useMemo(
+    () => ["agility", "manipulation", "perception", "communication"] as const,
+    [],
+  );
+  const leftColumnGroupSet = useMemo(
+    () => new Set<string>(leftColumnGroups),
+    [leftColumnGroups],
+  );
+  const rightColumnGroups = useMemo(
+    () =>
+      getSkillGroupOrder().filter((group) => leftColumnGroupSet.has(group) === false),
+    [leftColumnGroupSet],
+  );
 
   useEffect(() => {
     const nextSkills = character.skills.map((skill) => {
@@ -756,41 +769,79 @@ function SkillsList({
           value={searchText}
         />
       </div>
-      <div className="space-y-3 lg:columns-2 lg:gap-6 lg:space-y-0">
-        {getSkillGroupOrder().map((group) => {
-          const skills = groupedSkills[group];
-          const hasQuery = searchText.trim().length > 0;
+      <div className="grid gap-x-6 gap-y-3 lg:grid-cols-2">
+        <div className="space-y-3">
+          {leftColumnGroups.map((group) => {
+            const skills = groupedSkills[group];
+            const hasQuery = searchText.trim().length > 0;
 
-          if (hasQuery && skills.length === 0) {
-            return null;
-          }
+            if (hasQuery && skills.length === 0) {
+              return null;
+            }
 
-          return (
-            <SkillGroupSection
-              key={group}
-              character={character}
-              collapsed={collapsedGroups[group]}
-              group={group}
-              onToggle={() =>
-                setCollapsedGroups((current) => ({
-                  ...current,
-                  [group]: !current[group],
-                }))
-              }
-              skillDrafts={skillDrafts}
-              skills={skills}
-              onUpdateSkillDraft={(skill, value, experienceCheck) =>
-                setSkillDrafts((current) => ({
-                  ...current,
-                  [skillKey(skill)]: {
-                    value,
-                    experienceCheck,
-                  },
-                }))
-              }
-            />
-          );
-        })}
+            return (
+              <SkillGroupSection
+                key={group}
+                character={character}
+                collapsed={collapsedGroups[group]}
+                group={group}
+                onToggle={() =>
+                  setCollapsedGroups((current) => ({
+                    ...current,
+                    [group]: !current[group],
+                  }))
+                }
+                skillDrafts={skillDrafts}
+                skills={skills}
+                onUpdateSkillDraft={(skill, value, experienceCheck) =>
+                  setSkillDrafts((current) => ({
+                    ...current,
+                    [skillKey(skill)]: {
+                      value,
+                      experienceCheck,
+                    },
+                  }))
+                }
+              />
+            );
+          })}
+        </div>
+        <div className="space-y-3">
+          {rightColumnGroups.map((group) => {
+            const skills = groupedSkills[group];
+            const hasQuery = searchText.trim().length > 0;
+
+            if (hasQuery && skills.length === 0) {
+              return null;
+            }
+
+            return (
+              <SkillGroupSection
+                key={group}
+                character={character}
+                collapsed={collapsedGroups[group]}
+                group={group}
+                onToggle={() =>
+                  setCollapsedGroups((current) => ({
+                    ...current,
+                    [group]: !current[group],
+                  }))
+                }
+                skillDrafts={skillDrafts}
+                skills={skills}
+                onUpdateSkillDraft={(skill, value, experienceCheck) =>
+                  setSkillDrafts((current) => ({
+                    ...current,
+                    [skillKey(skill)]: {
+                      value,
+                      experienceCheck,
+                    },
+                  }))
+                }
+              />
+            );
+          })}
+        </div>
       </div>
     </section>
   );
@@ -818,7 +869,7 @@ function SkillGroupSection({
   skills: CharacterSkillRecord[];
 }) {
   return (
-    <section className="mb-3 break-inside-avoid-column lg:mb-4">
+    <section>
       <div className="flex items-center justify-between gap-3 border-b border-panel-border/60 pb-1">
         <button
           className="flex min-w-0 flex-1 items-center gap-2 text-left"
