@@ -12,7 +12,14 @@ import {
 } from "@/domain/character";
 import { parseTextImport } from "@/domain/import/pipeline";
 import { reviewImportResult } from "@/domain/import/types";
-import type { Character } from "@/domain/types";
+import {
+  getGroupedSkills,
+  getSkillEffectiveValue,
+  getSkillGroupBonus,
+  getSkillGroupOrder,
+  getSkillGroupTitle,
+} from "@/domain/skills";
+import type { Character, CharacterSkillRecord } from "@/domain/types";
 import { createIndexedDBCharacterRepository } from "@/lib/storage";
 
 const repository = createIndexedDBCharacterRepository();
@@ -511,6 +518,7 @@ function IdentityCard({
     currentMagicPoints: String(character?.currentMagicPoints ?? 10),
   }));
   const lastSavedKeyRef = useRef("");
+  const [skillSearch, setSkillSearch] = useState("");
 
   useEffect(() => {
     if (!character) {
@@ -568,6 +576,30 @@ function IdentityCard({
     return () => window.clearTimeout(timeoutId);
   }, [character, draft, onSaveCharacter]);
 
+  const previewCharacter = useMemo(() => {
+    if (!character) {
+      return null;
+    }
+
+    const nextPow = parseNumberDraft(draft.pow, character.pow);
+
+    return {
+      ...character,
+      str: parseNumberDraft(draft.str, character.str),
+      con: parseNumberDraft(draft.con, character.con),
+      siz: parseNumberDraft(draft.siz, character.siz),
+      dex: parseNumberDraft(draft.dex, character.dex),
+      int: parseNumberDraft(draft.int, character.int),
+      pow: nextPow,
+      powExperienceCheck: draft.powExperienceCheck,
+      cha: parseNumberDraft(draft.cha, character.cha),
+      currentMagicPoints: parseNumberDraft(
+        draft.currentMagicPoints,
+        Math.min(character.currentMagicPoints, nextPow),
+      ),
+    };
+  }, [character, draft]);
+
   return (
     <DashboardCard>
       {character ? (
@@ -621,12 +653,255 @@ function IdentityCard({
               Max MP <span className="ml-2 font-semibold text-foreground">{getMaxMagicPoints(character)}</span>
             </div>
           </div>
+          {previewCharacter ? (
+            <SkillsList
+              character={previewCharacter}
+              onSaveCharacter={onSaveCharacter}
+              searchText={skillSearch}
+              onSearchTextChange={setSkillSearch}
+            />
+          ) : null}
         </div>
       ) : (
         <EmptyCardMessage text="Select or create a character to see the workspace." />
       )}
     </DashboardCard>
   );
+}
+
+function SkillsList({
+  character,
+  onSaveCharacter,
+  searchText,
+  onSearchTextChange,
+}: {
+  character: Character;
+  onSaveCharacter: (character: Character) => Promise<void>;
+  searchText: string;
+  onSearchTextChange: (value: string) => void;
+}) {
+  const [skillDrafts, setSkillDrafts] = useState<Record<string, { value?: string; experienceCheck?: boolean }>>({});
+  const [collapsedGroups, setCollapsedGroups] = useState<Record<string, boolean>>(
+    () => Object.fromEntries(getSkillGroupOrder().map((group) => [group, false])),
+  );
+  const lastSavedSkillsRef = useRef("");
+
+  useEffect(() => {
+    const nextSkills = character.skills.map((skill) => {
+      const draft = skillDrafts[skillKey(skill)];
+      const nextValue = parseNumberDraft(
+        draft?.value ?? "",
+        getSkillEffectiveValue(character, skill),
+      );
+
+      return {
+        ...skill,
+        modifier:
+          nextValue -
+          (getSkillEffectiveValue(character, skill) - skill.modifier),
+        experienceCheck: draft?.experienceCheck ?? skill.experienceCheck,
+      };
+    });
+    const saveKey = JSON.stringify(
+      nextSkills.map((skill) => [skill.name, skill.group, skill.modifier, skill.experienceCheck]),
+    );
+    const currentKey = JSON.stringify(
+      character.skills.map((skill) => [skill.name, skill.group, skill.modifier, skill.experienceCheck]),
+    );
+
+    if (saveKey === currentKey || saveKey === lastSavedSkillsRef.current) {
+      return;
+    }
+
+    const timeoutId = window.setTimeout(() => {
+      lastSavedSkillsRef.current = saveKey;
+      void onSaveCharacter({
+        ...character,
+        skills: nextSkills,
+      });
+    }, 250);
+
+    return () => window.clearTimeout(timeoutId);
+  }, [character, onSaveCharacter, skillDrafts]);
+
+  const groupedSkills = getGroupedSkills(
+    {
+      ...character,
+      skills: character.skills.map((skill) => {
+        const draft = skillDrafts[skillKey(skill)];
+        const nextValue = parseNumberDraft(
+          draft?.value ?? "",
+          getSkillEffectiveValue(character, skill),
+        );
+
+        return {
+          ...skill,
+          modifier:
+            nextValue -
+            (getSkillEffectiveValue(character, skill) - skill.modifier),
+          experienceCheck: draft?.experienceCheck ?? skill.experienceCheck,
+        };
+      }),
+    },
+    searchText,
+  );
+
+  return (
+    <section className="pt-2">
+      <div className="mb-2">
+        <input
+          className="min-h-9 w-full rounded-[8px] bg-black/[0.035] px-3 py-1.5 text-sm outline-none placeholder:text-stone-400 dark:bg-white/[0.04]"
+          onChange={(event) => onSearchTextChange(event.target.value)}
+          placeholder="Search skills"
+          value={searchText}
+        />
+      </div>
+      <div className="space-y-3 lg:columns-2 lg:gap-6 lg:space-y-0">
+        {getSkillGroupOrder().map((group) => {
+          const skills = groupedSkills[group];
+          const hasQuery = searchText.trim().length > 0;
+
+          if (hasQuery && skills.length === 0) {
+            return null;
+          }
+
+          return (
+            <SkillGroupSection
+              key={group}
+              character={character}
+              collapsed={collapsedGroups[group]}
+              group={group}
+              onToggle={() =>
+                setCollapsedGroups((current) => ({
+                  ...current,
+                  [group]: !current[group],
+                }))
+              }
+              skillDrafts={skillDrafts}
+              skills={skills}
+              onUpdateSkillDraft={(skill, value, experienceCheck) =>
+                setSkillDrafts((current) => ({
+                  ...current,
+                  [skillKey(skill)]: {
+                    value,
+                    experienceCheck,
+                  },
+                }))
+              }
+            />
+          );
+        })}
+      </div>
+    </section>
+  );
+}
+
+function SkillGroupSection({
+  character,
+  collapsed,
+  group,
+  onToggle,
+  onUpdateSkillDraft,
+  skillDrafts,
+  skills,
+}: {
+  character: Character;
+  collapsed: boolean;
+  group: ReturnType<typeof getSkillGroupOrder>[number];
+  onToggle: () => void;
+  onUpdateSkillDraft: (
+    skill: CharacterSkillRecord,
+    value: string,
+    experienceCheck: boolean,
+  ) => void;
+  skillDrafts: Record<string, { value?: string; experienceCheck?: boolean }>;
+  skills: CharacterSkillRecord[];
+}) {
+  return (
+    <section className="mb-3 break-inside-avoid-column lg:mb-4">
+      <div className="flex items-center justify-between gap-3 border-b border-panel-border/60 pb-1">
+        <button
+          className="flex min-w-0 flex-1 items-center gap-2 text-left"
+          onClick={onToggle}
+          type="button"
+        >
+          <span className="text-xs text-stone-500">{collapsed ? ">" : "v"}</span>
+          <h4 className="text-sm font-semibold">{getSkillGroupTitle(group)}</h4>
+        </button>
+        <span className="shrink-0 text-sm text-stone-500 tabular-nums">
+          {formatSignedPercentage(getSkillGroupBonus(character, group))}
+        </span>
+      </div>
+      {collapsed ? null : (
+        <div className="mt-1.5">
+          <div className="grid grid-cols-[minmax(0,1fr)_52px_22px] items-center gap-2 border-b border-panel-border/40 pb-1 text-[10px] font-semibold uppercase tracking-[0.12em] text-stone-500">
+            <span>Skill</span>
+            <span className="text-right">%</span>
+            <span className="text-center">XP</span>
+          </div>
+          {skills.length > 0 ? (
+            <div className="divide-y divide-panel-border/30">
+              {skills.map((skill) => (
+                <div
+                  key={`${group}-${skill.name}`}
+                  className="grid grid-cols-[minmax(0,1fr)_52px_22px] items-center gap-2 py-1 text-sm"
+                >
+                  <span className="min-w-0 truncate text-stone-700 dark:text-stone-200">
+                    {skill.name}
+                  </span>
+                  <input
+                    className="min-h-6 rounded-[4px] bg-black/[0.025] px-1 py-0 text-right font-semibold tabular-nums outline-none dark:bg-white/[0.035]"
+                    inputMode="numeric"
+                    onChange={(event) =>
+                      onUpdateSkillDraft(
+                        skill,
+                        event.target.value,
+                        skillDrafts[skillKey(skill)]?.experienceCheck ??
+                          skill.experienceCheck,
+                      )
+                    }
+                    value={
+                      skillDrafts[skillKey(skill)]?.value ??
+                      String(getSkillEffectiveValue(character, skill))
+                    }
+                  />
+                  <div className="flex justify-center">
+                    <input
+                      checked={
+                        skillDrafts[skillKey(skill)]?.experienceCheck ??
+                        skill.experienceCheck
+                      }
+                      className="h-3.5 w-3.5 rounded border-panel-border"
+                      onChange={(event) =>
+                        onUpdateSkillDraft(
+                          skill,
+                          skillDrafts[skillKey(skill)]?.value ??
+                            String(getSkillEffectiveValue(character, skill)),
+                          event.target.checked,
+                        )
+                      }
+                      type="checkbox"
+                    />
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="py-0.5 text-sm text-stone-500">No matches</div>
+          )}
+        </div>
+      )}
+    </section>
+  );
+}
+
+function skillKey(skill: CharacterSkillRecord): string {
+  return `${skill.group}::${skill.name}`;
+}
+
+function formatSignedPercentage(value: number): string {
+  const sign = value > 0 ? "+" : "";
+  return `${sign}${value}%`;
 }
 
 function CombatCard({
