@@ -1,0 +1,306 @@
+{
+  "skillGroups": {
+    "agility": [
+      {
+        "name": "Boat",
+        "base": "05"
+      },
+      {
+        "name": "Climb",
+        "base": "40"
+      },
+      {
+        "name": "Dodge",
+        "base": "DEXx2"
+      },
+      {
+        "name": "Drive Chariot",
+        "base": "05"
+      },
+      {
+        "name": "Jump",
+        "base": "DEXx3"
+      },
+      {
+        "name": "Ride (mount type)",
+        "base": "05"
+      },
+      {
+        "name": "Swim",
+        "base": "15"
+      }
+    ],
+    "communication": [
+      {
+        "name": "Act",
+        "base": "05"
+      },
+      {
+        "name": "Art",
+        "base": "05"
+      },
+      {
+        "name": "Bargain",
+        "base": "05"
+      },
+      {
+        "name": "Charm",
+        "base": "15"
+      },
+      {
+        "name": "Dance",
+        "base": "10"
+      },
+      {
+        "name": "Disguise",
+        "base": "05"
+      },
+      {
+        "name": "Fast Talk",
+        "base": "05"
+      },
+      {
+        "name": "Intimidate",
+        "base": "15"
+      },
+      {
+        "name": "Intrigue",
+        "base": "05"
+      },
+      {
+        "name": "Orate",
+        "base": "10"
+      },
+      {
+        "name": "Sing",
+        "base": "10"
+      },
+      {
+        "name": "Speak Own Language",
+        "base": "50"
+      },
+      {
+        "name": "Speak Other Language",
+        "base": "00"
+      }
+    ],
+    "knowledge": [
+      {
+        "name": "Alchemy",
+        "base": "00"
+      },
+      {
+        "name": "Animal Lore",
+        "base": "05"
+      },
+      {
+        "name": "Battle",
+        "base": "10"
+      },
+      {
+        "name": "Bureaucracy",
+        "base": "00"
+      },
+      {
+        "name": "Celestial Lore",
+        "base": "05"
+      },
+      {
+        "name": "Cult Lore (specific cult)",
+        "base": "05"
+      },
+      {
+        "name": "Customs",
+        "base": "local 25 / all others 00"
+      },
+      {
+        "name": "Elder Race Lore (race)",
+        "base": "05"
+      },
+      {
+        "name": "Evaluate",
+        "base": "10"
+      },
+      {
+        "name": "Farm",
+        "base": "10"
+      },
+      {
+        "name": "First Aid",
+        "base": "10"
+      },
+      {
+        "name": "Game",
+        "base": "15"
+      },
+      {
+        "name": "Herd",
+        "base": "05"
+      },
+      {
+        "name": "Homeland Lore (local)",
+        "base": "30"
+      },
+      {
+        "name": "Homeland Lore (other)",
+        "base": "00"
+      },
+      {
+        "name": "Library Use",
+        "base": "00"
+      },
+      {
+        "name": "Manage Household",
+        "base": "10"
+      },
+      {
+        "name": "Mineral Lore",
+        "base": "05"
+      },
+      {
+        "name": "Peaceful Cut",
+        "base": "10"
+      },
+      {
+        "name": "Plant Lore",
+        "base": "05"
+      },
+      {
+        "name": "Read/Write (language)",
+        "base": "00"
+      },
+      {
+        "name": "Shiphandling",
+        "base": "00"
+      },
+      {
+        "name": "Survival",
+        "base": "15"
+      },
+      {
+        "name": "Treat Disease",
+        "base": "05"
+      },
+      {
+        "name": "Treat Poison",
+        "base": "05"
+      },
+      {
+        "name": "Meditate",
+        "base": "00",
+        "subgroup": "magic"
+      },
+      {
+        "name": "Prepare Corpse",
+        "base": "10",
+        "subgroup": "magic"
+      },
+      {
+        "name": "Sense Assassin",
+        "base": "00",
+        "subgroup": "magic"
+      },
+      {
+        "name": "Sense Chaos",
+        "base": "00",
+        "subgroup": "magic"
+      },
+      {
+        "name": "Spirit Combat",
+        "base": "20",
+        "subgroup": "magic"
+      },
+      {
+        "name": "Spirit Dance",
+        "base": "00",
+        "subgroup": "magic"
+      },
+      {
+        "name": "Spirit Lore",
+        "base": "00",
+        "subgroup": "magic"
+      },
+      {
+        "name": "Spirit Travel",
+        "base": "10",
+        "subgroup": "magic"
+      },
+      {
+        "name": "Understand Herd Beast",
+        "base": "00",
+        "subgroup": "magic"
+      },
+      {
+        "name": "Worship (deity)",
+        "base": "05",
+        "subgroup": "magic"
+      }
+    ],
+    "manipulation": [
+      {
+        "name": "Conceal",
+        "base": "05"
+      },
+      {
+        "name": "Craft (specific craft)",
+        "base": "10"
+      },
+      {
+        "name": "Devise",
+        "base": "05"
+      },
+      {
+        "name": "Melee Weapon",
+        "base": "Base Value"
+      },
+      {
+        "name": "Missile Weapon",
+        "base": "Base Value"
+      },
+      {
+        "name": "Play Instrument",
+        "base": "05"
+      },
+      {
+        "name": "Shield",
+        "base": "Base Value"
+      },
+      {
+        "name": "Sleight",
+        "base": "05"
+      }
+    ],
+    "perception": [
+      {
+        "name": "Insight",
+        "base": "species 20 / others 00"
+      },
+      {
+        "name": "Listen",
+        "base": "25"
+      },
+      {
+        "name": "Scan",
+        "base": "25"
+      },
+      {
+        "name": "Search",
+        "base": "25"
+      },
+      {
+        "name": "Track",
+        "base": "05"
+      }
+    ],
+    "stealth": [
+      {
+        "name": "Hide",
+        "base": "10"
+      },
+      {
+        "name": "Move Quietly",
+        "base": "10"
+      }
+    ]
+  }
+}

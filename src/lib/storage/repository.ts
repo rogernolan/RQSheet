@@ -1,4 +1,5 @@
 import type { ImportResult } from "@/domain/import/types";
+import { createImportedSkills } from "@/domain/skills";
 import type { Character } from "@/domain/types";
 
 import { createBlankCharacter } from "./default-character";
@@ -81,6 +82,7 @@ export function createCharacterRepository(
         notes: result.trailingNotes ?? "",
         runePercentages: result.runePercentages,
         passions: result.passions,
+        skills: [],
         weapons: result.weapons,
         equipment: result.equipment,
         magic: result.magic,
@@ -92,6 +94,7 @@ export function createCharacterRepository(
         pow: result.attributes.pow,
         cha: result.attributes.cha,
       });
+      character.skills = createImportedSkills(result.skills, character);
       await store.putCharacter(character);
       return character;
     },

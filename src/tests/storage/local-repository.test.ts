@@ -21,6 +21,7 @@ describe("local character repository", () => {
     expect(created.name).toBe("Arkat");
     expect(created.pow).toBe(18);
     expect(created.powExperienceCheck).toBe(true);
+    expect(created.skills.length).toBeGreaterThan(40);
     expect(characters).toHaveLength(1);
     expect(characters[0].id).toBe(created.id);
   });
@@ -29,11 +30,18 @@ describe("local character repository", () => {
     const repository = createCharacterRepository(createMemoryCharacterStore());
 
     const created = await repository.createCharacter({ name: "Arkat" });
-    await repository.saveCharacter({ ...created, name: "Arkat the Wise" });
+    await repository.saveCharacter({
+      ...created,
+      name: "Arkat the Wise",
+      skills: created.skills.map((skill) =>
+        skill.name === "Dodge" ? { ...skill, experienceCheck: true } : skill,
+      ),
+    });
 
     const saved = await repository.getCharacter(created.id);
 
     expect(saved?.name).toBe("Arkat the Wise");
+    expect(saved?.skills.find((skill) => skill.name === "Dodge")?.experienceCheck).toBe(true);
   });
 
   it("persists edited hit locations and refreshes max HP from current stats", async () => {
@@ -125,7 +133,9 @@ describe("local character repository", () => {
       },
       runePercentages: {},
       passions: [],
-      skills: [],
+      skills: [
+        { name: "Dodge", groupName: "agility", percentage: 55, isCustom: false },
+      ],
       weapons: [],
       equipment: [],
       magic: [],
@@ -150,6 +160,8 @@ describe("local character repository", () => {
     expect(imported.family).toBe("Lorionaeo");
     expect(imported.worships).toBe("Issaries, Lanbril");
     expect(imported.dex).toBe(19);
+    expect(imported.skills.some((skill) => skill.name === "Dodge")).toBe(true);
+    expect(imported.skills.some((skill) => skill.name === "Boat")).toBe(false);
     expect((await repository.listCharacters())).toHaveLength(1);
   });
 
@@ -178,7 +190,9 @@ describe("local character repository", () => {
         { name: "Love (family)", percentage: 60 },
         { name: "Hate (House Vralaeo)", percentage: 60 },
       ],
-      skills: [],
+      skills: [
+        { name: "Spirit Combat", groupName: "magic", percentage: 35, isCustom: false },
+      ],
       weapons: [
         { name: "Rapier", percentage: 30, damage: "1d6+1" },
         { name: "Self Bow", percentage: 50, range: "80" },
@@ -213,6 +227,8 @@ describe("local character repository", () => {
     expect(imported.equipment[0]).toContain("Writing implements");
     expect(imported.magic[0]?.name).toBe("Analyze Magic");
     expect(imported.notes).toContain("auspicion birth");
+    expect(imported.skills.some((skill) => skill.name === "Spirit Combat")).toBe(true);
+    expect(imported.skills.some((skill) => skill.name === "Dodge")).toBe(false);
   });
 
   it("normalizes older stored characters that are missing newer collection fields", async () => {
@@ -247,5 +263,6 @@ describe("local character repository", () => {
     expect(loaded?.magic).toEqual([]);
     expect(loaded?.passions).toEqual([]);
     expect(loaded?.runePercentages).toEqual({});
+    expect(loaded?.skills.length).toBeGreaterThan(40);
   });
 });

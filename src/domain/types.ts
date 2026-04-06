@@ -1,9 +1,19 @@
 import type {
   ParsedPassionEntry,
   ParsedSpellEntry,
+  SkillGroupName,
   ParsedWeaponEntry,
   RuneName,
 } from "@/domain/import/types";
+
+export interface CharacterSkillRecord {
+  name: string;
+  group: SkillGroupName;
+  baseRule: string;
+  modifier: number;
+  isCustom: boolean;
+  experienceCheck: boolean;
+}
 
 export type HitLocationKey =
   | "head"
@@ -33,6 +43,7 @@ export interface Character {
   notes: string;
   runePercentages: Partial<Record<RuneName, number>>;
   passions: ParsedPassionEntry[];
+  skills: CharacterSkillRecord[];
   weapons: ParsedWeaponEntry[];
   equipment: string[];
   magic: ParsedSpellEntry[];
