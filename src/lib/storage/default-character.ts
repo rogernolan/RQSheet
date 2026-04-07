@@ -28,6 +28,7 @@ export function createBlankCharacter(seed: Partial<Character> = {}): Character {
     occupation: seed.occupation ?? "",
     notes: seed.notes ?? "",
     runePercentages: seed.runePercentages ?? {},
+    runeExperienceChecks: seed.runeExperienceChecks ?? {},
     passions: seed.passions ?? [],
     skills: normalizeSkills(seed.skills),
     weapons: normalizeWeapons(seed.weapons),
@@ -43,6 +44,7 @@ export function createBlankCharacter(seed: Partial<Character> = {}): Character {
     powExperienceCheck: seed.powExperienceCheck ?? false,
     cha: seed.cha ?? 10,
     currentMagicPoints,
+    runePoints: Math.max(0, seed.runePoints ?? 3),
     createdAt: seed.createdAt ?? now,
     updatedAt: seed.updatedAt ?? now,
   } satisfies Character;

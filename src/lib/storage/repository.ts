@@ -33,10 +33,12 @@ function touchCharacter(character: Character): Character {
     Math.max(0, normalized.currentMagicPoints),
     Math.max(0, normalized.pow),
   );
+  const runePoints = Math.max(0, normalized.runePoints);
 
   return {
     ...normalized,
     currentMagicPoints,
+    runePoints,
     updatedAt,
   };
 }
@@ -82,6 +84,7 @@ export function createCharacterRepository(
         occupation: result.characterInfo.occupation ?? "",
         notes: result.trailingNotes ?? "",
         runePercentages: result.runePercentages,
+        runeExperienceChecks: {},
         passions: result.passions,
         skills: [],
         weapons: createImportedWeapons(result.weapons),

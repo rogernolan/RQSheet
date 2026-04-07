@@ -91,6 +91,7 @@ export interface ParsedSpellEntry {
   name: string;
   points: number;
   source: string;
+  page?: string;
 }
 
 export interface TextImportCoverage {

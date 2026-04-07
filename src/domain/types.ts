@@ -57,6 +57,7 @@ export interface Character {
   occupation: string;
   notes: string;
   runePercentages: Partial<Record<RuneName, number>>;
+  runeExperienceChecks: Partial<Record<RuneName, boolean>>;
   passions: ParsedPassionEntry[];
   skills: CharacterSkillRecord[];
   weapons: CharacterWeaponRecord[];
@@ -72,6 +73,7 @@ export interface Character {
   powExperienceCheck: boolean;
   cha: number;
   currentMagicPoints: number;
+  runePoints: number;
   updatedAt: string;
   createdAt: string;
 }

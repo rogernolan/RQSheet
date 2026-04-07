@@ -19,6 +19,7 @@ const defaultCharacter: Character = {
   occupation: "",
   notes: "",
   runePercentages: {},
+  runeExperienceChecks: {},
   passions: [],
   skills: [],
   weapons: [],
@@ -34,6 +35,7 @@ const defaultCharacter: Character = {
   powExperienceCheck: false,
   cha: 10,
   currentMagicPoints: 10,
+  runePoints: 3,
   createdAt: "",
   updatedAt: "",
 };

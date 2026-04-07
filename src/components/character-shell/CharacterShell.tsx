@@ -19,6 +19,7 @@ import {
   getSkillGroupOrder,
   getSkillGroupTitle,
 } from "@/domain/skills";
+import { classifySpellSource } from "@/domain/magic";
 import { getWeaponTypeLabel } from "@/domain/weapons";
 import type {
   Character,
@@ -704,6 +705,37 @@ function SkillsList({
     [leftColumnGroupSet],
   );
 
+  async function handleAddSkill(group: ReturnType<typeof getSkillGroupOrder>[number]) {
+    const nextSkill: CharacterSkillRecord = {
+      name: "New Skill",
+      group,
+      baseRule: "0",
+      modifier: 0,
+      isCustom: true,
+      experienceCheck: false,
+    };
+
+    await onSaveCharacter({
+      ...character,
+      skills: [...character.skills, nextSkill],
+    });
+  }
+
+  async function handleDeleteSkill(targetSkill: CharacterSkillRecord) {
+    await onSaveCharacter({
+      ...character,
+      skills: character.skills.filter(
+        (skill) =>
+          skill.group !== targetSkill.group || skill.name !== targetSkill.name,
+      ),
+    });
+    setSkillDrafts((current) => {
+      const next = { ...current };
+      delete next[skillKey(targetSkill)];
+      return next;
+    });
+  }
+
   useEffect(() => {
     const nextSkills = character.skills.map((skill) => {
       const draft = skillDrafts[skillKey(skill)];
@@ -798,6 +830,8 @@ function SkillsList({
                 }
                 skillDrafts={skillDrafts}
                 skills={skills}
+                onAddSkill={() => void handleAddSkill(group)}
+                onDeleteSkill={(skill) => void handleDeleteSkill(skill)}
                 onUpdateSkillDraft={(skill, value, experienceCheck) =>
                   setSkillDrafts((current) => ({
                     ...current,
@@ -834,6 +868,8 @@ function SkillsList({
                 }
                 skillDrafts={skillDrafts}
                 skills={skills}
+                onAddSkill={() => void handleAddSkill(group)}
+                onDeleteSkill={(skill) => void handleDeleteSkill(skill)}
                 onUpdateSkillDraft={(skill, value, experienceCheck) =>
                   setSkillDrafts((current) => ({
                     ...current,
@@ -857,6 +893,8 @@ function SkillGroupSection({
   collapsed,
   group,
   onToggle,
+  onAddSkill,
+  onDeleteSkill,
   onUpdateSkillDraft,
   skillDrafts,
   skills,
@@ -865,6 +903,8 @@ function SkillGroupSection({
   collapsed: boolean;
   group: ReturnType<typeof getSkillGroupOrder>[number];
   onToggle: () => void;
+  onAddSkill: () => void;
+  onDeleteSkill: (skill: CharacterSkillRecord) => void;
   onUpdateSkillDraft: (
     skill: CharacterSkillRecord,
     value: string,
@@ -890,17 +930,18 @@ function SkillGroupSection({
       </div>
       {collapsed ? null : (
         <div className="mt-1.5">
-          <div className="grid grid-cols-[minmax(0,1fr)_52px_22px] items-center gap-2 border-b border-panel-border/40 pb-1 text-[10px] font-semibold uppercase tracking-[0.12em] text-stone-500">
+          <div className="grid grid-cols-[minmax(0,1fr)_52px_22px_20px] items-center gap-2 border-b border-panel-border/40 pb-1 text-[10px] font-semibold uppercase tracking-[0.12em] text-stone-500">
             <span>Skill</span>
             <span className="text-right">%</span>
             <span className="text-center">XP</span>
+            <span />
           </div>
           {skills.length > 0 ? (
             <div className="divide-y divide-panel-border/30">
               {skills.map((skill) => (
                 <div
                   key={`${group}-${skill.name}`}
-                  className="grid grid-cols-[minmax(0,1fr)_52px_22px] items-center gap-2 py-1 text-sm"
+                  className="grid grid-cols-[minmax(0,1fr)_52px_22px_20px] items-center gap-2 py-1 text-sm"
                 >
                   <span className="min-w-0 truncate text-stone-700 dark:text-stone-200">
                     {skill.name}
@@ -923,10 +964,10 @@ function SkillGroupSection({
                   />
                   <div className="flex justify-center">
                     <input
-                      checked={
+                      checked={Boolean(
                         skillDrafts[skillKey(skill)]?.experienceCheck ??
-                        skill.experienceCheck
-                      }
+                          skill.experienceCheck,
+                      )}
                       className="h-3.5 w-3.5 rounded border-panel-border"
                       onChange={(event) =>
                         onUpdateSkillDraft(
@@ -939,12 +980,29 @@ function SkillGroupSection({
                       type="checkbox"
                     />
                   </div>
+                  <button
+                    aria-label={`Delete ${skill.name}`}
+                    className="text-center text-xs text-stone-400 transition hover:text-stone-700 dark:hover:text-stone-200"
+                    onClick={() => onDeleteSkill(skill)}
+                    type="button"
+                  >
+                    ×
+                  </button>
                 </div>
               ))}
             </div>
           ) : (
             <div className="py-0.5 text-sm text-stone-500">No matches</div>
           )}
+          <div className="pt-1.5">
+            <button
+              className="text-xs font-semibold uppercase tracking-[0.12em] text-stone-500 transition hover:text-foreground"
+              onClick={onAddSkill}
+              type="button"
+            >
+              + Add Skill
+            </button>
+          </div>
         </div>
       )}
     </section>
@@ -1132,7 +1190,9 @@ function CombatCard({
             <CompactMetric label="Damage Bonus" value={getDamageBonusText(character)} />
           </div>
           <WeaponsList
+            character={character}
             expandedWeaponKeys={expandedWeaponKeys}
+            onSaveCharacter={onSaveCharacter}
             onToggleExpanded={(key) =>
               setExpandedWeaponKeys((current) => ({
                 ...current,
@@ -1160,13 +1220,17 @@ function CombatCard({
 }
 
 function WeaponsList({
+  character,
   expandedWeaponKeys,
+  onSaveCharacter,
   onToggleExpanded,
   onUpdateWeaponDraft,
   weaponDrafts,
   weapons,
 }: {
+  character: Character;
   expandedWeaponKeys: Record<string, boolean>;
+  onSaveCharacter: (character: Character) => Promise<void>;
   onToggleExpanded: (key: string) => void;
   onUpdateWeaponDraft: (key: string, patch: Partial<CharacterWeaponRecord>) => void;
   weaponDrafts: Record<string, Partial<CharacterWeaponRecord>>;
@@ -1174,9 +1238,35 @@ function WeaponsList({
 }) {
   if (weapons.length === 0) {
     return (
-      <div className="border-t border-panel-border/40 pt-2 text-sm text-stone-500">
-        No weapons yet.
-      </div>
+      <section className="border-t border-panel-border/40 pt-2">
+        <div className="text-sm text-stone-500">No weapons yet.</div>
+        <div className="pt-1.5">
+          <button
+            className="text-xs font-semibold uppercase tracking-[0.12em] text-stone-500 transition hover:text-foreground"
+            onClick={() =>
+              void onSaveCharacter({
+                ...character,
+                weapons: [
+                  ...character.weapons,
+                  {
+                    name: "New Weapon",
+                    percentage: 0,
+                    experienceCheck: false,
+                    damage: "",
+                    strikeRank: "",
+                    range: "",
+                    type: "",
+                    isEquipped: false,
+                  },
+                ],
+              })
+            }
+            type="button"
+          >
+            + Add Weapon
+          </button>
+        </div>
+      </section>
     );
   }
 
@@ -1199,6 +1289,12 @@ function WeaponsList({
             <WeaponListRow
               key={key}
               isExpanded={expandedWeaponKeys[key] ?? false}
+              onDelete={() =>
+                void onSaveCharacter({
+                  ...character,
+                  weapons: character.weapons.filter((_, currentIndex) => currentIndex !== index),
+                })
+              }
               onToggleExpanded={() => onToggleExpanded(key)}
               onUpdate={(patch) => onUpdateWeaponDraft(key, patch)}
               weapon={{ ...weapon, ...draft }}
@@ -1206,17 +1302,45 @@ function WeaponsList({
           );
         })}
       </div>
+      <div className="pt-1.5">
+        <button
+          className="text-xs font-semibold uppercase tracking-[0.12em] text-stone-500 transition hover:text-foreground"
+          onClick={() =>
+            void onSaveCharacter({
+              ...character,
+              weapons: [
+                ...character.weapons,
+                {
+                  name: "New Weapon",
+                  percentage: 0,
+                  experienceCheck: false,
+                  damage: "",
+                  strikeRank: "",
+                  range: "",
+                  type: "",
+                  isEquipped: false,
+                },
+              ],
+            })
+          }
+          type="button"
+        >
+          + Add Weapon
+        </button>
+      </div>
     </section>
   );
 }
 
 function WeaponListRow({
   isExpanded,
+  onDelete,
   onToggleExpanded,
   onUpdate,
   weapon,
 }: {
   isExpanded: boolean;
+  onDelete: () => void;
   onToggleExpanded: () => void;
   onUpdate: (patch: Partial<CharacterWeaponRecord>) => void;
   weapon: CharacterWeaponRecord;
@@ -1246,11 +1370,11 @@ function WeaponListRow({
           onChange={(event) =>
             onUpdate({ percentage: parseNumberDraft(event.target.value, weapon.percentage) })
           }
-          value={String(weapon.percentage)}
+          value={String(weapon.percentage ?? 0)}
         />
         <div className="flex justify-center">
           <input
-            checked={weapon.experienceCheck}
+            checked={Boolean(weapon.experienceCheck)}
             className="h-3.5 w-3.5 rounded border-panel-border"
             onChange={(event) => onUpdate({ experienceCheck: event.target.checked })}
             type="checkbox"
@@ -1259,12 +1383,12 @@ function WeaponListRow({
         <input
           className="min-h-6 rounded-[4px] bg-black/[0.025] px-1 py-0 text-center font-semibold tabular-nums outline-none dark:bg-white/[0.035]"
           onChange={(event) => onUpdate({ strikeRank: event.target.value })}
-          value={weapon.strikeRank}
+          value={weapon.strikeRank ?? ""}
         />
         <input
           className="min-h-6 rounded-[4px] bg-black/[0.025] px-1 py-0 text-right outline-none dark:bg-white/[0.035]"
           onChange={(event) => onUpdate({ damage: event.target.value })}
-          value={weapon.damage}
+          value={weapon.damage ?? ""}
         />
       </div>
       {isExpanded ? (
@@ -1311,7 +1435,7 @@ function WeaponListRow({
               onChange={(event) =>
                 onUpdate({ type: event.target.value as CharacterWeaponRecord["type"] })
               }
-              value={weapon.type}
+              value={weapon.type ?? ""}
             >
               <option value="">{getWeaponTypeLabel("")}</option>
               <option value="c">{getWeaponTypeLabel("c")}</option>
@@ -1323,7 +1447,7 @@ function WeaponListRow({
           <label className="flex items-center gap-2 text-sm">
             <span className="text-stone-500">Equipped</span>
             <input
-              checked={weapon.isEquipped}
+              checked={Boolean(weapon.isEquipped)}
               className="h-3.5 w-3.5 rounded border-panel-border"
               onChange={(event) => onUpdate({ isEquipped: event.target.checked })}
               type="checkbox"
@@ -1334,8 +1458,17 @@ function WeaponListRow({
             <input
               className="min-h-6 rounded-[4px] bg-black/[0.025] px-1 py-0 outline-none dark:bg-white/[0.035]"
               onChange={(event) => onUpdate({ range: event.target.value })}
-              value={weapon.range}
+              value={weapon.range ?? ""}
             />
+          </div>
+          <div className="sm:col-span-2">
+            <button
+              className="text-xs font-semibold uppercase tracking-[0.12em] text-stone-500 transition hover:text-red-700 dark:hover:text-red-300"
+              onClick={onDelete}
+              type="button"
+            >
+              Delete Weapon
+            </button>
           </div>
         </div>
       ) : null}
@@ -1511,7 +1644,17 @@ function RunesMagicCard({
   onSaveCharacter: (character: Character) => Promise<void>;
 }) {
   const [notesDraft, setNotesDraft] = useState(character?.notes ?? "");
+  const [runeDrafts, setRuneDrafts] = useState<Record<string, string>>({});
+  const [runeCheckDrafts, setRuneCheckDrafts] = useState<Record<string, boolean>>({});
+  const [magicSearch, setMagicSearch] = useState("");
+  const [magicDrafts, setMagicDrafts] = useState<Record<string, { name?: string; points?: string; page?: string }>>({});
+  const [magicStatsDraft, setMagicStatsDraft] = useState({
+    currentMagicPoints: String(character?.currentMagicPoints ?? 0),
+    runePoints: String(character?.runePoints ?? 3),
+  });
   const lastSavedNotesRef = useRef("");
+  const lastSavedRunesRef = useRef("");
+  const lastSavedMagicRef = useRef("");
 
   useEffect(() => {
     if (!character) {
@@ -1536,36 +1679,163 @@ function RunesMagicCard({
     return () => window.clearTimeout(timeoutId);
   }, [character, notesDraft, onSaveCharacter]);
 
+  useEffect(() => {
+    if (!character) {
+      return;
+    }
+
+    const nextRunePercentages = {
+      ...character.runePercentages,
+      ...Object.fromEntries(
+        Object.entries(runeDrafts).map(([name, value]) => [
+          name,
+          parseNumberDraft(value, Number(character.runePercentages[name as keyof typeof character.runePercentages] ?? 0)),
+        ]),
+      ),
+    };
+    const nextRuneExperienceChecks = {
+      ...character.runeExperienceChecks,
+      ...runeCheckDrafts,
+    };
+    const saveKey = JSON.stringify({
+      runePercentages: nextRunePercentages,
+      runeExperienceChecks: nextRuneExperienceChecks,
+    });
+    const currentKey = JSON.stringify({
+      runePercentages: character.runePercentages,
+      runeExperienceChecks: character.runeExperienceChecks,
+    });
+
+    if (saveKey === currentKey || saveKey === lastSavedRunesRef.current) {
+      return;
+    }
+
+    const timeoutId = window.setTimeout(() => {
+      lastSavedRunesRef.current = saveKey;
+      void onSaveCharacter({
+        ...character,
+        runePercentages: nextRunePercentages,
+        runeExperienceChecks: nextRuneExperienceChecks,
+      });
+    }, 250);
+
+    return () => window.clearTimeout(timeoutId);
+  }, [character, onSaveCharacter, runeCheckDrafts, runeDrafts]);
+
+  useEffect(() => {
+    if (!character) {
+      return;
+    }
+
+    const nextMagic = character.magic.map((spell, index) => ({
+      ...spell,
+      name: magicDrafts[magicKey(spell, index)]?.name ?? spell.name,
+      points: parseNumberDraft(
+        magicDrafts[magicKey(spell, index)]?.points ?? "",
+        spell.points,
+      ),
+      page: magicDrafts[magicKey(spell, index)]?.page ?? spell.page ?? "",
+    }));
+    const nextCurrentMagicPoints = parseNumberDraft(
+      magicStatsDraft.currentMagicPoints,
+      character.currentMagicPoints,
+    );
+    const nextRunePoints = parseNumberDraft(
+      magicStatsDraft.runePoints,
+      character.runePoints,
+    );
+    const saveKey = JSON.stringify({
+      magic: nextMagic,
+      currentMagicPoints: nextCurrentMagicPoints,
+      runePoints: nextRunePoints,
+    });
+    const currentKey = JSON.stringify({
+      magic: character.magic,
+      currentMagicPoints: character.currentMagicPoints,
+      runePoints: character.runePoints,
+    });
+
+    if (saveKey === currentKey || saveKey === lastSavedMagicRef.current) {
+      return;
+    }
+
+    const timeoutId = window.setTimeout(() => {
+      lastSavedMagicRef.current = saveKey;
+      void onSaveCharacter({
+        ...character,
+        magic: nextMagic,
+        currentMagicPoints: nextCurrentMagicPoints,
+        runePoints: nextRunePoints,
+      });
+    }, 250);
+
+    return () => window.clearTimeout(timeoutId);
+  }, [character, magicDrafts, magicStatsDraft, onSaveCharacter]);
+
   return (
     <DashboardCard>
       {character ? (
         <div className="space-y-2.5">
-          <div className="grid grid-cols-2 gap-x-3 gap-y-1 text-sm">
-            <CompactMetric label="Rune Pts" value={character.pow} />
-            <CompactMetric label="Magic Pts" value={getMaxMagicPoints(character)} />
-            <CompactMetric
-              label="Parsed Runes"
-              value={Object.keys(character.runePercentages).length}
-            />
-            <CompactMetric label="Passions" value={character.passions.length} />
-          </div>
+          <RunesAffinityPanel
+            character={character}
+            runeDrafts={runeDrafts}
+            runeCheckDrafts={runeCheckDrafts}
+            onChangeRune={(name, value) =>
+              setRuneDrafts((current) =>
+                updateRuneDrafts(current, name, value),
+              )
+            }
+            onToggleRuneCheck={(name, checked) =>
+              setRuneCheckDrafts((current) => ({
+                ...current,
+                [name]: checked,
+              }))
+            }
+          />
           <div className="grid gap-2 sm:grid-cols-2 xl:grid-cols-1">
-            <CompactPanel
-              title="Runes"
-              body={
-                topRuneSummary(character) ||
-                "Persistent rune cards will replace the old tab."
+            <MagicSection
+              character={character}
+              magicDrafts={magicDrafts}
+              magicSearch={magicSearch}
+              magicStatsDraft={magicStatsDraft}
+              onAddSpell={(kind) =>
+                void onSaveCharacter({
+                  ...character,
+                  magic: [
+                    ...character.magic,
+                    {
+                      name: "New Spell",
+                      points: 1,
+                      page: "",
+                      source:
+                        kind === "spirit"
+                          ? "Spirit Magic"
+                          : "Rune Magic",
+                    },
+                  ],
+                })
               }
-            />
-            <CompactPanel
-              title="Magic"
-              body={
-                character.magic.length > 0
-                  ? `${character.magic
-                      .slice(0, 3)
-                      .map((spell) => `${spell.name} (${spell.points})`)
-                      .join(", ")}`
-                  : "Import and spell editing will be modal-backed later."
+              onDeleteSpell={(index) =>
+                void onSaveCharacter({
+                  ...character,
+                  magic: character.magic.filter((_, currentIndex) => currentIndex !== index),
+                })
+              }
+              onSearchChange={setMagicSearch}
+              onStatsChange={(field, value) =>
+                setMagicStatsDraft((current) => ({
+                  ...current,
+                  [field]: value,
+                }))
+              }
+              onUpdateSpellDraft={(key, patch) =>
+                setMagicDrafts((current) => ({
+                  ...current,
+                  [key]: {
+                    ...current[key],
+                    ...patch,
+                  },
+                }))
               }
             />
             <CompactPanel
@@ -1594,13 +1864,448 @@ function RunesMagicCard({
   );
 }
 
-function topRuneSummary(character: Character): string {
-  const entries = Object.entries(character.runePercentages)
-    .sort((lhs, rhs) => Number(rhs[1] ?? 0) - Number(lhs[1] ?? 0))
-    .slice(0, 3)
-    .map(([name, value]) => `${capitalize(name)} ${value}%`);
+const elementalRuneLayout = [
+  { name: "fire", top: "3%", left: "50%", className: "-translate-x-1/2" },
+  { name: "darkness", top: "24%", left: "84%", className: "-translate-x-1/2" },
+  { name: "water", top: "66%", left: "74%", className: "-translate-x-1/2" },
+  { name: "earth", top: "66%", left: "26%", className: "-translate-x-1/2" },
+  { name: "air", top: "24%", left: "16%", className: "-translate-x-1/2" },
+  { name: "moon", top: "36%", left: "50%", className: "-translate-x-1/2" },
+] as const;
 
-  return entries.join(", ");
+const pairedRuneRows = [
+  ["fertility", "death"],
+  ["harmony", "disorder"],
+  ["truth", "illusion"],
+  ["stasis", "movement"],
+] as const;
+
+function RunesAffinityPanel({
+  character,
+  runeDrafts,
+  runeCheckDrafts,
+  onChangeRune,
+  onToggleRuneCheck,
+}: {
+  character: Character;
+  runeDrafts: Record<string, string>;
+  runeCheckDrafts: Record<string, boolean>;
+  onChangeRune: (name: string, value: string) => void;
+  onToggleRuneCheck: (name: string, checked: boolean) => void;
+}) {
+  return (
+    <section className="space-y-3">
+      <div className="relative mx-auto h-[272px] w-full max-w-[300px]">
+        <div className="absolute inset-x-[18%] top-[16%] h-[48%] rounded-full border border-panel-border/40" />
+        {elementalRuneLayout.map((rune) => (
+          <div
+            key={rune.name}
+            className={`absolute ${rune.className}`}
+            style={{ left: rune.left, top: rune.top }}
+          >
+            <RuneNode
+              label={capitalize(rune.name)}
+              name={rune.name}
+              experienceChecked={
+                runeCheckDrafts[rune.name] ??
+                Boolean(
+                  character.runeExperienceChecks[
+                    rune.name as keyof typeof character.runeExperienceChecks
+                  ],
+                )
+              }
+              onToggleCheck={(checked) => onToggleRuneCheck(rune.name, checked)}
+              value={runeDrafts[rune.name] ?? String(character.runePercentages[rune.name as keyof typeof character.runePercentages] ?? 0)}
+              onChange={(value) => onChangeRune(rune.name, value)}
+            />
+          </div>
+        ))}
+      </div>
+
+      <div className="relative mx-auto w-full max-w-[320px] py-1">
+        <div className="absolute bottom-[12px] left-1/2 top-[12px] w-px -translate-x-1/2 bg-panel-border/60" />
+        <div className="space-y-2">
+          <div className="flex justify-center">
+            <RuneNode
+              label="Man"
+              name="man"
+              compact
+              experienceChecked={
+                runeCheckDrafts.man ?? Boolean(character.runeExperienceChecks.man)
+              }
+              onToggleCheck={(checked) => onToggleRuneCheck("man", checked)}
+              value={runeDrafts.man ?? String(character.runePercentages.man ?? 50)}
+              onChange={(value) => onChangeRune("man", value)}
+            />
+          </div>
+          {pairedRuneRows.map(([left, right]) => (
+            <div key={`${left}-${right}`} className="relative grid grid-cols-[1fr_auto_1fr] items-center gap-3">
+              <div className="h-px bg-panel-border/60" />
+              <div className="grid grid-cols-2 gap-[54px]">
+                <RuneNode
+                  label={capitalize(left)}
+                  name={left}
+                  compact
+                  experienceChecked={
+                    runeCheckDrafts[left] ??
+                    Boolean(
+                      character.runeExperienceChecks[
+                        left as keyof typeof character.runeExperienceChecks
+                      ],
+                    )
+                  }
+                  onToggleCheck={(checked) => onToggleRuneCheck(left, checked)}
+                  value={runeDrafts[left] ?? String(character.runePercentages[left as keyof typeof character.runePercentages] ?? 50)}
+                  onChange={(value) => onChangeRune(left, value)}
+                />
+                <RuneNode
+                  label={capitalize(right)}
+                  name={right}
+                  compact
+                  experienceChecked={
+                    runeCheckDrafts[right] ??
+                    Boolean(
+                      character.runeExperienceChecks[
+                        right as keyof typeof character.runeExperienceChecks
+                      ],
+                    )
+                  }
+                  onToggleCheck={(checked) => onToggleRuneCheck(right, checked)}
+                  value={runeDrafts[right] ?? String(character.runePercentages[right as keyof typeof character.runePercentages] ?? 50)}
+                  onChange={(value) => onChangeRune(right, value)}
+                />
+              </div>
+              <div className="h-px bg-panel-border/60" />
+            </div>
+          ))}
+          <div className="flex justify-center">
+            <RuneNode
+              label="Beast"
+              name="beast"
+              compact
+              experienceChecked={
+                runeCheckDrafts.beast ?? Boolean(character.runeExperienceChecks.beast)
+              }
+              onToggleCheck={(checked) => onToggleRuneCheck("beast", checked)}
+              value={runeDrafts.beast ?? String(character.runePercentages.beast ?? 50)}
+              onChange={(value) => onChangeRune("beast", value)}
+            />
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function RuneNode({
+  compact = false,
+  experienceChecked,
+  label,
+  name,
+  onChange,
+  onToggleCheck,
+  value,
+}: {
+  compact?: boolean;
+  experienceChecked: boolean;
+  label: string;
+  name: string;
+  onChange: (value: string) => void;
+  onToggleCheck: (checked: boolean) => void;
+  value: string;
+}) {
+  return (
+    <label
+      className={`block rounded-[8px] border border-panel-border/50 bg-black/[0.025] px-2 py-1 dark:bg-white/[0.03] ${
+        compact ? "w-[108px]" : "w-[92px]"
+      }`}
+    >
+      <div className="mb-1 flex items-center justify-between gap-1 text-[10px] font-semibold uppercase tracking-[0.1em] text-stone-500">
+        <span className="truncate">{label}</span>
+        <input
+          checked={experienceChecked}
+          className="h-3.5 w-3.5 rounded border-panel-border"
+          onChange={(event) => onToggleCheck(event.target.checked)}
+          type="checkbox"
+        />
+      </div>
+      <div className="flex items-center gap-2">
+        <Image
+          alt=""
+          aria-hidden="true"
+          className="h-8 w-8 object-contain"
+          draggable="false"
+          height={32}
+          src={`/rune-${name}.png`}
+          width={32}
+        />
+        <input
+          className="min-h-7 w-full bg-transparent text-right text-sm font-semibold tabular-nums outline-none"
+          inputMode="numeric"
+          onChange={(event) => onChange(event.target.value)}
+          value={value}
+        />
+      </div>
+    </label>
+  );
+}
+
+function updateRuneDrafts(
+  current: Record<string, string>,
+  name: string,
+  value: string,
+): Record<string, string> {
+  const next = { ...current, [name]: value };
+  const pairedRune = getPairedRune(name);
+  if (!pairedRune) {
+    return next;
+  }
+
+  const parsed = parseNumberDraft(value, 50);
+  next[pairedRune] = String(Math.max(0, 100 - parsed));
+  return next;
+}
+
+function getPairedRune(name: string): string | null {
+  switch (name) {
+    case "man":
+      return "beast";
+    case "beast":
+      return "man";
+    case "fertility":
+      return "death";
+    case "death":
+      return "fertility";
+    case "harmony":
+      return "disorder";
+    case "disorder":
+      return "harmony";
+    case "truth":
+      return "illusion";
+    case "illusion":
+      return "truth";
+    case "stasis":
+      return "movement";
+    case "movement":
+      return "stasis";
+    default:
+      return null;
+  }
+}
+
+const commonRuneSpellCatalog = [
+  { name: "Command Cult Spirit", pointsText: "2", page: "323" },
+  { name: "Dismiss Magic", pointsText: "1+", page: "326" },
+  { name: "Divination", pointsText: "1+", page: "327" },
+  { name: "Extension", pointsText: "1+", page: "328" },
+  { name: "Find Enemy", pointsText: "1", page: "328" },
+  { name: "Heal Wound", pointsText: "1", page: "330" },
+  { name: "Multispell", pointsText: "1+", page: "335" },
+  { name: "Sanctify", pointsText: "1+", page: "338" },
+  { name: "Soul Sight", pointsText: "1", page: "340" },
+  { name: "Spirit Block", pointsText: "1+", page: "341" },
+  { name: "Summon Cult Spirit", pointsText: "1-3", page: "342" },
+  { name: "Warding", pointsText: "1+", page: "347" },
+] as const;
+
+function MagicSection({
+  character,
+  magicDrafts,
+  magicSearch,
+  magicStatsDraft,
+  onAddSpell,
+  onDeleteSpell,
+  onSearchChange,
+  onStatsChange,
+  onUpdateSpellDraft,
+}: {
+  character: Character;
+  magicDrafts: Record<string, { name?: string; points?: string; page?: string }>;
+  magicSearch: string;
+  magicStatsDraft: { currentMagicPoints: string; runePoints: string };
+  onAddSpell: (kind: "spirit" | "rune") => void;
+  onDeleteSpell: (index: number) => void;
+  onSearchChange: (value: string) => void;
+  onStatsChange: (field: "currentMagicPoints" | "runePoints", value: string) => void;
+  onUpdateSpellDraft: (key: string, patch: { name?: string; points?: string; page?: string }) => void;
+}) {
+  const spiritSpells = character.magic
+    .map((spell, index) => ({ spell, index }))
+    .filter(({ spell }) => classifySpellSource(spell.source) === "spirit")
+    .filter(({ spell }) => spellMatchesSearch(spell.name, magicSearch));
+  const runeSpells = character.magic
+    .map((spell, index) => ({ spell, index }))
+    .filter(({ spell }) => classifySpellSource(spell.source) === "rune")
+    .filter(({ spell }) => spellMatchesSearch(spell.name, magicSearch));
+  const commonRuneSpells = commonRuneSpellCatalog.filter((spell) =>
+    spellMatchesSearch(spell.name, magicSearch),
+  );
+
+  return (
+    <section className="space-y-2 border-t border-panel-border/40 pt-2">
+      <input
+        className="min-h-8 w-full rounded-[8px] bg-black/[0.035] px-3 py-1.5 text-sm outline-none placeholder:text-stone-400 dark:bg-white/[0.04]"
+        onChange={(event) => onSearchChange(event.target.value)}
+        placeholder="Search magic"
+        value={magicSearch}
+      />
+
+      <MagicSpellGroup
+        addLabel="+ Add Spirit Spell"
+        emptyText={magicSearch.trim() ? "No spirit magic matches" : "No spirit magic yet"}
+        spells={spiritSpells}
+        title="Spirit Magic"
+        trailing={
+          <div className="flex items-center gap-2">
+            <span className="text-[11px] uppercase tracking-[0.12em] text-stone-500">MP</span>
+            <input
+              className="min-h-6 w-10 bg-transparent text-right text-sm font-semibold tabular-nums outline-none"
+              inputMode="numeric"
+              onChange={(event) => onStatsChange("currentMagicPoints", event.target.value)}
+              value={magicStatsDraft.currentMagicPoints}
+            />
+            <span className="text-sm text-stone-500">/ {getMaxMagicPoints(character)}</span>
+          </div>
+        }
+        onAdd={() => onAddSpell("spirit")}
+        onDelete={onDeleteSpell}
+        onUpdateDraft={onUpdateSpellDraft}
+        draftMap={magicDrafts}
+      />
+
+      <MagicSpellGroup
+        addLabel="+ Add Rune Spell"
+        emptyText={magicSearch.trim() ? "No rune spell matches" : "No rune spells yet"}
+        spells={runeSpells}
+        title="Rune Spells"
+        trailing={
+          <div className="flex items-center gap-2">
+            <span className="text-[11px] uppercase tracking-[0.12em] text-stone-500">RP</span>
+            <input
+              className="min-h-6 w-10 bg-transparent text-right text-sm font-semibold tabular-nums outline-none"
+              inputMode="numeric"
+              onChange={(event) => onStatsChange("runePoints", event.target.value)}
+              value={magicStatsDraft.runePoints}
+            />
+          </div>
+        }
+        onAdd={() => onAddSpell("rune")}
+        onDelete={onDeleteSpell}
+        onUpdateDraft={onUpdateSpellDraft}
+        draftMap={magicDrafts}
+      />
+
+      <div className="space-y-1">
+        <div className="flex items-center justify-between gap-3 border-b border-panel-border/40 pb-1">
+          <h4 className="text-sm font-semibold">Common Rune Spells</h4>
+        </div>
+        {commonRuneSpells.length > 0 ? (
+          <div className="space-y-1">
+            {commonRuneSpells.map((spell) => (
+              <div
+                key={spell.name}
+                className="grid grid-cols-[minmax(0,1fr)_36px_42px] gap-2 text-sm"
+              >
+                <span className="truncate">{spell.name}</span>
+                <span className="text-right text-stone-500">{spell.pointsText}</span>
+                <span className="text-right text-stone-500">p{spell.page}</span>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="text-sm text-stone-500">No common rune spell matches</div>
+        )}
+      </div>
+    </section>
+  );
+}
+
+function MagicSpellGroup({
+  addLabel,
+  draftMap,
+  emptyText,
+  onAdd,
+  onDelete,
+  onUpdateDraft,
+  spells,
+  title,
+  trailing,
+}: {
+  addLabel: string;
+  draftMap: Record<string, { name?: string; points?: string; page?: string }>;
+  emptyText: string;
+  onAdd: () => void;
+  onDelete: (index: number) => void;
+  onUpdateDraft: (key: string, patch: { name?: string; points?: string; page?: string }) => void;
+  spells: Array<{ spell: Character["magic"][number]; index: number }>;
+  title: string;
+  trailing: ReactNode;
+}) {
+  return (
+    <div className="space-y-1">
+      <div className="flex items-center justify-between gap-3 border-b border-panel-border/40 pb-1">
+        <h4 className="text-sm font-semibold">{title}</h4>
+        {trailing}
+      </div>
+      {spells.length > 0 ? (
+        <div className="space-y-1">
+          {spells.map(({ spell, index }) => {
+            const key = magicKey(spell, index);
+            return (
+              <div
+                key={key}
+                className="grid grid-cols-[minmax(0,1fr)_38px_44px_20px] items-center gap-2 text-sm"
+              >
+                <input
+                  className="min-h-6 rounded-[4px] bg-black/[0.025] px-1.5 py-0 outline-none dark:bg-white/[0.035]"
+                  onChange={(event) => onUpdateDraft(key, { name: event.target.value })}
+                  value={draftMap[key]?.name ?? spell.name}
+                />
+                <input
+                  className="min-h-6 rounded-[4px] bg-black/[0.025] px-1 py-0 text-right tabular-nums outline-none dark:bg-white/[0.035]"
+                  inputMode="numeric"
+                  onChange={(event) => onUpdateDraft(key, { points: event.target.value })}
+                  value={draftMap[key]?.points ?? String(spell.points)}
+                />
+                <input
+                  className="min-h-6 rounded-[4px] bg-black/[0.025] px-1 py-0 text-right outline-none dark:bg-white/[0.035]"
+                  onChange={(event) => onUpdateDraft(key, { page: event.target.value })}
+                  placeholder="p."
+                  value={draftMap[key]?.page ?? spell.page ?? ""}
+                />
+                <button
+                  aria-label={`Delete ${spell.name}`}
+                  className="text-center text-xs text-stone-400 transition hover:text-stone-700 dark:hover:text-stone-200"
+                  onClick={() => onDelete(index)}
+                  type="button"
+                >
+                  ×
+                </button>
+              </div>
+            );
+          })}
+        </div>
+      ) : (
+        <div className="text-sm text-stone-500">{emptyText}</div>
+      )}
+      <button
+        className="text-xs font-semibold uppercase tracking-[0.12em] text-stone-500 transition hover:text-foreground"
+        onClick={onAdd}
+        type="button"
+      >
+        {addLabel}
+      </button>
+    </div>
+  );
+}
+
+function spellMatchesSearch(name: string, query: string): boolean {
+  const trimmed = query.trim().toLowerCase();
+  return trimmed.length === 0 || name.toLowerCase().includes(trimmed);
+}
+
+function magicKey(spell: Character["magic"][number], index: number): string {
+  return `${index}:${spell.name.trim().toLowerCase()}`;
 }
 
 function capitalize(value: string): string {
