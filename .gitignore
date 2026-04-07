@@ -1,10 +1,20 @@
+# macOS
 .DS_Store
+
+# Node and package managers
 node_modules
-.next
-dist
-coverage
-playwright-report
-test-results
-*.log
 yarn.lock
 pnpm-lock.yaml
+
+# Next.js and build output
+.next
+out
+dist
+coverage
+
+# Test output
+playwright-report
+test-results
+
+# Logs
+*.log
