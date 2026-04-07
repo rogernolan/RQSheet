@@ -23,6 +23,7 @@ import { classifySpellSource } from "@/domain/magic";
 import { getWeaponTypeLabel } from "@/domain/weapons";
 import type {
   Character,
+  CharacterEquipmentRecord,
   CharacterSkillRecord,
   CharacterWeaponRecord,
 } from "@/domain/types";
@@ -1038,7 +1039,14 @@ function CombatCard({
       ]),
     ),
   );
-  const lastSavedCombatKeyRef = useRef("");
+  const lastSavedHitLocationsRef = useRef("");
+  const lastSavedNotesRef = useRef("");
+  const lastSavedEquipmentRef = useRef("");
+  const lastSavedWeaponsRef = useRef("");
+  const [notesDraft, setNotesDraft] = useState(character?.notes ?? "");
+  const [equipmentDrafts, setEquipmentDrafts] = useState<
+    Record<string, Partial<CharacterEquipmentRecord>>
+  >({});
   const [weaponDrafts, setWeaponDrafts] = useState<
     Record<string, Partial<CharacterWeaponRecord>>
   >({});
@@ -1074,12 +1082,12 @@ function CombatCard({
       ]),
     );
 
-    if (saveKey === currentKey || saveKey === lastSavedCombatKeyRef.current) {
+    if (saveKey === currentKey || saveKey === lastSavedHitLocationsRef.current) {
       return;
     }
 
     const timeoutId = window.setTimeout(() => {
-      lastSavedCombatKeyRef.current = saveKey;
+      lastSavedHitLocationsRef.current = saveKey;
       void onSaveCharacter({
         ...character,
         hitLocations: nextHitLocations,
@@ -1088,6 +1096,57 @@ function CombatCard({
 
     return () => window.clearTimeout(timeoutId);
   }, [character, hitLocationDraft, onSaveCharacter]);
+
+  useEffect(() => {
+    if (!character) {
+      return;
+    }
+
+    if (notesDraft === character.notes || notesDraft === lastSavedNotesRef.current) {
+      return;
+    }
+
+    const timeoutId = window.setTimeout(() => {
+      lastSavedNotesRef.current = notesDraft;
+      void onSaveCharacter({
+        ...character,
+        notes: notesDraft,
+      });
+    }, 300);
+
+    return () => window.clearTimeout(timeoutId);
+  }, [character, notesDraft, onSaveCharacter]);
+
+  useEffect(() => {
+    if (!character) {
+      return;
+    }
+
+    const nextEquipment = character.equipment.map((item, index) => ({
+      ...item,
+      ...equipmentDrafts[equipmentKey(item, index)],
+    }));
+    const saveKey = JSON.stringify(
+      nextEquipment.map((item) => [item.name, item.enc, item.isEquipped]),
+    );
+    const currentKey = JSON.stringify(
+      character.equipment.map((item) => [item.name, item.enc, item.isEquipped]),
+    );
+
+    if (saveKey === currentKey || saveKey === lastSavedEquipmentRef.current) {
+      return;
+    }
+
+    const timeoutId = window.setTimeout(() => {
+      lastSavedEquipmentRef.current = saveKey;
+      void onSaveCharacter({
+        ...character,
+        equipment: nextEquipment,
+      });
+    }, 250);
+
+    return () => window.clearTimeout(timeoutId);
+  }, [character, equipmentDrafts, onSaveCharacter]);
 
   useEffect(() => {
     if (!character) {
@@ -1129,12 +1188,12 @@ function CombatCard({
       ]),
     );
 
-    if (saveKey === currentKey || saveKey === lastSavedCombatKeyRef.current) {
+    if (saveKey === currentKey || saveKey === lastSavedWeaponsRef.current) {
       return;
     }
 
     const timeoutId = window.setTimeout(() => {
-      lastSavedCombatKeyRef.current = saveKey;
+      lastSavedWeaponsRef.current = saveKey;
       void onSaveCharacter({
         ...character,
         weapons: nextWeapons,
@@ -1211,11 +1270,129 @@ function CombatCard({
             weaponDrafts={weaponDrafts}
             weapons={character.weapons}
           />
+          <EquipmentList
+            character={character}
+            equipmentDrafts={equipmentDrafts}
+            onSaveCharacter={onSaveCharacter}
+            onUpdateEquipmentDraft={(key, patch) =>
+              setEquipmentDrafts((current) => ({
+                ...current,
+                [key]: {
+                  ...current[key],
+                  ...patch,
+                },
+              }))
+            }
+          />
+          <div className="pt-1">
+            <h4 className="text-sm font-semibold">Notes</h4>
+            <textarea
+              className="mt-2 min-h-24 w-full rounded-[8px] bg-black/[0.035] px-3 py-2 text-sm leading-5 outline-none dark:bg-white/[0.04]"
+              onChange={(event) => setNotesDraft(event.target.value)}
+              placeholder="Add notes for this character..."
+              value={notesDraft}
+            />
+          </div>
         </div>
       ) : (
         <EmptyCardMessage text="Combat details appear once a character is selected." />
       )}
     </DashboardCard>
+  );
+}
+
+function EquipmentList({
+  character,
+  equipmentDrafts,
+  onSaveCharacter,
+  onUpdateEquipmentDraft,
+}: {
+  character: Character;
+  equipmentDrafts: Record<string, Partial<CharacterEquipmentRecord>>;
+  onSaveCharacter: (character: Character) => Promise<void>;
+  onUpdateEquipmentDraft: (key: string, patch: Partial<CharacterEquipmentRecord>) => void;
+}) {
+  return (
+    <section className="border-t border-panel-border/40 pt-2">
+      <div className="mb-1 grid grid-cols-[minmax(0,1fr)_42px_26px_20px] items-center gap-2 border-b border-panel-border/30 pb-1 text-[10px] font-semibold uppercase tracking-[0.12em] text-stone-500">
+        <span>Equipment</span>
+        <span className="text-right">ENC</span>
+        <span className="text-center">Eq</span>
+        <span />
+      </div>
+      <div className="space-y-1.5">
+        {character.equipment.map((item, index) => {
+          const key = equipmentKey(item, index);
+          const draft = equipmentDrafts[key];
+          const merged = { ...item, ...draft };
+
+          return (
+            <div
+              key={key}
+              className="grid grid-cols-[minmax(0,1fr)_42px_26px_20px] items-center gap-2 text-sm"
+            >
+              <input
+                className="min-h-6 rounded-[4px] bg-black/[0.025] px-1.5 py-0 outline-none dark:bg-white/[0.035]"
+                onChange={(event) =>
+                  onUpdateEquipmentDraft(key, { name: event.target.value })
+                }
+                value={merged.name ?? ""}
+              />
+              <input
+                className="min-h-6 rounded-[4px] bg-black/[0.025] px-1 py-0 text-right tabular-nums outline-none dark:bg-white/[0.035]"
+                inputMode="numeric"
+                onChange={(event) =>
+                  onUpdateEquipmentDraft(key, {
+                    enc: parseNumberDraft(event.target.value, merged.enc ?? 0),
+                  })
+                }
+                value={String(merged.enc ?? 0)}
+              />
+              <div className="flex justify-center">
+                <input
+                  checked={Boolean(merged.isEquipped)}
+                  className="h-3.5 w-3.5 rounded border-panel-border"
+                  onChange={(event) =>
+                    onUpdateEquipmentDraft(key, { isEquipped: event.target.checked })
+                  }
+                  type="checkbox"
+                />
+              </div>
+              <button
+                aria-label={`Delete ${merged.name || "equipment"}`}
+                className="text-center text-xs text-stone-400 transition hover:text-stone-700 dark:hover:text-stone-200"
+                onClick={() =>
+                  void onSaveCharacter({
+                    ...character,
+                    equipment: character.equipment.filter((_, currentIndex) => currentIndex !== index),
+                  })
+                }
+                type="button"
+              >
+                ×
+              </button>
+            </div>
+          );
+        })}
+      </div>
+      <div className="pt-1.5">
+        <button
+          className="text-xs font-semibold uppercase tracking-[0.12em] text-stone-500 transition hover:text-foreground"
+          onClick={() =>
+            void onSaveCharacter({
+              ...character,
+              equipment: [
+                ...character.equipment,
+                { name: "New Item", enc: 0, isEquipped: false },
+              ],
+            })
+          }
+          type="button"
+        >
+          + Add Equipment
+        </button>
+      </div>
+    </section>
   );
 }
 
@@ -1643,7 +1820,6 @@ function RunesMagicCard({
   character: Character | null;
   onSaveCharacter: (character: Character) => Promise<void>;
 }) {
-  const [notesDraft, setNotesDraft] = useState(character?.notes ?? "");
   const [runeDrafts, setRuneDrafts] = useState<Record<string, string>>({});
   const [runeCheckDrafts, setRuneCheckDrafts] = useState<Record<string, boolean>>({});
   const [magicSearch, setMagicSearch] = useState("");
@@ -1652,32 +1828,8 @@ function RunesMagicCard({
     currentMagicPoints: String(character?.currentMagicPoints ?? 0),
     runePoints: String(character?.runePoints ?? 3),
   });
-  const lastSavedNotesRef = useRef("");
   const lastSavedRunesRef = useRef("");
   const lastSavedMagicRef = useRef("");
-
-  useEffect(() => {
-    if (!character) {
-      return;
-    }
-
-    if (
-      notesDraft === character.notes ||
-      notesDraft === lastSavedNotesRef.current
-    ) {
-      return;
-    }
-
-    const timeoutId = window.setTimeout(() => {
-      lastSavedNotesRef.current = notesDraft;
-      void onSaveCharacter({
-        ...character,
-        notes: notesDraft,
-      });
-    }, 300);
-
-    return () => window.clearTimeout(timeoutId);
-  }, [character, notesDraft, onSaveCharacter]);
 
   useEffect(() => {
     if (!character) {
@@ -1837,23 +1989,6 @@ function RunesMagicCard({
                   },
                 }))
               }
-            />
-            <CompactPanel
-              title="Equipment"
-              body={
-                character.equipment.length > 0
-                  ? character.equipment.slice(0, 2).join(" | ")
-                  : "Encumbrance and item editing come after the shell."
-              }
-            />
-          </div>
-          <div className="pt-1">
-            <h4 className="text-sm font-semibold">Notes</h4>
-            <textarea
-              className="mt-2 min-h-24 w-full rounded-[8px] bg-black/[0.035] px-3 py-2 text-sm leading-5 outline-none dark:bg-white/[0.04]"
-              onChange={(event) => setNotesDraft(event.target.value)}
-              placeholder="Add notes for this character..."
-              value={notesDraft}
             />
           </div>
         </div>
@@ -2602,23 +2737,6 @@ function StatisticStripCell({
   );
 }
 
-function CompactPanel({
-  title,
-  body,
-}: {
-  title: string;
-  body: string;
-}) {
-  return (
-    <div className="rounded-[8px] bg-black/[0.03] p-2.5 dark:bg-white/[0.04]">
-      <h4 className="text-sm font-semibold">{title}</h4>
-      <p className="mt-1 text-sm leading-5 text-stone-600 dark:text-stone-300">
-        {body}
-      </p>
-    </div>
-  );
-}
-
 function EmptyCardMessage({ text }: { text: string }) {
   return (
     <div className="rounded-[8px] bg-black/[0.03] p-2.5 text-sm leading-5 text-stone-600 dark:bg-white/[0.04] dark:text-stone-300">
@@ -2629,6 +2747,10 @@ function EmptyCardMessage({ text }: { text: string }) {
 
 function weaponKey(weapon: CharacterWeaponRecord, index: number): string {
   return `${index}:${weapon.name.trim().toLowerCase()}`;
+}
+
+function equipmentKey(item: CharacterEquipmentRecord, index: number): string {
+  return `${index}:${item.name.trim().toLowerCase()}`;
 }
 
 function parseNumberDraft(value: string, fallback: number): number {

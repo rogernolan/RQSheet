@@ -1,4 +1,5 @@
 import { reconcileHitLocations } from "@/domain/character";
+import { normalizeEquipment } from "@/domain/equipment";
 import { normalizeSkills } from "@/domain/skills";
 import { normalizeWeapons } from "@/domain/weapons";
 import type { Character } from "@/domain/types";
@@ -32,7 +33,7 @@ export function createBlankCharacter(seed: Partial<Character> = {}): Character {
     passions: seed.passions ?? [],
     skills: normalizeSkills(seed.skills),
     weapons: normalizeWeapons(seed.weapons),
-    equipment: seed.equipment ?? [],
+    equipment: normalizeEquipment(seed.equipment),
     magic: seed.magic ?? [],
     hitLocations: seed.hitLocations ?? [],
     str: seed.str ?? 10,

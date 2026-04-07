@@ -224,7 +224,9 @@ describe("local character repository", () => {
     expect(imported.runePercentages.truth).toBe(75);
     expect(imported.passions).toHaveLength(2);
     expect(imported.weapons[0]?.name).toBe("Rapier");
-    expect(imported.equipment[0]).toContain("Writing implements");
+    expect(imported.equipment[0]?.name).toContain("Writing implements");
+    expect(imported.equipment[0]?.enc).toBe(0);
+    expect(imported.equipment[0]?.isEquipped).toBe(false);
     expect(imported.magic[0]?.name).toBe("Analyze Magic");
     expect(imported.notes).toContain("auspicion birth");
     expect(imported.skills.some((skill) => skill.name === "Spirit Combat")).toBe(true);

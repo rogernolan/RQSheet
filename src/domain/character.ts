@@ -1,4 +1,5 @@
 import type { Character, HitLocation, HitLocationKey } from "@/domain/types";
+import { normalizeEquipment } from "@/domain/equipment";
 import { normalizeSkills } from "@/domain/skills";
 import { normalizeWeapons } from "@/domain/weapons";
 
@@ -51,6 +52,7 @@ export function createCharacter(seed: Partial<Character> = {}): Character {
   const character = {
     ...defaultCharacter,
     ...seed,
+    equipment: normalizeEquipment(seed.equipment),
     skills: normalizeSkills(seed.skills),
     weapons: normalizeWeapons(seed.weapons),
     pow,

@@ -1,3 +1,4 @@
+import { createImportedEquipment } from "@/domain/equipment";
 import type { ImportResult } from "@/domain/import/types";
 import { createImportedSkills } from "@/domain/skills";
 import { createImportedWeapons } from "@/domain/weapons";
@@ -88,7 +89,7 @@ export function createCharacterRepository(
         passions: result.passions,
         skills: [],
         weapons: createImportedWeapons(result.weapons),
-        equipment: result.equipment,
+        equipment: createImportedEquipment(result.equipment),
         magic: result.magic,
         str: result.attributes.str,
         con: result.attributes.con,

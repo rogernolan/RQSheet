@@ -48,6 +48,12 @@ export interface CharacterWeaponRecord {
   isEquipped: boolean;
 }
 
+export interface CharacterEquipmentRecord {
+  name: string;
+  enc: number;
+  isEquipped: boolean;
+}
+
 export interface Character {
   id: string;
   name: string;
@@ -61,7 +67,7 @@ export interface Character {
   passions: ParsedPassionEntry[];
   skills: CharacterSkillRecord[];
   weapons: CharacterWeaponRecord[];
-  equipment: string[];
+  equipment: CharacterEquipmentRecord[];
   magic: ParsedSpellEntry[];
   hitLocations: HitLocation[];
   str: number;
