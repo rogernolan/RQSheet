@@ -837,7 +837,9 @@ function SkillsList({
 
   return (
     <section className="pt-2">
-      <h4 className="mb-2 text-sm font-semibold">Skills</h4>
+      <h4 className="mb-2 text-sm font-semibold uppercase tracking-[0.18em] text-stone-500">
+        Skills
+      </h4>
       <div className="mb-2">
         <input
           className="min-h-9 w-full rounded-[8px] bg-black/[0.035] px-3 py-1.5 text-sm outline-none placeholder:text-stone-400 dark:bg-white/[0.04]"
@@ -2069,7 +2071,9 @@ function RunesAffinityPanel({
 }) {
   return (
     <section className="space-y-3">
-      <h4 className="text-sm font-semibold">Runes</h4>
+      <h4 className="text-sm font-semibold uppercase tracking-[0.18em] text-stone-500">
+        Runes
+      </h4>
       <div className="relative mx-auto h-[272px] w-full max-w-[300px]">
         <div className="absolute inset-x-[18%] top-[16%] h-[48%] rounded-full border border-panel-border/40" />
         {elementalRuneLayout.map((rune) => (
@@ -2318,7 +2322,9 @@ function MagicSection({
 
   return (
     <section className="space-y-2 border-t border-panel-border/40 pt-2">
-      <h4 className="text-sm font-semibold">Magic</h4>
+      <h4 className="text-sm font-semibold uppercase tracking-[0.18em] text-stone-500">
+        Magic
+      </h4>
       <input
         className="min-h-8 w-full rounded-[8px] bg-black/[0.035] px-3 py-1.5 text-sm outline-none placeholder:text-stone-400 dark:bg-white/[0.04]"
         onChange={(event) => onSearchChange(event.target.value)}
