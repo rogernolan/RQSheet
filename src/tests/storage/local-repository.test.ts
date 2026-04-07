@@ -44,6 +44,27 @@ describe("local character repository", () => {
     expect(saved?.skills.find((skill) => skill.name === "Dodge")?.experienceCheck).toBe(true);
   });
 
+  it("persists edited passion experience checks", async () => {
+    const repository = createCharacterRepository(createMemoryCharacterStore());
+
+    const created = await repository.createCharacter({
+      name: "Arkat",
+      passions: [{ name: "Loyalty (Sartar)", percentage: 60 }],
+    });
+
+    await repository.saveCharacter({
+      ...created,
+      passions: created.passions.map((passion) => ({
+        ...passion,
+        experienceCheck: passion.name === "Loyalty (Sartar)",
+      })),
+    });
+
+    const saved = await repository.getCharacter(created.id);
+
+    expect(saved?.passions[0]?.experienceCheck).toBe(true);
+  });
+
   it("persists edited hit locations and refreshes max HP from current stats", async () => {
     const repository = createCharacterRepository(createMemoryCharacterStore());
 
@@ -223,6 +244,7 @@ describe("local character repository", () => {
 
     expect(imported.runePercentages.truth).toBe(75);
     expect(imported.passions).toHaveLength(2);
+    expect(imported.passions[0]?.experienceCheck).toBe(false);
     expect(imported.weapons[0]?.name).toBe("Rapier");
     expect(imported.equipment[0]?.name).toContain("Writing implements");
     expect(imported.equipment[0]?.enc).toBe(0);

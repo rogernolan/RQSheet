@@ -55,6 +55,7 @@ export interface ParsedCharacterInfo {
 export interface ParsedPassionEntry {
   name: string;
   percentage: number;
+  experienceCheck?: boolean;
 }
 
 export interface ParsedSkillEntry {

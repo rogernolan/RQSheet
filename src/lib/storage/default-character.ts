@@ -1,4 +1,4 @@
-import { reconcileHitLocations } from "@/domain/character";
+import { normalizePassions, reconcileHitLocations } from "@/domain/character";
 import { normalizeEquipment } from "@/domain/equipment";
 import { normalizeSkills } from "@/domain/skills";
 import { normalizeWeapons } from "@/domain/weapons";
@@ -30,7 +30,7 @@ export function createBlankCharacter(seed: Partial<Character> = {}): Character {
     notes: seed.notes ?? "",
     runePercentages: seed.runePercentages ?? {},
     runeExperienceChecks: seed.runeExperienceChecks ?? {},
-    passions: seed.passions ?? [],
+    passions: normalizePassions(seed.passions),
     skills: normalizeSkills(seed.skills),
     weapons: normalizeWeapons(seed.weapons),
     equipment: normalizeEquipment(seed.equipment),

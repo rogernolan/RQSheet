@@ -86,7 +86,10 @@ export function createCharacterRepository(
         notes: result.trailingNotes ?? "",
         runePercentages: result.runePercentages,
         runeExperienceChecks: {},
-        passions: result.passions,
+        passions: result.passions.map((passion) => ({
+          ...passion,
+          experienceCheck: passion.experienceCheck ?? false,
+        })),
         skills: [],
         weapons: createImportedWeapons(result.weapons),
         equipment: createImportedEquipment(result.equipment),

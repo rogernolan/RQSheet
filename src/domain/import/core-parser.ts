@@ -191,6 +191,7 @@ function parsePassions(section: string): ParsedPassionEntry[] {
         {
           name: cleanedName,
           percentage,
+          experienceCheck: false,
         },
       ];
     });

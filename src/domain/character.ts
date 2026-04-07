@@ -1,6 +1,7 @@
 import type { Character, HitLocation, HitLocationKey } from "@/domain/types";
 import { normalizeEquipment } from "@/domain/equipment";
 import { normalizeSkills } from "@/domain/skills";
+import type { ParsedPassionEntry } from "@/domain/import/types";
 import { normalizeWeapons } from "@/domain/weapons";
 
 type StatisticKey = "str" | "con" | "siz" | "dex" | "int" | "pow" | "cha";
@@ -52,6 +53,7 @@ export function createCharacter(seed: Partial<Character> = {}): Character {
   const character = {
     ...defaultCharacter,
     ...seed,
+    passions: normalizePassions(seed.passions),
     equipment: normalizeEquipment(seed.equipment),
     skills: normalizeSkills(seed.skills),
     weapons: normalizeWeapons(seed.weapons),
@@ -66,6 +68,15 @@ export function createCharacter(seed: Partial<Character> = {}): Character {
     ...character,
     hitLocations: reconcileHitLocations(character, seed.hitLocations),
   };
+}
+
+export function normalizePassions(
+  passions: ParsedPassionEntry[] | undefined,
+): ParsedPassionEntry[] {
+  return (passions ?? []).map((passion) => ({
+    ...passion,
+    experienceCheck: passion.experienceCheck ?? false,
+  }));
 }
 
 export function getDisplayName(character: Character): string {

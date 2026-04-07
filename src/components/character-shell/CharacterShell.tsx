@@ -648,16 +648,54 @@ function IdentityCard({
               </div>
             </div>
           </div>
-          <div className="grid gap-2.5 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-end">
-            <EditableNumberField
-              label="Current MP"
-              onChange={(value) =>
-                setDraft((current) => ({ ...current, currentMagicPoints: value }))
-              }
-              value={draft.currentMagicPoints}
-            />
-            <div className="pb-1 text-sm text-stone-500">
-              Max MP <span className="ml-2 font-semibold text-foreground">{getMaxMagicPoints(character)}</span>
+          <div className="border-t border-panel-border/40 pt-2">
+            <div className="flex items-center justify-between gap-3">
+              <h4 className="text-sm font-semibold">Passions</h4>
+            </div>
+            <div className="mt-1.5">
+              {character.passions.length > 0 ? (
+                <div className="grid gap-x-6 gap-y-1 sm:grid-cols-2">
+                  {character.passions
+                    .slice()
+                    .sort((lhs, rhs) => rhs.percentage - lhs.percentage)
+                    .slice(0, 6)
+                    .map((passion) => (
+                      <div
+                        key={`${passion.name}-${passion.percentage}`}
+                        className="grid grid-cols-[minmax(0,1fr)_auto_auto] items-center gap-2 text-sm"
+                      >
+                        <span className="min-w-0 truncate text-stone-700 dark:text-stone-200">
+                          {passion.name}
+                        </span>
+                        <span className="shrink-0 font-semibold tabular-nums">
+                          {passion.percentage}%
+                        </span>
+                        <input
+                          aria-label={`${passion.name} experience check`}
+                          checked={Boolean(passion.experienceCheck)}
+                          className="h-4 w-4 rounded border-stone-300 text-stone-900 focus:ring-stone-400"
+                          onChange={(event) => {
+                            void onSaveCharacter({
+                              ...character,
+                              passions: character.passions.map((entry) =>
+                                entry.name === passion.name &&
+                                entry.percentage === passion.percentage
+                                  ? {
+                                      ...entry,
+                                      experienceCheck: event.target.checked,
+                                    }
+                                  : entry,
+                              ),
+                            });
+                          }}
+                          type="checkbox"
+                        />
+                      </div>
+                    ))}
+                </div>
+              ) : (
+                <div className="text-sm text-stone-500">No passions yet.</div>
+              )}
             </div>
           </div>
           {previewCharacter ? (
@@ -799,6 +837,7 @@ function SkillsList({
 
   return (
     <section className="pt-2">
+      <h4 className="mb-2 text-sm font-semibold">Skills</h4>
       <div className="mb-2">
         <input
           className="min-h-9 w-full rounded-[8px] bg-black/[0.035] px-3 py-1.5 text-sm outline-none placeholder:text-stone-400 dark:bg-white/[0.04]"
@@ -2030,6 +2069,7 @@ function RunesAffinityPanel({
 }) {
   return (
     <section className="space-y-3">
+      <h4 className="text-sm font-semibold">Runes</h4>
       <div className="relative mx-auto h-[272px] w-full max-w-[300px]">
         <div className="absolute inset-x-[18%] top-[16%] h-[48%] rounded-full border border-panel-border/40" />
         {elementalRuneLayout.map((rune) => (
@@ -2278,6 +2318,7 @@ function MagicSection({
 
   return (
     <section className="space-y-2 border-t border-panel-border/40 pt-2">
+      <h4 className="text-sm font-semibold">Magic</h4>
       <input
         className="min-h-8 w-full rounded-[8px] bg-black/[0.035] px-3 py-1.5 text-sm outline-none placeholder:text-stone-400 dark:bg-white/[0.04]"
         onChange={(event) => onSearchChange(event.target.value)}
@@ -2671,28 +2712,6 @@ function HeaderNameField({
       onBlur={(event) => void onBlur("name", event.target.value)}
       placeholder="Unnamed Character"
     />
-  );
-}
-
-function EditableNumberField({
-  label,
-  onChange,
-  value,
-}: {
-  label: string;
-  onChange: (value: string) => void;
-  value: string;
-}) {
-  return (
-    <label className="block">
-      <span className="mb-2 block text-sm font-medium">{label}</span>
-      <input
-        className="min-h-9 w-full rounded-[8px] bg-black/[0.035] px-2.5 py-1.5 text-sm outline-none dark:bg-white/[0.04]"
-        inputMode="numeric"
-        onChange={(event) => onChange(event.target.value)}
-        value={value}
-      />
-    </label>
   );
 }
 
