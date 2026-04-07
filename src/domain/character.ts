@@ -1,5 +1,6 @@
 import type { Character, HitLocation, HitLocationKey } from "@/domain/types";
 import { normalizeSkills } from "@/domain/skills";
+import { normalizeWeapons } from "@/domain/weapons";
 
 type StatisticKey = "str" | "con" | "siz" | "dex" | "int" | "pow" | "cha";
 
@@ -49,6 +50,7 @@ export function createCharacter(seed: Partial<Character> = {}): Character {
     ...defaultCharacter,
     ...seed,
     skills: normalizeSkills(seed.skills),
+    weapons: normalizeWeapons(seed.weapons),
     pow,
     currentMagicPoints,
     id: seed.id ?? createId(),

@@ -2,7 +2,6 @@ import type {
   ParsedPassionEntry,
   ParsedSpellEntry,
   SkillGroupName,
-  ParsedWeaponEntry,
   RuneName,
 } from "@/domain/import/types";
 
@@ -33,6 +32,22 @@ export interface HitLocation {
   armour: number;
 }
 
+export type CharacterWeaponType = "c" | "s" | "i" | "cnt" | "";
+
+export interface CharacterWeaponRecord {
+  name: string;
+  percentage: number;
+  experienceCheck: boolean;
+  damage: string;
+  strikeRank: string;
+  range: string;
+  hpCurrent?: number;
+  hpMax?: number;
+  enc?: number;
+  type: CharacterWeaponType;
+  isEquipped: boolean;
+}
+
 export interface Character {
   id: string;
   name: string;
@@ -44,7 +59,7 @@ export interface Character {
   runePercentages: Partial<Record<RuneName, number>>;
   passions: ParsedPassionEntry[];
   skills: CharacterSkillRecord[];
-  weapons: ParsedWeaponEntry[];
+  weapons: CharacterWeaponRecord[];
   equipment: string[];
   magic: ParsedSpellEntry[];
   hitLocations: HitLocation[];

@@ -1,5 +1,6 @@
 import type { ImportResult } from "@/domain/import/types";
 import { createImportedSkills } from "@/domain/skills";
+import { createImportedWeapons } from "@/domain/weapons";
 import type { Character } from "@/domain/types";
 
 import { createBlankCharacter } from "./default-character";
@@ -83,7 +84,7 @@ export function createCharacterRepository(
         runePercentages: result.runePercentages,
         passions: result.passions,
         skills: [],
-        weapons: result.weapons,
+        weapons: createImportedWeapons(result.weapons),
         equipment: result.equipment,
         magic: result.magic,
         str: result.attributes.str,

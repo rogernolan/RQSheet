@@ -19,7 +19,12 @@ import {
   getSkillGroupOrder,
   getSkillGroupTitle,
 } from "@/domain/skills";
-import type { Character, CharacterSkillRecord } from "@/domain/types";
+import { getWeaponTypeLabel } from "@/domain/weapons";
+import type {
+  Character,
+  CharacterSkillRecord,
+  CharacterWeaponRecord,
+} from "@/domain/types";
 import { createIndexedDBCharacterRepository } from "@/lib/storage";
 
 const repository = createIndexedDBCharacterRepository();
@@ -976,6 +981,12 @@ function CombatCard({
     ),
   );
   const lastSavedCombatKeyRef = useRef("");
+  const [weaponDrafts, setWeaponDrafts] = useState<
+    Record<string, Partial<CharacterWeaponRecord>>
+  >({});
+  const [expandedWeaponKeys, setExpandedWeaponKeys] = useState<Record<string, boolean>>(
+    {},
+  );
 
   useEffect(() => {
     if (!character) {
@@ -1020,17 +1031,71 @@ function CombatCard({
     return () => window.clearTimeout(timeoutId);
   }, [character, hitLocationDraft, onSaveCharacter]);
 
+  useEffect(() => {
+    if (!character) {
+      return;
+    }
+
+    const nextWeapons = character.weapons.map((weapon, index) => ({
+      ...weapon,
+      ...weaponDrafts[weaponKey(weapon, index)],
+    }));
+    const saveKey = JSON.stringify(
+      nextWeapons.map((weapon) => [
+        weapon.name,
+        weapon.percentage,
+        weapon.experienceCheck,
+        weapon.strikeRank,
+        weapon.damage,
+        weapon.hpCurrent ?? null,
+        weapon.hpMax ?? null,
+        weapon.enc ?? null,
+        weapon.type,
+        weapon.isEquipped,
+        weapon.range,
+      ]),
+    );
+    const currentKey = JSON.stringify(
+      character.weapons.map((weapon) => [
+        weapon.name,
+        weapon.percentage,
+        weapon.experienceCheck,
+        weapon.strikeRank,
+        weapon.damage,
+        weapon.hpCurrent ?? null,
+        weapon.hpMax ?? null,
+        weapon.enc ?? null,
+        weapon.type,
+        weapon.isEquipped,
+        weapon.range,
+      ]),
+    );
+
+    if (saveKey === currentKey || saveKey === lastSavedCombatKeyRef.current) {
+      return;
+    }
+
+    const timeoutId = window.setTimeout(() => {
+      lastSavedCombatKeyRef.current = saveKey;
+      void onSaveCharacter({
+        ...character,
+        weapons: nextWeapons,
+      });
+    }, 250);
+
+    return () => window.clearTimeout(timeoutId);
+  }, [character, onSaveCharacter, weaponDrafts]);
+
+  const featuredStrikeRank = character
+    ? (character.weapons.find((weapon) => weapon.isEquipped)?.strikeRank ||
+        character.weapons[0]?.strikeRank ||
+        "-")
+    : "-";
+
   return (
     <DashboardCard>
       {character ? (
         <div className="space-y-2.5">
-          <div className="grid grid-cols-3 gap-x-3 gap-y-1 text-sm sm:grid-cols-2 xl:grid-cols-3">
-            <CompactMetric label="Damage" value={getDamageBonusText(character)} />
-            <CompactMetric label="Current HP" value={`${character.con + character.siz}`} />
-            <CompactMetric label="Move" value={character.dex >= 15 ? 8 : 6} />
-            <CompactMetric label="Healing" value={Math.max(1, Math.floor(character.con / 6))} />
-            <CompactMetric label="MP" value={`${character.currentMagicPoints}/${getMaxMagicPoints(character)}`} />
-          </div>
           <div className="pt-1">
             <div className="flex items-center justify-between gap-3">
               <h4 className="text-sm font-semibold uppercase tracking-[0.18em] text-stone-500">
@@ -1062,34 +1127,219 @@ function CombatCard({
               />
             </div>
           </div>
-          {character.weapons.length > 0 ? (
-            <div className="pt-1">
-              <h4 className="text-sm font-semibold">Imported Weapons</h4>
-              <div className="mt-2.5 space-y-1.5">
-                {character.weapons.slice(0, 4).map((weapon) => (
-                  <div
-                    key={`${weapon.name}-${weapon.percentage ?? 0}`}
-                    className="flex items-center justify-between gap-3 rounded-[8px] bg-black/[0.035] px-3 py-2 text-sm dark:bg-white/[0.04]"
-                  >
-                    <span>{weapon.name}</span>
-                    <span className="text-stone-500">
-                      {weapon.percentage ? `${weapon.percentage}%` : "-"}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          ) : (
-            <div className="rounded-[8px] bg-black/[0.03] p-3 text-sm text-stone-600 dark:bg-white/[0.03] dark:text-stone-300">
-              Weapons and hit locations will live here once the repository-backed
-              feature set lands.
-            </div>
-          )}
+          <div className="grid grid-cols-2 gap-x-4 gap-y-1 border-t border-panel-border/40 pt-2 text-sm">
+            <CompactMetric label="Strike Rank" value={featuredStrikeRank} />
+            <CompactMetric label="Damage Bonus" value={getDamageBonusText(character)} />
+          </div>
+          <WeaponsList
+            expandedWeaponKeys={expandedWeaponKeys}
+            onToggleExpanded={(key) =>
+              setExpandedWeaponKeys((current) => ({
+                ...current,
+                [key]: !current[key],
+              }))
+            }
+            onUpdateWeaponDraft={(key, patch) =>
+              setWeaponDrafts((current) => ({
+                ...current,
+                [key]: {
+                  ...current[key],
+                  ...patch,
+                },
+              }))
+            }
+            weaponDrafts={weaponDrafts}
+            weapons={character.weapons}
+          />
         </div>
       ) : (
         <EmptyCardMessage text="Combat details appear once a character is selected." />
       )}
     </DashboardCard>
+  );
+}
+
+function WeaponsList({
+  expandedWeaponKeys,
+  onToggleExpanded,
+  onUpdateWeaponDraft,
+  weaponDrafts,
+  weapons,
+}: {
+  expandedWeaponKeys: Record<string, boolean>;
+  onToggleExpanded: (key: string) => void;
+  onUpdateWeaponDraft: (key: string, patch: Partial<CharacterWeaponRecord>) => void;
+  weaponDrafts: Record<string, Partial<CharacterWeaponRecord>>;
+  weapons: CharacterWeaponRecord[];
+}) {
+  if (weapons.length === 0) {
+    return (
+      <div className="border-t border-panel-border/40 pt-2 text-sm text-stone-500">
+        No weapons yet.
+      </div>
+    );
+  }
+
+  return (
+    <section className="border-t border-panel-border/40 pt-2">
+      <div className="mb-1 grid grid-cols-[18px_minmax(0,1fr)_44px_22px_48px_56px] items-center gap-2 border-b border-panel-border/30 pb-1 text-[10px] font-semibold uppercase tracking-[0.12em] text-stone-500">
+        <span />
+        <span>Weapon</span>
+        <span className="text-right">%</span>
+        <span className="text-center">XP</span>
+        <span className="text-center">SR</span>
+        <span className="text-right">Dmg</span>
+      </div>
+      <div className="space-y-1.5">
+        {weapons.map((weapon, index) => {
+          const key = weaponKey(weapon, index);
+          const draft = weaponDrafts[key];
+
+          return (
+            <WeaponListRow
+              key={key}
+              isExpanded={expandedWeaponKeys[key] ?? false}
+              onToggleExpanded={() => onToggleExpanded(key)}
+              onUpdate={(patch) => onUpdateWeaponDraft(key, patch)}
+              weapon={{ ...weapon, ...draft }}
+            />
+          );
+        })}
+      </div>
+    </section>
+  );
+}
+
+function WeaponListRow({
+  isExpanded,
+  onToggleExpanded,
+  onUpdate,
+  weapon,
+}: {
+  isExpanded: boolean;
+  onToggleExpanded: () => void;
+  onUpdate: (patch: Partial<CharacterWeaponRecord>) => void;
+  weapon: CharacterWeaponRecord;
+}) {
+  return (
+    <div className="border-b border-panel-border/30 pb-1.5 last:border-b-0">
+      <div className="grid grid-cols-[18px_minmax(0,1fr)_44px_22px_48px_56px] items-center gap-2 text-sm">
+        <button
+          aria-label={isExpanded ? "Collapse weapon" : "Expand weapon"}
+          className="text-xs text-stone-500"
+          onClick={onToggleExpanded}
+          type="button"
+        >
+          {isExpanded ? "v" : ">"}
+        </button>
+        <div className="min-w-0">
+          <div className="truncate font-medium">{weapon.name || "Weapon"}</div>
+          {weapon.type ? (
+            <div className="truncate text-[11px] text-stone-500">
+              {getWeaponTypeLabel(weapon.type)}
+            </div>
+          ) : null}
+        </div>
+        <input
+          className="min-h-6 rounded-[4px] bg-black/[0.025] px-1 py-0 text-right font-semibold tabular-nums outline-none dark:bg-white/[0.035]"
+          inputMode="numeric"
+          onChange={(event) =>
+            onUpdate({ percentage: parseNumberDraft(event.target.value, weapon.percentage) })
+          }
+          value={String(weapon.percentage)}
+        />
+        <div className="flex justify-center">
+          <input
+            checked={weapon.experienceCheck}
+            className="h-3.5 w-3.5 rounded border-panel-border"
+            onChange={(event) => onUpdate({ experienceCheck: event.target.checked })}
+            type="checkbox"
+          />
+        </div>
+        <input
+          className="min-h-6 rounded-[4px] bg-black/[0.025] px-1 py-0 text-center font-semibold tabular-nums outline-none dark:bg-white/[0.035]"
+          onChange={(event) => onUpdate({ strikeRank: event.target.value })}
+          value={weapon.strikeRank}
+        />
+        <input
+          className="min-h-6 rounded-[4px] bg-black/[0.025] px-1 py-0 text-right outline-none dark:bg-white/[0.035]"
+          onChange={(event) => onUpdate({ damage: event.target.value })}
+          value={weapon.damage}
+        />
+      </div>
+      {isExpanded ? (
+        <div className="grid gap-2 pl-6 pt-2 text-sm sm:grid-cols-2">
+          <div className="grid grid-cols-[auto_38px_12px_38px] items-center gap-1">
+            <span className="text-stone-500">Hit points</span>
+            <input
+              className="min-h-6 rounded-[4px] bg-black/[0.025] px-1 py-0 text-center tabular-nums outline-none dark:bg-white/[0.035]"
+              inputMode="numeric"
+              onChange={(event) =>
+                onUpdate({
+                  hpCurrent: parseOptionalNumberDraft(event.target.value, weapon.hpCurrent),
+                })
+              }
+              value={formatOptionalNumber(weapon.hpCurrent)}
+            />
+            <span className="text-center text-stone-400">/</span>
+            <input
+              className="min-h-6 rounded-[4px] bg-black/[0.025] px-1 py-0 text-center tabular-nums outline-none dark:bg-white/[0.035]"
+              inputMode="numeric"
+              onChange={(event) =>
+                onUpdate({
+                  hpMax: parseOptionalNumberDraft(event.target.value, weapon.hpMax),
+                })
+              }
+              value={formatOptionalNumber(weapon.hpMax)}
+            />
+          </div>
+          <div className="grid grid-cols-[auto_38px_auto_96px] items-center gap-2">
+            <span className="text-stone-500">ENC</span>
+            <input
+              className="min-h-6 rounded-[4px] bg-black/[0.025] px-1 py-0 text-center tabular-nums outline-none dark:bg-white/[0.035]"
+              inputMode="numeric"
+              onChange={(event) =>
+                onUpdate({
+                  enc: parseOptionalNumberDraft(event.target.value, weapon.enc),
+                })
+              }
+              value={formatOptionalNumber(weapon.enc)}
+            />
+            <span className="text-stone-500">type</span>
+            <select
+              className="min-h-6 rounded-[4px] bg-black/[0.025] px-1 py-0 outline-none dark:bg-white/[0.035]"
+              onChange={(event) =>
+                onUpdate({ type: event.target.value as CharacterWeaponRecord["type"] })
+              }
+              value={weapon.type}
+            >
+              <option value="">{getWeaponTypeLabel("")}</option>
+              <option value="c">{getWeaponTypeLabel("c")}</option>
+              <option value="s">{getWeaponTypeLabel("s")}</option>
+              <option value="i">{getWeaponTypeLabel("i")}</option>
+              <option value="cnt">{getWeaponTypeLabel("cnt")}</option>
+            </select>
+          </div>
+          <label className="flex items-center gap-2 text-sm">
+            <span className="text-stone-500">Equipped</span>
+            <input
+              checked={weapon.isEquipped}
+              className="h-3.5 w-3.5 rounded border-panel-border"
+              onChange={(event) => onUpdate({ isEquipped: event.target.checked })}
+              type="checkbox"
+            />
+          </label>
+          <div className="grid grid-cols-[auto_minmax(0,1fr)] items-center gap-2">
+            <span className="text-stone-500">Range:</span>
+            <input
+              className="min-h-6 rounded-[4px] bg-black/[0.025] px-1 py-0 outline-none dark:bg-white/[0.035]"
+              onChange={(event) => onUpdate({ range: event.target.value })}
+              value={weapon.range}
+            />
+          </div>
+        </div>
+      ) : null}
+    </div>
   );
 }
 
@@ -1672,9 +1922,30 @@ function EmptyCardMessage({ text }: { text: string }) {
   );
 }
 
+function weaponKey(weapon: CharacterWeaponRecord, index: number): string {
+  return `${index}:${weapon.name.trim().toLowerCase()}`;
+}
+
 function parseNumberDraft(value: string, fallback: number): number {
   const parsed = Number.parseInt(value.trim(), 10);
   return Number.isNaN(parsed) ? fallback : parsed;
+}
+
+function parseOptionalNumberDraft(
+  value: string,
+  fallback: number | undefined,
+): number | undefined {
+  const trimmed = value.trim();
+  if (trimmed.length === 0) {
+    return undefined;
+  }
+
+  const parsed = Number.parseInt(trimmed, 10);
+  return Number.isNaN(parsed) ? fallback : parsed;
+}
+
+function formatOptionalNumber(value: number | undefined): string {
+  return typeof value === "number" ? String(value) : "";
 }
 
 function sortCharacters(characters: Character[]): Character[] {

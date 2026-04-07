@@ -1,5 +1,6 @@
 import { reconcileHitLocations } from "@/domain/character";
 import { normalizeSkills } from "@/domain/skills";
+import { normalizeWeapons } from "@/domain/weapons";
 import type { Character } from "@/domain/types";
 
 export function createCharacterId(): string {
@@ -29,7 +30,7 @@ export function createBlankCharacter(seed: Partial<Character> = {}): Character {
     runePercentages: seed.runePercentages ?? {},
     passions: seed.passions ?? [],
     skills: normalizeSkills(seed.skills),
-    weapons: seed.weapons ?? [],
+    weapons: normalizeWeapons(seed.weapons),
     equipment: seed.equipment ?? [],
     magic: seed.magic ?? [],
     hitLocations: seed.hitLocations ?? [],
