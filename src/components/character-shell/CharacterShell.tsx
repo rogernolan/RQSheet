@@ -1004,8 +1004,13 @@ function SkillGroupSection({
                       )
                     }
                     value={
-                      skillDrafts[skillKey(skill)]?.value ??
-                      String(getSkillEffectiveValue(character, skill))
+                      formatTwoDigitNumber(
+                        parseNumberDraft(
+                          skillDrafts[skillKey(skill)]?.value ??
+                            String(getSkillEffectiveValue(character, skill)),
+                          getSkillEffectiveValue(character, skill),
+                        ),
+                      )
                     }
                   />
                   <DerivedChanceStack
@@ -1600,7 +1605,7 @@ function WeaponListRow({
           onChange={(event) =>
             onUpdate({ percentage: parseNumberDraft(event.target.value, weapon.percentage) })
           }
-          value={String(weapon.percentage ?? 0)}
+          value={formatTwoDigitNumber(weapon.percentage ?? 0)}
         />
         <DerivedChanceStack value={weapon.percentage ?? 0} />
         <div className="flex justify-center">
@@ -2786,8 +2791,8 @@ function EmptyCardMessage({ text }: { text: string }) {
 function DerivedChanceStack({ value }: { value: number }) {
   return (
     <div className="flex min-h-6 flex-col justify-center text-[10px] leading-3 text-stone-400">
-      <span className="tabular-nums">S:{deriveSpecialChance(value)}</span>
-      <span className="tabular-nums">L:{deriveCriticalChance(value)}</span>
+      <span className="tabular-nums">S:{formatTwoDigitNumber(deriveSpecialChance(value))}</span>
+      <span className="tabular-nums">L:{formatTwoDigitNumber(deriveCriticalChance(value))}</span>
     </div>
   );
 }
@@ -2828,6 +2833,10 @@ function deriveSpecialChance(value: number): number {
 
 function deriveCriticalChance(value: number): number {
   return Math.floor(Math.max(0, value) / 20);
+}
+
+function formatTwoDigitNumber(value: number): string {
+  return String(Math.max(0, value)).padStart(2, "0");
 }
 
 function sortCharacters(characters: Character[]): Character[] {
