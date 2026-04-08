@@ -972,9 +972,10 @@ function SkillGroupSection({
       </div>
       {collapsed ? null : (
         <div className="mt-1.5">
-          <div className="grid grid-cols-[minmax(0,1fr)_52px_22px_20px] items-center gap-2 border-b border-panel-border/40 pb-1 text-[10px] font-semibold uppercase tracking-[0.12em] text-stone-500">
+          <div className="grid grid-cols-[minmax(0,1fr)_52px_36px_22px_20px] items-center gap-2 border-b border-panel-border/40 pb-1 text-[10px] font-semibold uppercase tracking-[0.12em] text-stone-500">
             <span>Skill</span>
             <span className="text-right">%</span>
+            <span className="text-left">S/L</span>
             <span className="text-center">XP</span>
             <span />
           </div>
@@ -983,9 +984,12 @@ function SkillGroupSection({
               {skills.map((skill) => (
                 <div
                   key={`${group}-${skill.name}`}
-                  className="grid grid-cols-[minmax(0,1fr)_52px_22px_20px] items-center gap-2 py-1 text-sm"
+                  className="grid grid-cols-[minmax(0,1fr)_52px_36px_22px_20px] items-center gap-2 py-1 text-sm"
                 >
-                  <span className="min-w-0 truncate text-stone-700 dark:text-stone-200">
+                  <span
+                    className="min-w-0 truncate text-stone-700 dark:text-stone-200"
+                    title={skill.name}
+                  >
                     {skill.name}
                   </span>
                   <input
@@ -1003,6 +1007,13 @@ function SkillGroupSection({
                       skillDrafts[skillKey(skill)]?.value ??
                       String(getSkillEffectiveValue(character, skill))
                     }
+                  />
+                  <DerivedChanceStack
+                    value={parseNumberDraft(
+                      skillDrafts[skillKey(skill)]?.value ??
+                        String(getSkillEffectiveValue(character, skill)),
+                      getSkillEffectiveValue(character, skill),
+                    )}
                   />
                   <div className="flex justify-center">
                     <input
@@ -1490,10 +1501,11 @@ function WeaponsList({
 
   return (
     <section className="border-t border-panel-border/40 pt-2">
-      <div className="mb-1 grid grid-cols-[18px_minmax(0,1fr)_44px_22px_48px_56px] items-center gap-2 border-b border-panel-border/30 pb-1 text-[10px] font-semibold uppercase tracking-[0.12em] text-stone-500">
+      <div className="mb-1 grid grid-cols-[18px_minmax(0,1fr)_44px_36px_22px_48px_56px] items-center gap-2 border-b border-panel-border/30 pb-1 text-[10px] font-semibold uppercase tracking-[0.12em] text-stone-500">
         <span />
         <span>Weapon</span>
         <span className="text-right">%</span>
+        <span className="text-left">S/L</span>
         <span className="text-center">XP</span>
         <span className="text-center">SR</span>
         <span className="text-right">Dmg</span>
@@ -1565,7 +1577,7 @@ function WeaponListRow({
 }) {
   return (
     <div className="border-b border-panel-border/30 pb-1.5 last:border-b-0">
-      <div className="grid grid-cols-[18px_minmax(0,1fr)_44px_22px_48px_56px] items-center gap-2 text-sm">
+      <div className="grid grid-cols-[18px_minmax(0,1fr)_44px_36px_22px_48px_56px] items-center gap-2 text-sm">
         <button
           aria-label={isExpanded ? "Collapse weapon" : "Expand weapon"}
           className="text-xs text-stone-500"
@@ -1590,6 +1602,7 @@ function WeaponListRow({
           }
           value={String(weapon.percentage ?? 0)}
         />
+        <DerivedChanceStack value={weapon.percentage ?? 0} />
         <div className="flex justify-center">
           <input
             checked={Boolean(weapon.experienceCheck)}
@@ -2770,6 +2783,15 @@ function EmptyCardMessage({ text }: { text: string }) {
   );
 }
 
+function DerivedChanceStack({ value }: { value: number }) {
+  return (
+    <div className="flex min-h-6 flex-col justify-center text-[10px] leading-3 text-stone-400">
+      <span className="tabular-nums">S:{deriveSpecialChance(value)}</span>
+      <span className="tabular-nums">L:{deriveCriticalChance(value)}</span>
+    </div>
+  );
+}
+
 function weaponKey(weapon: CharacterWeaponRecord, index: number): string {
   return `${index}:${weapon.name.trim().toLowerCase()}`;
 }
@@ -2798,6 +2820,14 @@ function parseOptionalNumberDraft(
 
 function formatOptionalNumber(value: number | undefined): string {
   return typeof value === "number" ? String(value) : "";
+}
+
+function deriveSpecialChance(value: number): number {
+  return Math.floor(Math.max(0, value) / 5);
+}
+
+function deriveCriticalChance(value: number): number {
+  return Math.floor(Math.max(0, value) / 20);
 }
 
 function sortCharacters(characters: Character[]): Character[] {
