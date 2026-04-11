@@ -56,6 +56,14 @@ function parseEquipmentSection(section: string): {
       continue;
     }
 
+    if (isCombatNoise(trimmed)) {
+      continue;
+    }
+
+    if (trimmed.toLowerCase().includes("armour points show")) {
+      continue;
+    }
+
     const weapon = parseWeaponLine(trimmed);
     if (weapon) {
       inWeaponTable = true;
@@ -63,11 +71,7 @@ function parseEquipmentSection(section: string): {
       continue;
     }
 
-    if (isCombatNoise(trimmed)) {
-      continue;
-    }
-
-    if (!inWeaponTable || trimmed.toLowerCase().includes("armour points show")) {
+    if (!inWeaponTable) {
       items.push(trimmed);
     }
   }
@@ -97,7 +101,7 @@ function parseMagicSection(section: string): ParsedSpellEntry[] {
       }
     }
 
-    const bareMatch = trimmed.match(/^(.*?)(\d+)$/u);
+    const bareMatch = trimmed.match(/^(.*?)\s+(\d+)$/u);
     if (
       currentSource.toLowerCase().includes("spells") &&
       !trimmed.includes(":") &&

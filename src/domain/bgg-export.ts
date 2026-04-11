@@ -39,9 +39,14 @@ const commonRuneSpellCatalog = [
 
 export function formatCharacterForBGG(character: Character): string {
   const spiritSpells = character.magic.filter((spell) => classifySpellSource(spell.source) === "spirit");
-  const runeSpells = character.magic.filter((spell) => classifySpellSource(spell.source) === "rune");
+  const runeSpells = character.magic.filter(
+    (spell) =>
+      classifySpellSource(spell.source) === "rune" &&
+      isCommonRuneSpellSource(spell.source) === false,
+  );
   const hpTotal = getMaxHitPoints(character);
   const cultName = character.worships.trim().length > 0 ? character.worships.trim() : "____________";
+  const runeSpellHeading = formatRuneSpellHeading(runeSpells, cultName);
 
   return [
     "[/COLOR][/center]",
@@ -98,7 +103,7 @@ export function formatCharacterForBGG(character: Character): string {
     `Cult: ${cultName}`,
     `Rune Points:        ${character.runePoints}/${character.runePoints}`,
     "",
-    `[u]CULTNAME Spells    (RPs)[/u]`,
+    `[u]${runeSpellHeading}[/u]`,
     ...formatSpells(runeSpells),
     "",
     `[u]Common Rune Spells (RPs)[/u]`,
@@ -222,6 +227,22 @@ function formatSpells(spells: Character["magic"]): string[] {
   return spells.map((spell) => `${spell.name.padEnd(16, " ")} (${spell.points})`);
 }
 
+function formatRuneSpellHeading(
+  runeSpells: Character["magic"],
+  cultName: string,
+): string {
+  const firstSource = runeSpells[0]?.source?.trim();
+  if (firstSource && isCommonRuneSpellSource(firstSource) === false) {
+    return firstSource;
+  }
+
+  return `${cultName} Spells    (RPs)`;
+}
+
+function isCommonRuneSpellSource(source: string): boolean {
+  return source.trim().toLowerCase().includes("common rune spells");
+}
+
 function formatEquipment(character: Character): string[] {
   if (character.equipment.length === 0) {
     return ["_______________"];
@@ -305,7 +326,12 @@ function formatBorn(character: Character): string {
 }
 
 function formatIncome(value: string): string {
-  return value.trim().length > 0 ? `${value} L` : "___ L";
+  const trimmed = value.trim();
+  if (trimmed.length === 0) {
+    return "___ L";
+  }
+
+  return /l$/iu.test(trimmed) ? trimmed : `${trimmed} L`;
 }
 
 function formatRansom(value: number): string {

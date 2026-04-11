@@ -93,7 +93,7 @@ export function createImportedSkills(
         baseRule,
         modifier: skill.percentage - (baseValue + groupBonus),
         isCustom: defaultSkill ? false : skill.isCustom,
-        experienceCheck: false,
+        experienceCheck: skill.experienceCheck ?? false,
       };
     }),
   );

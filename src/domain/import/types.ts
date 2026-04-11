@@ -78,6 +78,7 @@ export interface ParsedSkillEntry {
   groupName: SkillGroupName;
   percentage: number;
   isCustom: boolean;
+  experienceCheck?: boolean;
 }
 
 export interface ParsedWeaponEntry {

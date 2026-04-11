@@ -83,6 +83,7 @@ function parseSkillLine(
     groupName: group,
     percentage,
     isCustom: !knownSkillNames[group].has(normalizeSkillName(name)),
+    experienceCheck: /\[x\]/iu.test(line),
   };
 }
 
