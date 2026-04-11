@@ -295,7 +295,7 @@ export function CharacterShell() {
               />
             ) : null}
 
-            <div className="ml-12 grid flex-1 grid-cols-1 gap-x-4 gap-y-3 md:grid-cols-2 xl:grid-cols-3">
+            <div className="ml-12 grid flex-1 grid-cols-1 gap-x-4 gap-y-3 md:grid-cols-2 xl:grid-cols-[0.9fr_1.2fr_0.9fr]">
               <IdentityCard
                 key={`identity-${selectedCharacter?.id ?? "empty"}`}
                 character={selectedCharacter}
@@ -498,38 +498,44 @@ function WorkspaceHeader({
           </h2>
         )}
         {character ? (
-          <div className="mt-2 grid gap-x-6 gap-y-1 text-sm text-stone-600 md:grid-cols-2 xl:grid-cols-3 dark:text-stone-300">
+          <div className="mt-2 grid gap-x-6 gap-y-1 text-sm text-stone-600 md:grid-cols-2 xl:grid-cols-6 dark:text-stone-300">
             <HeaderSummaryField
+              className="xl:col-span-1"
               field="worships"
               label="Worships"
               onBlur={handleSummaryBlur}
               value={character.worships}
             />
             <HeaderSummaryField
+              className="xl:col-span-1"
               field="family"
               label="Clan"
               onBlur={handleSummaryBlur}
               value={character.family}
             />
             <HeaderSummaryField
+              className="xl:col-span-2"
               field="tribe"
               label="Tribe"
               onBlur={handleSummaryBlur}
               value={character.tribe}
             />
             <HeaderSummaryField
+              className="xl:col-span-2"
               field="patron"
               label="Patron"
               onBlur={handleSummaryBlur}
               value={character.patron}
             />
             <HeaderSummaryField
+              className="xl:col-span-2"
               field="occupation"
               label="Occupation"
               onBlur={handleSummaryBlur}
               value={character.occupation}
             />
             <HeaderBirthField
+              className="xl:col-span-2"
               key={`birth-${character.birthDay}-${character.birthWeek}-${character.birthSeason}-${character.birthYear}`}
               label="Born"
               onBlur={(parts) =>
@@ -553,24 +559,28 @@ function WorkspaceHeader({
               }}
             />
             <HeaderNumberSummaryField
+              className="xl:col-span-2"
               field="reputation"
               label="Reputation"
               onBlur={handleNumberSummaryBlur}
               value={character.reputation}
             />
             <HeaderSummaryField
+              className="xl:col-span-2"
               field="sol"
               label="SoL"
               onBlur={handleSummaryBlur}
               value={character.sol}
             />
             <HeaderSummaryField
+              className="xl:col-span-2"
               field="income"
               label="Income"
               onBlur={handleSummaryBlur}
               value={character.income}
             />
             <HeaderNumberSummaryField
+              className="xl:col-span-2"
               field="ransom"
               label="Ransom"
               onBlur={handleNumberSummaryBlur}
@@ -675,6 +685,10 @@ function IdentityCard({
   }));
   const lastSavedKeyRef = useRef("");
   const [skillSearch, setSkillSearch] = useState("");
+  const [passionDrafts, setPassionDrafts] = useState<
+    Record<string, { name?: string; percentage?: string; experienceCheck?: boolean }>
+  >({});
+  const lastSavedPassionsRef = useRef("");
 
   useEffect(() => {
     if (!character) {
@@ -731,6 +745,54 @@ function IdentityCard({
 
     return () => window.clearTimeout(timeoutId);
   }, [character, draft, onSaveCharacter]);
+
+  useEffect(() => {
+    if (!character) {
+      return;
+    }
+
+    const nextPassions = character.passions.map((passion, index) => {
+      const draftEntry = passionDrafts[passionKey(passion, index)];
+      return {
+        ...passion,
+        name: draftEntry?.name ?? passion.name,
+        percentage: parseNumberDraft(
+          draftEntry?.percentage ?? "",
+          passion.percentage,
+        ),
+        experienceCheck:
+          draftEntry?.experienceCheck ?? Boolean(passion.experienceCheck),
+      };
+    });
+    const saveKey = JSON.stringify(
+      nextPassions.map((passion) => [
+        passion.name,
+        passion.percentage,
+        passion.experienceCheck,
+      ]),
+    );
+    const currentKey = JSON.stringify(
+      character.passions.map((passion) => [
+        passion.name,
+        passion.percentage,
+        Boolean(passion.experienceCheck),
+      ]),
+    );
+
+    if (saveKey === currentKey || saveKey === lastSavedPassionsRef.current) {
+      return;
+    }
+
+    const timeoutId = window.setTimeout(() => {
+      lastSavedPassionsRef.current = saveKey;
+      void onSaveCharacter({
+        ...character,
+        passions: nextPassions,
+      });
+    }, 250);
+
+    return () => window.clearTimeout(timeoutId);
+  }, [character, onSaveCharacter, passionDrafts]);
 
   const previewCharacter = useMemo(() => {
     if (!character) {
@@ -800,47 +862,110 @@ function IdentityCard({
           <div className="border-t border-panel-border/40 pt-2">
             <div className="flex items-center justify-between gap-3">
               <h4 className="text-sm font-semibold">Passions</h4>
+              <button
+                className="text-xs font-semibold uppercase tracking-[0.12em] text-stone-500 transition hover:text-foreground"
+                onClick={() =>
+                  void onSaveCharacter({
+                    ...character,
+                    passions: [
+                      ...character.passions,
+                      {
+                        name: "New Passion",
+                        percentage: 0,
+                        experienceCheck: false,
+                      },
+                    ],
+                  })
+                }
+                type="button"
+              >
+                + Add Passion
+              </button>
             </div>
             <div className="mt-1.5">
               {character.passions.length > 0 ? (
                 <div className="grid gap-x-6 gap-y-1 sm:grid-cols-2">
-                  {character.passions
-                    .slice()
-                    .sort((lhs, rhs) => rhs.percentage - lhs.percentage)
-                    .slice(0, 6)
-                    .map((passion) => (
+                  {character.passions.map((passion, index) => {
+                    const key = passionKey(passion, index);
+                    const draftEntry = passionDrafts[key];
+                    return (
                       <div
-                        key={`${passion.name}-${passion.percentage}`}
-                        className="grid grid-cols-[minmax(0,1fr)_auto_auto] items-center gap-2 text-sm"
+                        key={key}
+                        className="grid grid-cols-[minmax(0,1fr)_56px_20px_20px] items-center gap-2 text-sm"
                       >
-                        <span className="min-w-0 truncate text-stone-700 dark:text-stone-200">
-                          {passion.name}
-                        </span>
-                        <span className="shrink-0 font-semibold tabular-nums">
-                          {passion.percentage}%
-                        </span>
+                        <input
+                          className="min-h-6 min-w-0 rounded-[4px] bg-black/[0.025] px-1.5 py-0 text-stone-700 outline-none dark:bg-white/[0.035] dark:text-stone-200"
+                          onChange={(event) =>
+                            setPassionDrafts((current) => ({
+                              ...current,
+                              [key]: {
+                                ...current[key],
+                                name: event.target.value,
+                              },
+                            }))
+                          }
+                          value={draftEntry?.name ?? passion.name}
+                        />
+                        <input
+                          className="min-h-6 rounded-[4px] bg-black/[0.025] px-1 py-0 text-right font-semibold tabular-nums outline-none dark:bg-white/[0.035]"
+                          inputMode="numeric"
+                          onChange={(event) =>
+                            setPassionDrafts((current) => ({
+                              ...current,
+                              [key]: {
+                                ...current[key],
+                                percentage: event.target.value,
+                              },
+                            }))
+                          }
+                          value={formatTwoDigitNumber(
+                            parseNumberDraft(
+                              draftEntry?.percentage ?? String(passion.percentage),
+                              passion.percentage,
+                            ),
+                          )}
+                        />
                         <input
                           aria-label={`${passion.name} experience check`}
-                          checked={Boolean(passion.experienceCheck)}
+                          checked={
+                            draftEntry?.experienceCheck ??
+                            Boolean(passion.experienceCheck)
+                          }
                           className="h-4 w-4 rounded border-stone-300 text-stone-900 focus:ring-stone-400"
-                          onChange={(event) => {
+                          onChange={(event) =>
+                            setPassionDrafts((current) => ({
+                              ...current,
+                              [key]: {
+                                ...current[key],
+                                experienceCheck: event.target.checked,
+                              },
+                            }))
+                          }
+                          type="checkbox"
+                        />
+                        <button
+                          aria-label={`Delete ${passion.name}`}
+                          className="text-center text-xs text-stone-400 transition hover:text-stone-700 dark:hover:text-stone-200"
+                          onClick={() => {
+                            setPassionDrafts((current) => {
+                              const next = { ...current };
+                              delete next[key];
+                              return next;
+                            });
                             void onSaveCharacter({
                               ...character,
-                              passions: character.passions.map((entry) =>
-                                entry.name === passion.name &&
-                                entry.percentage === passion.percentage
-                                  ? {
-                                      ...entry,
-                                      experienceCheck: event.target.checked,
-                                    }
-                                  : entry,
+                              passions: character.passions.filter(
+                                (_, currentIndex) => currentIndex !== index,
                               ),
                             });
                           }}
-                          type="checkbox"
-                        />
+                          type="button"
+                        >
+                          ×
+                        </button>
                       </div>
-                    ))}
+                    );
+                  })}
                 </div>
               ) : (
                 <div className="text-sm text-stone-500">No passions yet.</div>
@@ -2839,11 +2964,13 @@ function CompactMetric({
 }
 
 function HeaderSummaryField({
+  className,
   field,
   label,
   onBlur,
   value,
 }: {
+  className?: string;
   field:
     | "worships"
     | "family"
@@ -2867,12 +2994,12 @@ function HeaderSummaryField({
   value: string;
 }) {
   return (
-    <label className="flex min-w-0 items-baseline gap-2">
+    <label className={`flex min-w-0 items-baseline gap-2 ${className ?? ""}`}>
       <span className="shrink-0 text-[11px] font-semibold uppercase tracking-[0.14em] text-stone-500">
         {label}:
       </span>
       <input
-        className="min-w-0 flex-1 bg-transparent text-sm text-foreground outline-none placeholder:text-stone-400"
+        className="min-h-6 min-w-0 flex-1 rounded-[4px] bg-black/[0.025] px-1.5 py-0 text-sm text-foreground outline-none placeholder:text-stone-400 dark:bg-white/[0.035]"
         defaultValue={value}
         key={`${field}-${value}`}
         onBlur={(event) => void onBlur(field, event.target.value)}
@@ -2902,7 +3029,7 @@ function HeaderNameField({
 }) {
   return (
     <input
-      className="w-full bg-transparent text-2xl font-semibold tracking-tight outline-none placeholder:text-stone-400"
+      className="w-full rounded-[4px] bg-black/[0.025] px-1.5 py-0.5 text-2xl font-semibold tracking-tight outline-none placeholder:text-stone-400 xl:max-w-[34%] dark:bg-white/[0.035]"
       defaultValue={value}
       key={`name-${value}`}
       onBlur={(event) => void onBlur("name", event.target.value)}
@@ -2912,10 +3039,12 @@ function HeaderNameField({
 }
 
 function HeaderBirthField({
+  className,
   label,
   onBlur,
   value,
 }: {
+  className?: string;
   label: string;
   onBlur: (value: { day: string; week: string; season: string; year: string }) => Promise<void>;
   value: { day: string; week: string; season: string; year: string };
@@ -2925,82 +3054,102 @@ function HeaderBirthField({
   const weeks = getWeeksForSeason(draft.season || "Sea Season");
 
   return (
-    <label className="flex min-w-0 items-start gap-2">
-      <span className="shrink-0 pt-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-stone-500">
+    <label className={`flex min-w-0 items-baseline gap-2 ${className ?? ""}`}>
+      <span className="shrink-0 text-[11px] font-semibold uppercase tracking-[0.14em] text-stone-500">
         {label}:
       </span>
-      <div className="grid min-w-0 flex-1 grid-cols-2 gap-1 xl:grid-cols-4">
-        <select
-          className="min-w-0 bg-transparent text-sm text-foreground outline-none"
-          onChange={(event) =>
-            setDraft((current) => ({
-              ...current,
-              day: event.target.value,
-            }))
+      <div className="min-w-0 flex-1 rounded-[4px] bg-black/[0.025] px-1.5 py-1 dark:bg-white/[0.035]">
+        <HeaderBirthRunes
+          daySelect={
+            <select
+              aria-label="Birth day"
+              className="absolute inset-0 cursor-pointer opacity-0"
+              onChange={(event) =>
+                setDraft((current) => ({
+                  ...current,
+                  day: event.target.value,
+                }))
+              }
+              onBlur={() => void onBlur(draft)}
+              value={draft.day}
+            >
+              <option disabled value="">
+                Day
+              </option>
+              {GLORANTHAN_DAYS.map((day) => (
+                <option key={day} value={day}>
+                  {day}
+                </option>
+              ))}
+            </select>
           }
-          onBlur={() => void onBlur(draft)}
-          value={draft.day}
-        >
-          <option value="">Day</option>
-          {GLORANTHAN_DAYS.map((day) => (
-            <option key={day} value={day}>
-              {day}
-            </option>
-          ))}
-        </select>
-        <select
-          className="min-w-0 bg-transparent text-sm text-foreground outline-none"
-          onChange={(event) =>
-            setDraft((current) => ({
-              ...current,
-              week: event.target.value,
-            }))
+          seasonSelect={
+            <select
+              aria-label="Birth season"
+              className="absolute inset-0 cursor-pointer opacity-0"
+              onChange={(event) =>
+                setDraft((current) => {
+                  const nextSeason = event.target.value;
+                  const nextWeeks = getWeeksForSeason(nextSeason || "Sea Season");
+                  return {
+                    ...current,
+                    season: nextSeason,
+                    week: nextWeeks.includes(current.week) ? current.week : "",
+                  };
+                })
+              }
+              onBlur={() => void onBlur(draft)}
+              value={draft.season}
+            >
+              <option disabled value="">
+                Season
+              </option>
+              {GLORANTHAN_SEASONS.map((season) => (
+                <option key={season} value={season}>
+                  {season}
+                </option>
+              ))}
+            </select>
           }
-          onBlur={() => void onBlur(draft)}
-          value={draft.week}
-        >
-          <option value="">Week</option>
-          {weeks.map((week) => (
-            <option key={week} value={week}>
-              {week}
-            </option>
-          ))}
-        </select>
-        <select
-          className="min-w-0 bg-transparent text-sm text-foreground outline-none"
-          onChange={(event) =>
-            setDraft((current) => {
-              const nextSeason = event.target.value;
-              const nextWeeks = getWeeksForSeason(nextSeason || "Sea Season");
-              return {
-                ...current,
-                season: nextSeason,
-                week: nextWeeks.includes(current.week) ? current.week : "",
-              };
-            })
+          value={draft}
+          weekSelect={
+            <select
+              aria-label="Birth week"
+              className="absolute inset-0 cursor-pointer opacity-0"
+              onChange={(event) =>
+                setDraft((current) => ({
+                  ...current,
+                  week: event.target.value,
+                }))
+              }
+              onBlur={() => void onBlur(draft)}
+              value={draft.week}
+            >
+              <option disabled value="">
+                Week
+              </option>
+              {weeks.map((week) => (
+                <option key={week} value={week}>
+                  {week}
+                </option>
+              ))}
+            </select>
           }
-          onBlur={() => void onBlur(draft)}
-          value={draft.season}
-        >
-          <option value="">Season</option>
-          {GLORANTHAN_SEASONS.map((season) => (
-            <option key={season} value={season}>
-              {season}
-            </option>
-          ))}
-        </select>
-        <input
-          className="min-w-0 bg-transparent text-sm text-foreground outline-none placeholder:text-stone-400"
-          inputMode="numeric"
-          onBlur={() => void onBlur(draft)}
-          onChange={(event) =>
-            setDraft((current) => ({
-              ...current,
-              year: event.target.value,
-            }))
+          yearInput={
+            <input
+              aria-label="Birth year"
+              className="absolute inset-0 cursor-text bg-transparent text-sm font-medium tabular-nums text-transparent caret-stone-700 outline-none dark:caret-stone-200"
+              inputMode="numeric"
+              onBlur={() => void onBlur(draft)}
+              onChange={(event) =>
+                setDraft((current) => ({
+                  ...current,
+                  year: event.target.value,
+                }))
+              }
+              value={draft.year}
+            />
           }
-          placeholder="Year"
-          value={draft.year}
         />
       </div>
     </label>
@@ -3008,23 +3157,25 @@ function HeaderBirthField({
 }
 
 function HeaderNumberSummaryField({
+  className,
   field,
   label,
   onBlur,
   value,
 }: {
+  className?: string;
   field: "reputation" | "ransom";
   label: string;
   onBlur: (field: "reputation" | "ransom", value: string) => Promise<void>;
   value: number;
 }) {
   return (
-    <label className="flex min-w-0 items-baseline gap-2">
+    <label className={`flex min-w-0 items-baseline gap-2 ${className ?? ""}`}>
       <span className="shrink-0 text-[11px] font-semibold uppercase tracking-[0.14em] text-stone-500">
         {label}:
       </span>
       <input
-        className="min-w-0 flex-1 bg-transparent text-sm text-foreground outline-none placeholder:text-stone-400"
+        className="min-h-6 min-w-0 flex-1 rounded-[4px] bg-black/[0.025] px-1.5 py-0 text-sm text-foreground outline-none placeholder:text-stone-400 dark:bg-white/[0.035]"
         defaultValue={String(value)}
         inputMode="numeric"
         key={`${field}-${value}`}
@@ -3170,24 +3321,26 @@ function StatisticStripCell({
     <label className="block min-w-0 border-r border-b border-panel-border px-1 py-1.5 last:border-r-0 sm:border-b-0">
       <span className="flex items-center justify-center gap-1 text-[8px] font-semibold uppercase tracking-[0.12em] text-stone-500 sm:text-[9px]">
         <span>{label}</span>
+      </span>
+      <div className="mt-1 flex items-center justify-center gap-1">
+        <input
+          className="min-h-7 w-full bg-transparent px-0.5 py-0.5 text-center text-sm font-semibold tabular-nums outline-none sm:text-[15px]"
+          inputMode="numeric"
+          onChange={(event) => onChange(event.target.value)}
+          value={value}
+        />
         {onCheckboxChange ? (
-          <span className="flex items-center gap-1 text-[8px] tracking-[0.1em] sm:text-[9px]">
+          <label className="flex shrink-0 items-center gap-1 text-[8px] font-semibold uppercase tracking-[0.1em] text-stone-500 sm:text-[9px]">
+            <span>{checkboxLabel}</span>
             <input
               checked={checkboxChecked}
               className="h-3.5 w-3.5 rounded border-panel-border"
               onChange={(event) => onCheckboxChange(event.target.checked)}
               type="checkbox"
             />
-            <span>{checkboxLabel}</span>
-          </span>
+          </label>
         ) : null}
-      </span>
-      <input
-        className="mt-1 min-h-7 w-full bg-transparent px-0.5 py-0.5 text-center text-sm font-semibold tabular-nums outline-none sm:text-[15px]"
-        inputMode="numeric"
-        onChange={(event) => onChange(event.target.value)}
-        value={value}
-      />
+      </div>
     </label>
   );
 }
@@ -3215,6 +3368,118 @@ function weaponKey(weapon: CharacterWeaponRecord, index: number): string {
 
 function equipmentKey(item: CharacterEquipmentRecord, index: number): string {
   return `${index}:${item.name.trim().toLowerCase()}`;
+}
+
+function passionKey(
+  passion: Character["passions"][number],
+  index: number,
+): string {
+  return `${index}:${passion.name.trim().toLowerCase()}`;
+}
+
+const birthWeekRuneMap: Record<string, string> = {
+  "Disorder Week": "disorder",
+  "Harmony Week": "harmony",
+  "Death Week": "death",
+  "Fertility Week": "fertility",
+  "Stasis Week": "stasis",
+  "Movement Week": "movement",
+  "Illusion Week": "illusion",
+  "Truth Week": "truth",
+  "Luck Week": "luck",
+  "Fate Week": "fate",
+};
+
+const birthDayRuneMap: Record<string, string> = {
+  Freezeday: "darkness",
+  Waterday: "water",
+  Clayday: "earth",
+  Windsday: "air",
+  Fireday: "fire",
+  Wildday: "disorder",
+  Godsday: "infinity",
+};
+
+const birthSeasonRuneMap: Record<string, string> = {
+  "Sea Season": "water",
+  "Fire Season": "fire",
+  "Earth Season": "earth",
+  "Dark Season": "darkness",
+  "Storm Season": "air",
+  "Sacred Time": "moon",
+};
+
+function HeaderBirthRunes({
+  daySelect,
+  seasonSelect,
+  value,
+  weekSelect,
+  yearInput,
+}: {
+  daySelect: ReactNode;
+  seasonSelect: ReactNode;
+  value: { day: string; week: string; season: string; year: string };
+  weekSelect: ReactNode;
+  yearInput: ReactNode;
+}) {
+  const tokens = [
+    {
+      key: "day",
+      value: value.day,
+      fallback: "?",
+      rune: birthDayRuneMap[value.day],
+    },
+    {
+      key: "week",
+      value: value.week,
+      rune: birthWeekRuneMap[value.week],
+    },
+    {
+      key: "season",
+      value: value.season,
+      rune: birthSeasonRuneMap[value.season],
+    },
+    { key: "year", value: value.year, fallback: "?" },
+  ];
+
+  return (
+    <div className="flex flex-wrap items-baseline gap-4">
+      {tokens.map((token) => (
+        <div
+          key={token.key}
+          className="group relative flex shrink-0 items-end gap-1"
+        >
+          {token.rune ? (
+            <Image
+              alt=""
+              aria-hidden="true"
+              className="h-4 w-4 cursor-pointer object-contain"
+              draggable="false"
+              height={16}
+              src={token.rune === "infinity" ? "/rune-godsday.png" : `/rune-${token.rune}.png`}
+              width={16}
+            />
+          ) : (
+            <span className={`${token.key === "year" ? "pointer-events-none" : "cursor-pointer"} text-sm font-medium tabular-nums text-stone-700 dark:text-stone-200`}>
+              {token.value || token.fallback}
+            </span>
+          )}
+          {token.key !== "year" ? (
+            <span
+              aria-hidden="true"
+              className="pointer-events-none translate-y-[-1px] text-[9px] font-semibold text-stone-400 dark:text-stone-500"
+            >
+              v
+            </span>
+          ) : null}
+          {token.key === "day" ? daySelect : null}
+          {token.key === "week" ? weekSelect : null}
+          {token.key === "season" ? seasonSelect : null}
+          {token.key === "year" ? yearInput : null}
+        </div>
+      ))}
+    </div>
+  );
 }
 
 function parseNumberDraft(value: string, fallback: number): number {
