@@ -827,9 +827,6 @@ function IdentityCard({
               <h4 className="text-sm font-semibold uppercase tracking-[0.18em] text-stone-500">
                 Statistics
               </h4>
-              <span className="text-xs uppercase tracking-[0.14em] text-stone-500">
-                Sheet Order
-              </span>
             </div>
             <div className="mt-2">
               <div className="grid grid-cols-4 border-y border-panel-border sm:grid-cols-7">
