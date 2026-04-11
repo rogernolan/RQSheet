@@ -20,7 +20,6 @@ import {
 import { parseTextImport } from "@/domain/import/pipeline";
 import { reviewImportResult } from "@/domain/import/types";
 import {
-  getGroupedSkills,
   getSkillEffectiveValue,
   getSkillGroupBonus,
   getSkillGroupOrder,
@@ -996,7 +995,10 @@ function SkillsList({
   searchText: string;
   onSearchTextChange: (value: string) => void;
 }) {
-  const [skillDrafts, setSkillDrafts] = useState<Record<string, { value?: string; experienceCheck?: boolean }>>({});
+  type GroupedSkillEntry = { skill: CharacterSkillRecord; index: number };
+  const [skillDrafts, setSkillDrafts] = useState<
+    Record<string, { name?: string; value?: string; experienceCheck?: boolean }>
+  >({});
   const [collapsedGroups, setCollapsedGroups] = useState<Record<string, boolean>>(
     () => Object.fromEntries(getSkillGroupOrder().map((group) => [group, false])),
   );
@@ -1031,24 +1033,17 @@ function SkillsList({
     });
   }
 
-  async function handleDeleteSkill(targetSkill: CharacterSkillRecord) {
+  async function handleDeleteSkill(targetIndex: number) {
     await onSaveCharacter({
       ...character,
-      skills: character.skills.filter(
-        (skill) =>
-          skill.group !== targetSkill.group || skill.name !== targetSkill.name,
-      ),
+      skills: character.skills.filter((_, index) => index !== targetIndex),
     });
-    setSkillDrafts((current) => {
-      const next = { ...current };
-      delete next[skillKey(targetSkill)];
-      return next;
-    });
+    setSkillDrafts({});
   }
 
   useEffect(() => {
-    const nextSkills = character.skills.map((skill) => {
-      const draft = skillDrafts[skillKey(skill)];
+    const nextSkills = character.skills.map((skill, index) => {
+      const draft = skillDrafts[skillDraftKey(index)];
       const nextValue = parseNumberDraft(
         draft?.value ?? "",
         getSkillEffectiveValue(character, skill),
@@ -1056,6 +1051,7 @@ function SkillsList({
 
       return {
         ...skill,
+        name: draft?.name ?? skill.name,
         modifier:
           nextValue -
           (getSkillEffectiveValue(character, skill) - skill.modifier),
@@ -1084,27 +1080,51 @@ function SkillsList({
     return () => window.clearTimeout(timeoutId);
   }, [character, onSaveCharacter, skillDrafts]);
 
-  const groupedSkills = getGroupedSkills(
-    {
-      ...character,
-      skills: character.skills.map((skill) => {
-        const draft = skillDrafts[skillKey(skill)];
-        const nextValue = parseNumberDraft(
-          draft?.value ?? "",
-          getSkillEffectiveValue(character, skill),
-        );
+  const groupedSkills = useMemo(() => {
+    const query = searchText.trim().toLocaleLowerCase();
+    const grouped = Object.fromEntries(
+      getSkillGroupOrder().map((group) => [group, [] as GroupedSkillEntry[]]),
+    ) as Record<
+      ReturnType<typeof getSkillGroupOrder>[number],
+      GroupedSkillEntry[]
+    >;
 
-        return {
+    const nextSkills = character.skills.map((skill, index) => {
+      const draft = skillDrafts[skillDraftKey(index)];
+      const nextValue = parseNumberDraft(
+        draft?.value ?? "",
+        getSkillEffectiveValue(character, skill),
+      );
+
+      return {
+        skill: {
           ...skill,
+          name: draft?.name ?? skill.name,
           modifier:
             nextValue -
             (getSkillEffectiveValue(character, skill) - skill.modifier),
           experienceCheck: draft?.experienceCheck ?? skill.experienceCheck,
-        };
-      }),
-    },
-    searchText,
-  );
+        },
+        index,
+      };
+    });
+
+    for (const entry of nextSkills) {
+      if (
+        query.length > 0 &&
+        entry.skill.name.toLocaleLowerCase().includes(query) === false
+      ) {
+        continue;
+      }
+      grouped[entry.skill.group].push(entry);
+    }
+
+    for (const group of getSkillGroupOrder()) {
+      grouped[group].sort((lhs, rhs) => lhs.skill.name.localeCompare(rhs.skill.name));
+    }
+
+    return grouped;
+  }, [character, searchText, skillDrafts]);
 
   return (
     <section className="pt-2">
@@ -1144,13 +1164,13 @@ function SkillsList({
                 skillDrafts={skillDrafts}
                 skills={skills}
                 onAddSkill={() => void handleAddSkill(group)}
-                onDeleteSkill={(skill) => void handleDeleteSkill(skill)}
-                onUpdateSkillDraft={(skill, value, experienceCheck) =>
+                onDeleteSkill={(index) => void handleDeleteSkill(index)}
+                onUpdateSkillDraft={(index, patch) =>
                   setSkillDrafts((current) => ({
                     ...current,
-                    [skillKey(skill)]: {
-                      value,
-                      experienceCheck,
+                    [skillDraftKey(index)]: {
+                      ...current[skillDraftKey(index)],
+                      ...patch,
                     },
                   }))
                 }
@@ -1182,13 +1202,13 @@ function SkillsList({
                 skillDrafts={skillDrafts}
                 skills={skills}
                 onAddSkill={() => void handleAddSkill(group)}
-                onDeleteSkill={(skill) => void handleDeleteSkill(skill)}
-                onUpdateSkillDraft={(skill, value, experienceCheck) =>
+                onDeleteSkill={(index) => void handleDeleteSkill(index)}
+                onUpdateSkillDraft={(index, patch) =>
                   setSkillDrafts((current) => ({
                     ...current,
-                    [skillKey(skill)]: {
-                      value,
-                      experienceCheck,
+                    [skillDraftKey(index)]: {
+                      ...current[skillDraftKey(index)],
+                      ...patch,
                     },
                   }))
                 }
@@ -1217,14 +1237,13 @@ function SkillGroupSection({
   group: ReturnType<typeof getSkillGroupOrder>[number];
   onToggle: () => void;
   onAddSkill: () => void;
-  onDeleteSkill: (skill: CharacterSkillRecord) => void;
+  onDeleteSkill: (index: number) => void;
   onUpdateSkillDraft: (
-    skill: CharacterSkillRecord,
-    value: string,
-    experienceCheck: boolean,
+    index: number,
+    patch: { name?: string; value?: string; experienceCheck?: boolean },
   ) => void;
-  skillDrafts: Record<string, { value?: string; experienceCheck?: boolean }>;
-  skills: CharacterSkillRecord[];
+  skillDrafts: Record<string, { name?: string; value?: string; experienceCheck?: boolean }>;
+  skills: Array<{ skill: CharacterSkillRecord; index: number }>;
 }) {
   return (
     <section>
@@ -1252,32 +1271,36 @@ function SkillGroupSection({
           </div>
           {skills.length > 0 ? (
             <div className="divide-y divide-panel-border/30">
-              {skills.map((skill) => (
+              {skills.map(({ skill, index }) => (
                 <div
-                  key={`${group}-${skill.name}`}
+                  key={`${group}-${index}`}
                   className="grid grid-cols-[minmax(0,1fr)_52px_36px_22px_20px] items-center gap-2 py-1 text-sm"
                 >
-                  <span
-                    className="min-w-0 truncate text-stone-700 dark:text-stone-200"
+                  <input
+                    className="min-h-6 min-w-0 rounded-[4px] bg-black/[0.025] px-1.5 py-0 text-stone-700 outline-none dark:bg-white/[0.035] dark:text-stone-200"
+                    onChange={(event) =>
+                      onUpdateSkillDraft(index, {
+                        name: event.target.value,
+                      })
+                    }
                     title={skill.name}
-                  >
-                    {skill.name}
-                  </span>
+                    value={skillDrafts[skillDraftKey(index)]?.name ?? skill.name}
+                  />
                   <input
                     className="min-h-6 rounded-[4px] bg-black/[0.025] px-1 py-0 text-right font-semibold tabular-nums outline-none dark:bg-white/[0.035]"
                     inputMode="numeric"
                     onChange={(event) =>
-                      onUpdateSkillDraft(
-                        skill,
-                        event.target.value,
-                        skillDrafts[skillKey(skill)]?.experienceCheck ??
+                      onUpdateSkillDraft(index, {
+                        value: event.target.value,
+                        experienceCheck:
+                          skillDrafts[skillDraftKey(index)]?.experienceCheck ??
                           skill.experienceCheck,
-                      )
+                      })
                     }
                     value={
                       formatTwoDigitNumber(
                         parseNumberDraft(
-                          skillDrafts[skillKey(skill)]?.value ??
+                          skillDrafts[skillDraftKey(index)]?.value ??
                             String(getSkillEffectiveValue(character, skill)),
                           getSkillEffectiveValue(character, skill),
                         ),
@@ -1286,7 +1309,7 @@ function SkillGroupSection({
                   />
                   <DerivedChanceStack
                     value={parseNumberDraft(
-                      skillDrafts[skillKey(skill)]?.value ??
+                      skillDrafts[skillDraftKey(index)]?.value ??
                         String(getSkillEffectiveValue(character, skill)),
                       getSkillEffectiveValue(character, skill),
                     )}
@@ -1294,17 +1317,17 @@ function SkillGroupSection({
                   <div className="flex justify-center">
                     <input
                       checked={Boolean(
-                        skillDrafts[skillKey(skill)]?.experienceCheck ??
+                        skillDrafts[skillDraftKey(index)]?.experienceCheck ??
                           skill.experienceCheck,
                       )}
                       className="h-3.5 w-3.5 rounded border-panel-border"
                       onChange={(event) =>
-                        onUpdateSkillDraft(
-                          skill,
-                          skillDrafts[skillKey(skill)]?.value ??
+                        onUpdateSkillDraft(index, {
+                          value:
+                            skillDrafts[skillDraftKey(index)]?.value ??
                             String(getSkillEffectiveValue(character, skill)),
-                          event.target.checked,
-                        )
+                          experienceCheck: event.target.checked,
+                        })
                       }
                       type="checkbox"
                     />
@@ -1312,7 +1335,7 @@ function SkillGroupSection({
                   <button
                     aria-label={`Delete ${skill.name}`}
                     className="text-center text-xs text-stone-400 transition hover:text-stone-700 dark:hover:text-stone-200"
-                    onClick={() => onDeleteSkill(skill)}
+                    onClick={() => onDeleteSkill(index)}
                     type="button"
                   >
                     ×
@@ -1338,8 +1361,8 @@ function SkillGroupSection({
   );
 }
 
-function skillKey(skill: CharacterSkillRecord): string {
-  return `${skill.group}::${skill.name}`;
+function skillDraftKey(index: number): string {
+  return String(index);
 }
 
 function formatSignedPercentage(value: number): string {
