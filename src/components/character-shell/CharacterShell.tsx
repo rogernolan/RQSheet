@@ -10,6 +10,13 @@ import {
   getMaxMagicPoints,
   getStatisticStripEntries,
 } from "@/domain/character";
+import { formatCharacterForBGG } from "@/domain/bgg-export";
+import {
+  GLORANTHAN_DAYS,
+  GLORANTHAN_SEASONS,
+  formatGloranthanDate,
+  getWeeksForSeason,
+} from "@/domain/glorantha-date";
 import { parseTextImport } from "@/domain/import/pipeline";
 import { reviewImportResult } from "@/domain/import/types";
 import {
@@ -36,6 +43,7 @@ export function CharacterShell() {
   const [selectedCharacterId, setSelectedCharacterId] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState("");
+  const [statusMessage, setStatusMessage] = useState("");
   const [isImportOpen, setIsImportOpen] = useState(false);
   const [isCharacterMenuOpen, setIsCharacterMenuOpen] = useState(false);
 
@@ -67,11 +75,13 @@ export function CharacterShell() {
           return loadedCharacters[0]?.id ?? "";
         });
         setErrorMessage("");
+        setStatusMessage("");
       } catch (error) {
         if (isCancelled) {
           return;
         }
 
+        setStatusMessage("");
         setErrorMessage(
           error instanceof Error
             ? error.message
@@ -101,7 +111,9 @@ export function CharacterShell() {
       setSelectedCharacterId(nextCharacter.id);
       setIsCharacterMenuOpen(false);
       setErrorMessage("");
+      setStatusMessage("");
     } catch (error) {
+      setStatusMessage("");
       setErrorMessage(
         error instanceof Error
           ? error.message
@@ -143,7 +155,9 @@ export function CharacterShell() {
       });
       setIsCharacterMenuOpen(false);
       setErrorMessage("");
+      setStatusMessage("");
     } catch (error) {
+      setStatusMessage("");
       setErrorMessage(
         error instanceof Error ? error.message : "Unable to delete the character.",
       );
@@ -162,9 +176,11 @@ export function CharacterShell() {
       setCharacters((current) => sortCharacters([...current, importedCharacter]));
       setSelectedCharacterId(importedCharacter.id);
       setErrorMessage("");
+      setStatusMessage("");
       setIsCharacterMenuOpen(false);
       setIsImportOpen(false);
     } catch (error) {
+      setStatusMessage("");
       setErrorMessage(
         error instanceof Error
           ? error.message
@@ -184,10 +200,46 @@ export function CharacterShell() {
         ),
       );
       setErrorMessage("");
+      setStatusMessage("");
     } catch (error) {
+      setStatusMessage("");
       setErrorMessage(
         error instanceof Error ? error.message : "Unable to save character changes.",
       );
+    }
+  }
+
+  async function handleExportCharacter() {
+    if (!selectedCharacter) {
+      return;
+    }
+
+    const exportText = formatCharacterForBGG(selectedCharacter);
+
+    try {
+      if (typeof navigator !== "undefined" && navigator.clipboard?.writeText) {
+        await navigator.clipboard.writeText(exportText);
+        setErrorMessage("");
+        setStatusMessage(`Copied BGG export for ${getDisplayName(selectedCharacter)}.`);
+      } else {
+        downloadCharacterExport(selectedCharacter.name, exportText);
+        setErrorMessage("");
+        setStatusMessage(`Downloaded BGG export for ${getDisplayName(selectedCharacter)}.`);
+      }
+
+      setIsCharacterMenuOpen(false);
+    } catch (error) {
+      try {
+        downloadCharacterExport(selectedCharacter.name, exportText);
+        setErrorMessage("");
+        setStatusMessage(`Downloaded BGG export for ${getDisplayName(selectedCharacter)}.`);
+        setIsCharacterMenuOpen(false);
+      } catch {
+        setStatusMessage("");
+        setErrorMessage(
+          error instanceof Error ? error.message : "Unable to export the character.",
+        );
+      }
     }
   }
 
@@ -225,6 +277,7 @@ export function CharacterShell() {
               errorMessage={errorMessage}
               isLoading={isLoading}
               onSaveCharacter={handleSaveCharacter}
+              statusMessage={statusMessage}
             />
 
             {isCharacterMenuOpen ? (
@@ -235,8 +288,10 @@ export function CharacterShell() {
                 selectedCharacterId={selectedCharacterId}
                 onCreateCharacter={handleCreateCharacter}
                 onDeleteCharacter={handleDeleteCharacter}
+                onExportCharacter={() => void handleExportCharacter()}
                 onImportCharacter={() => setIsImportOpen(true)}
                 onSelectCharacter={handleSelectCharacter}
+                selectedCharacter={selectedCharacter}
               />
             ) : null}
 
@@ -385,14 +440,25 @@ function WorkspaceHeader({
   errorMessage,
   isLoading,
   onSaveCharacter,
+  statusMessage,
 }: {
   character: Character | null;
   errorMessage: string;
   isLoading: boolean;
   onSaveCharacter: (character: Character) => Promise<void>;
+  statusMessage: string;
 }) {
   async function handleSummaryBlur(
-    field: "name" | "worships" | "family" | "patron" | "occupation",
+    field:
+      | "name"
+      | "worships"
+      | "family"
+      | "tribe"
+      | "patron"
+      | "occupation"
+      | "dateOfBirth"
+      | "sol"
+      | "income",
     value: string,
   ) {
     if (!character) {
@@ -402,6 +468,20 @@ function WorkspaceHeader({
     await onSaveCharacter({
       ...character,
       [field]: value,
+    });
+  }
+
+  async function handleNumberSummaryBlur(
+    field: "reputation" | "ransom",
+    value: string,
+  ) {
+    if (!character) {
+      return;
+    }
+
+    await onSaveCharacter({
+      ...character,
+      [field]: Math.max(0, parseNumberDraft(value, character[field])),
     });
   }
 
@@ -418,7 +498,7 @@ function WorkspaceHeader({
           </h2>
         )}
         {character ? (
-          <div className="mt-2 grid gap-x-6 gap-y-1 text-sm text-stone-600 md:grid-cols-2 dark:text-stone-300">
+          <div className="mt-2 grid gap-x-6 gap-y-1 text-sm text-stone-600 md:grid-cols-2 xl:grid-cols-3 dark:text-stone-300">
             <HeaderSummaryField
               field="worships"
               label="Worships"
@@ -427,9 +507,15 @@ function WorkspaceHeader({
             />
             <HeaderSummaryField
               field="family"
-              label="Family"
+              label="Clan"
               onBlur={handleSummaryBlur}
               value={character.family}
+            />
+            <HeaderSummaryField
+              field="tribe"
+              label="Tribe"
+              onBlur={handleSummaryBlur}
+              value={character.tribe}
             />
             <HeaderSummaryField
               field="patron"
@@ -443,11 +529,62 @@ function WorkspaceHeader({
               onBlur={handleSummaryBlur}
               value={character.occupation}
             />
+            <HeaderBirthField
+              key={`birth-${character.birthDay}-${character.birthWeek}-${character.birthSeason}-${character.birthYear}`}
+              label="Born"
+              onBlur={(parts) =>
+                onSaveCharacter({
+                  ...character,
+                  birthDay: parts.day,
+                  birthWeek: parts.week,
+                  birthSeason: parts.season,
+                  birthYear: parts.year,
+                  dateOfBirth:
+                    parts.day && parts.week && parts.season && parts.year
+                      ? formatGloranthanDate(parts)
+                      : "",
+                })
+              }
+              value={{
+                day: character.birthDay,
+                week: character.birthWeek,
+                season: character.birthSeason,
+                year: character.birthYear,
+              }}
+            />
+            <HeaderNumberSummaryField
+              field="reputation"
+              label="Reputation"
+              onBlur={handleNumberSummaryBlur}
+              value={character.reputation}
+            />
+            <HeaderSummaryField
+              field="sol"
+              label="SoL"
+              onBlur={handleSummaryBlur}
+              value={character.sol}
+            />
+            <HeaderSummaryField
+              field="income"
+              label="Income"
+              onBlur={handleSummaryBlur}
+              value={character.income}
+            />
+            <HeaderNumberSummaryField
+              field="ransom"
+              label="Ransom"
+              onBlur={handleNumberSummaryBlur}
+              value={character.ransom}
+            />
           </div>
         ) : null}
         {errorMessage.length > 0 ? (
           <p className="mt-2 text-sm text-red-700 dark:text-red-300">
             {errorMessage}
+          </p>
+        ) : statusMessage.length > 0 ? (
+          <p className="mt-2 text-sm text-stone-600 dark:text-stone-300">
+            {statusMessage}
           </p>
         ) : null}
       </div>
@@ -462,8 +599,10 @@ function CharacterMenuPopup({
   selectedCharacterId,
   onCreateCharacter,
   onDeleteCharacter,
+  onExportCharacter,
   onImportCharacter,
   onSelectCharacter,
+  selectedCharacter,
 }: {
   characters: Character[];
   errorMessage: string;
@@ -471,8 +610,10 @@ function CharacterMenuPopup({
   selectedCharacterId: string;
   onCreateCharacter: () => Promise<void>;
   onDeleteCharacter: (characterId: string) => Promise<void>;
+  onExportCharacter: () => void;
   onImportCharacter: () => void;
   onSelectCharacter: (characterId: string) => void;
+  selectedCharacter: Character | null;
 }) {
   return (
     <div className="character-menu-pop absolute left-0 top-[4.25rem] z-30 w-full max-w-[360px] origin-top-left rounded-[14px] border border-panel-border bg-panel p-2 shadow-xl backdrop-blur">
@@ -500,6 +641,14 @@ function CharacterMenuPopup({
           type="button"
         >
           Import Character
+        </button>
+        <button
+          className="col-span-2 min-h-10 rounded-[10px] bg-black/[0.04] px-3 py-2 text-left text-sm font-medium disabled:cursor-not-allowed disabled:opacity-50 dark:bg-white/[0.06]"
+          disabled={selectedCharacter === null}
+          onClick={onExportCharacter}
+          type="button"
+        >
+          Export Character
         </button>
       </div>
     </div>
@@ -2003,6 +2152,7 @@ function RunesMagicCard({
               }))
             }
           />
+          <GiftGeasSection character={character} onSaveCharacter={onSaveCharacter} />
           <div className="grid gap-2 sm:grid-cols-2 xl:grid-cols-1">
             <MagicSection
               character={character}
@@ -2694,10 +2844,24 @@ function HeaderSummaryField({
   onBlur,
   value,
 }: {
-  field: "worships" | "family" | "patron" | "occupation";
+  field:
+    | "worships"
+    | "family"
+    | "tribe"
+    | "patron"
+    | "occupation"
+    | "sol"
+    | "income";
   label: string;
   onBlur: (
-    field: "worships" | "family" | "patron" | "occupation",
+    field:
+      | "worships"
+      | "family"
+      | "tribe"
+      | "patron"
+      | "occupation"
+      | "sol"
+      | "income",
     value: string,
   ) => Promise<void>;
   value: string;
@@ -2723,7 +2887,15 @@ function HeaderNameField({
   value,
 }: {
   onBlur: (
-    field: "name" | "worships" | "family" | "patron" | "occupation",
+    field:
+      | "name"
+      | "worships"
+      | "family"
+      | "tribe"
+      | "patron"
+      | "occupation"
+      | "sol"
+      | "income",
     value: string,
   ) => Promise<void>;
   value: string;
@@ -2736,6 +2908,246 @@ function HeaderNameField({
       onBlur={(event) => void onBlur("name", event.target.value)}
       placeholder="Unnamed Character"
     />
+  );
+}
+
+function HeaderBirthField({
+  label,
+  onBlur,
+  value,
+}: {
+  label: string;
+  onBlur: (value: { day: string; week: string; season: string; year: string }) => Promise<void>;
+  value: { day: string; week: string; season: string; year: string };
+}) {
+  const [draft, setDraft] = useState(value);
+
+  const weeks = getWeeksForSeason(draft.season || "Sea Season");
+
+  return (
+    <label className="flex min-w-0 items-start gap-2">
+      <span className="shrink-0 pt-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-stone-500">
+        {label}:
+      </span>
+      <div className="grid min-w-0 flex-1 grid-cols-2 gap-1 xl:grid-cols-4">
+        <select
+          className="min-w-0 bg-transparent text-sm text-foreground outline-none"
+          onChange={(event) =>
+            setDraft((current) => ({
+              ...current,
+              day: event.target.value,
+            }))
+          }
+          onBlur={() => void onBlur(draft)}
+          value={draft.day}
+        >
+          <option value="">Day</option>
+          {GLORANTHAN_DAYS.map((day) => (
+            <option key={day} value={day}>
+              {day}
+            </option>
+          ))}
+        </select>
+        <select
+          className="min-w-0 bg-transparent text-sm text-foreground outline-none"
+          onChange={(event) =>
+            setDraft((current) => ({
+              ...current,
+              week: event.target.value,
+            }))
+          }
+          onBlur={() => void onBlur(draft)}
+          value={draft.week}
+        >
+          <option value="">Week</option>
+          {weeks.map((week) => (
+            <option key={week} value={week}>
+              {week}
+            </option>
+          ))}
+        </select>
+        <select
+          className="min-w-0 bg-transparent text-sm text-foreground outline-none"
+          onChange={(event) =>
+            setDraft((current) => {
+              const nextSeason = event.target.value;
+              const nextWeeks = getWeeksForSeason(nextSeason || "Sea Season");
+              return {
+                ...current,
+                season: nextSeason,
+                week: nextWeeks.includes(current.week) ? current.week : "",
+              };
+            })
+          }
+          onBlur={() => void onBlur(draft)}
+          value={draft.season}
+        >
+          <option value="">Season</option>
+          {GLORANTHAN_SEASONS.map((season) => (
+            <option key={season} value={season}>
+              {season}
+            </option>
+          ))}
+        </select>
+        <input
+          className="min-w-0 bg-transparent text-sm text-foreground outline-none placeholder:text-stone-400"
+          inputMode="numeric"
+          onBlur={() => void onBlur(draft)}
+          onChange={(event) =>
+            setDraft((current) => ({
+              ...current,
+              year: event.target.value,
+            }))
+          }
+          placeholder="Year"
+          value={draft.year}
+        />
+      </div>
+    </label>
+  );
+}
+
+function HeaderNumberSummaryField({
+  field,
+  label,
+  onBlur,
+  value,
+}: {
+  field: "reputation" | "ransom";
+  label: string;
+  onBlur: (field: "reputation" | "ransom", value: string) => Promise<void>;
+  value: number;
+}) {
+  return (
+    <label className="flex min-w-0 items-baseline gap-2">
+      <span className="shrink-0 text-[11px] font-semibold uppercase tracking-[0.14em] text-stone-500">
+        {label}:
+      </span>
+      <input
+        className="min-w-0 flex-1 bg-transparent text-sm text-foreground outline-none placeholder:text-stone-400"
+        defaultValue={String(value)}
+        inputMode="numeric"
+        key={`${field}-${value}`}
+        onBlur={(event) => void onBlur(field, event.target.value)}
+        placeholder="0"
+      />
+    </label>
+  );
+}
+
+function GiftGeasSection({
+  character,
+  onSaveCharacter,
+}: {
+  character: Character;
+  onSaveCharacter: (character: Character) => Promise<void>;
+}) {
+  async function handleUpdateList(
+    field: "gifts" | "geases",
+    index: number,
+    value: string,
+  ) {
+    const nextItems = [...character[field]];
+    nextItems[index] = value;
+    await onSaveCharacter({
+      ...character,
+      [field]: nextItems,
+    });
+  }
+
+  async function handleAddItem(field: "gifts" | "geases") {
+    await onSaveCharacter({
+      ...character,
+      [field]: [...character[field], ""],
+    });
+  }
+
+  async function handleDeleteItem(field: "gifts" | "geases", index: number) {
+    await onSaveCharacter({
+      ...character,
+      [field]: character[field].filter((_, currentIndex) => currentIndex !== index),
+    });
+  }
+
+  return (
+    <section className="space-y-2 border-t border-panel-border/40 pt-2">
+      <h4 className="text-sm font-semibold uppercase tracking-[0.18em] text-stone-500">
+        Gifts & Geases
+      </h4>
+      <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-1 2xl:grid-cols-2">
+        <InlineStringListSection
+          items={character.gifts}
+          label="Gifts"
+          onAdd={() => void handleAddItem("gifts")}
+          onDelete={(index) => void handleDeleteItem("gifts", index)}
+          onUpdate={(index, value) => void handleUpdateList("gifts", index, value)}
+        />
+        <InlineStringListSection
+          items={character.geases}
+          label="Geases"
+          onAdd={() => void handleAddItem("geases")}
+          onDelete={(index) => void handleDeleteItem("geases", index)}
+          onUpdate={(index, value) => void handleUpdateList("geases", index, value)}
+        />
+      </div>
+    </section>
+  );
+}
+
+function InlineStringListSection({
+  items,
+  label,
+  onAdd,
+  onDelete,
+  onUpdate,
+}: {
+  items: string[];
+  label: string;
+  onAdd: () => void;
+  onDelete: (index: number) => void;
+  onUpdate: (index: number, value: string) => void;
+}) {
+  return (
+    <div className="space-y-1">
+      <div className="flex items-center justify-between gap-3 border-b border-panel-border/40 pb-1">
+        <h4 className="text-sm font-semibold">{label}</h4>
+      </div>
+      {items.length > 0 ? (
+        <div className="space-y-1">
+          {items.map((item, index) => (
+            <div
+              key={`${label}-${index}`}
+              className="grid grid-cols-[minmax(0,1fr)_20px] items-center gap-2 text-sm"
+            >
+              <input
+                className="min-h-6 rounded-[4px] bg-black/[0.025] px-1.5 py-0 outline-none dark:bg-white/[0.035]"
+                defaultValue={item}
+                key={`${label}-${index}-${item}`}
+                onBlur={(event) => onUpdate(index, event.target.value)}
+                placeholder={label === "Gifts" ? "Gift" : "Geas"}
+              />
+              <button
+                aria-label={`Delete ${label.slice(0, -1).toLowerCase()}`}
+                className="text-center text-xs text-stone-400 transition hover:text-stone-700 dark:hover:text-stone-200"
+                onClick={() => onDelete(index)}
+                type="button"
+              >
+                ×
+              </button>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <div className="text-sm text-stone-500">No {label.toLowerCase()} yet.</div>
+      )}
+      <button
+        className="text-xs font-semibold uppercase tracking-[0.12em] text-stone-500 transition hover:text-foreground"
+        onClick={onAdd}
+        type="button"
+      >
+        + Add {label.slice(0, -1)}
+      </button>
+    </div>
   );
 }
 
@@ -2837,6 +3249,28 @@ function deriveCriticalChance(value: number): number {
 
 function formatTwoDigitNumber(value: number): string {
   return String(Math.max(0, value)).padStart(2, "0");
+}
+
+function downloadCharacterExport(name: string, content: string) {
+  const blob = new Blob([content], { type: "text/plain;charset=utf-8" });
+  const url = URL.createObjectURL(blob);
+  const anchor = document.createElement("a");
+  anchor.href = url;
+  anchor.download = `${sanitizeFileName(name || "character")}-bgg.txt`;
+  document.body.appendChild(anchor);
+  anchor.click();
+  anchor.remove();
+  URL.revokeObjectURL(url);
+}
+
+function sanitizeFileName(value: string): string {
+  const sanitized = value
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+
+  return sanitized.length > 0 ? sanitized : "character";
 }
 
 function sortCharacters(characters: Character[]): Character[] {

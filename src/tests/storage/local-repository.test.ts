@@ -21,6 +21,13 @@ describe("local character repository", () => {
     expect(created.name).toBe("Arkat");
     expect(created.pow).toBe(18);
     expect(created.powExperienceCheck).toBe(true);
+    expect(created.tribe).toBe("");
+    expect(created.reputation).toBe(0);
+    expect(created.sol).toBe("");
+    expect(created.income).toBe("");
+    expect(created.ransom).toBe(1000);
+    expect(created.gifts).toEqual([]);
+    expect(created.geases).toEqual([]);
     expect(created.skills.length).toBeGreaterThan(40);
     expect(characters).toHaveLength(1);
     expect(characters[0].id).toBe(created.id);
@@ -144,7 +151,12 @@ describe("local character repository", () => {
         candidateName: "Selina",
         family: "Lorionaeo",
         patron: "Marele",
+        dateOfBirth: "Earth season, 1604",
         occupation: "Initiate",
+        reputation: 25,
+        sol: "Free",
+        income: "40",
+        ransom: 1200,
         cult: "Issaries",
         worships: ["Lanbril"],
       },
@@ -180,6 +192,11 @@ describe("local character repository", () => {
     expect(imported.name).toBe("Selina");
     expect(imported.family).toBe("Lorionaeo");
     expect(imported.worships).toBe("Issaries, Lanbril");
+    expect(imported.dateOfBirth).toBe("Earth season, 1604");
+    expect(imported.reputation).toBe(25);
+    expect(imported.sol).toBe("Free");
+    expect(imported.income).toBe("40");
+    expect(imported.ransom).toBe(1200);
     expect(imported.dex).toBe(19);
     expect(imported.skills.some((skill) => skill.name === "Dodge")).toBe(true);
     expect(imported.skills.some((skill) => skill.name === "Boat")).toBe(false);

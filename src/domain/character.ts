@@ -1,4 +1,5 @@
 import type { Character, HitLocation, HitLocationKey } from "@/domain/types";
+import { formatGloranthanDate, parseGloranthanDate } from "@/domain/glorantha-date";
 import { normalizeEquipment } from "@/domain/equipment";
 import { normalizeSkills } from "@/domain/skills";
 import type { ParsedPassionEntry } from "@/domain/import/types";
@@ -16,9 +17,21 @@ const defaultCharacter: Character = {
   id: "",
   name: "",
   worships: "",
+  tribe: "",
   family: "",
   patron: "",
+  dateOfBirth: "",
+  birthDay: "",
+  birthWeek: "",
+  birthSeason: "",
+  birthYear: "",
   occupation: "",
+  reputation: 0,
+  sol: "",
+  income: "",
+  ransom: 1000,
+  gifts: [],
+  geases: [],
   notes: "",
   runePercentages: {},
   runeExperienceChecks: {},
@@ -53,6 +66,7 @@ export function createCharacter(seed: Partial<Character> = {}): Character {
   const character = {
     ...defaultCharacter,
     ...seed,
+    ...normalizeBirthDateFields(seed),
     passions: normalizePassions(seed.passions),
     equipment: normalizeEquipment(seed.equipment),
     skills: normalizeSkills(seed.skills),
@@ -67,6 +81,36 @@ export function createCharacter(seed: Partial<Character> = {}): Character {
   return {
     ...character,
     hitLocations: reconcileHitLocations(character, seed.hitLocations),
+  };
+}
+
+function normalizeBirthDateFields(
+  seed: Partial<Character>,
+): Pick<Character, "dateOfBirth" | "birthDay" | "birthWeek" | "birthSeason" | "birthYear"> {
+  const parsed =
+    seed.dateOfBirth && seed.dateOfBirth.trim().length > 0
+      ? parseGloranthanDate(seed.dateOfBirth)
+      : null;
+
+  const birthDay = seed.birthDay ?? parsed?.day ?? "";
+  const birthWeek = seed.birthWeek ?? parsed?.week ?? "";
+  const birthSeason = seed.birthSeason ?? parsed?.season ?? "";
+  const birthYear = seed.birthYear ?? parsed?.year ?? "";
+
+  return {
+    birthDay,
+    birthWeek,
+    birthSeason,
+    birthYear,
+    dateOfBirth:
+      birthDay && birthWeek && birthSeason && birthYear
+        ? formatGloranthanDate({
+            day: birthDay,
+            week: birthWeek,
+            season: birthSeason,
+            year: birthYear,
+          })
+        : seed.dateOfBirth ?? "",
   };
 }
 
