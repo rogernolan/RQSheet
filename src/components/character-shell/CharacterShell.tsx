@@ -295,7 +295,7 @@ export function CharacterShell() {
               />
             ) : null}
 
-            <div className="ml-12 grid flex-1 grid-cols-1 gap-x-4 gap-y-3 md:grid-cols-2 xl:grid-cols-[0.9fr_1.2fr_0.9fr]">
+            <div className="ml-12 grid flex-1 grid-cols-1 gap-x-4 gap-y-3 md:grid-cols-2 xl:grid-cols-[1.56fr_0.72fr_0.72fr]">
               <IdentityCard
                 key={`identity-${selectedCharacter?.id ?? "empty"}`}
                 character={selectedCharacter}
@@ -3321,7 +3321,7 @@ function StatisticStripCell({
       </span>
       <div className="mt-1 flex items-center justify-center gap-1">
         <input
-          className="min-h-7 w-full bg-transparent px-0.5 py-0.5 text-center text-sm font-semibold tabular-nums outline-none sm:text-[15px]"
+          className="min-h-7 w-full bg-transparent px-0.5 py-0.5 text-center text-[15px] font-semibold tabular-nums outline-none sm:text-[18px]"
           inputMode="numeric"
           onChange={(event) => onChange(event.target.value)}
           value={value}
