@@ -1,21 +1,21 @@
 # RQSheetWeb
 
-`RQSheetWeb` is a web reimplementation of the `RQSheet` iOS app.
-
-It is a local-first RuneQuest character sheet designed for desktop and iPad
+`RQSheetWeb` is a small web app RuneQuest: RolePlaying in Gloranth (or Runequest 4e) character sheet designed for desktop and iPad.
+It supports import from and export to the [RPGG Play By Forum format](https://rpggeek.com/thread/1207530/article/30823864#30823864) by Edward Bolme.
 
 ## What It Is
 
-The current web app includes:
+RQWebSheet currently lets you:
 
-- a local character workspace backed by browser storage
-- character create, import, select, and delete flows
-- a sheet-style layout for statistics, skills, combat, runes, magic, equipment, notes, and passions
-- a text import flow based on the iOS app fixtures and importer design
-- touch-friendly interactions with implicit save
-- early PWA support for iPad installation
+- create and manage multiple characters in your browser
+- import a character from an RPGGeek formatted character
+- install it on tablet as a PWA web app
 
-The project is currently local-only by design, but the code keeps a storage boundary so a hosted/synced version can be added later.
+At the moment, data is stored locally in your browser on that device.
+
+Save is implicit and there is no undo. 
+
+This app was entirely vibe coded with Codex. Use it at your own risk.
 
 ## Tech Stack
 
@@ -39,7 +39,7 @@ Then open [http://localhost:3000](http://localhost:3000).
 
 ## Running On Your Local Network
 
-For testing on iPad or another device on the same Wi-Fi network:
+To install on a tablet or another device on the same Wi-Fi network:
 
 ```bash
 npm run dev:lan
@@ -47,9 +47,9 @@ npm run dev:lan
 
 That script starts the dev server on `0.0.0.0` and configures the current LAN origin for Next.js dev mode.
 
-Then open the URL shown by the script from your other device.
+Then open the URL shown by the script from your other device and save to homescreen or whatever your favourite way of doing this is.
 
-## Checks
+## Testing
 
 ```bash
 npm test
@@ -80,6 +80,6 @@ docs/                  Planning notes
 
 ## Status
 
-This is an active build, not a finished product. 
+This is an active build, not a finished product.
 
 For the implementation plan, see [docs/implementation-plan.md](/Users/rog/Development/RQSheetWeb/docs/implementation-plan.md).
