@@ -9,6 +9,7 @@ RQWebSheet currently lets you:
 
 - create and manage multiple characters in your browser
 - import a character from an RPGGeek formatted character
+- export your character to RPGGeek markdown
 - install it on tablet as a PWA web app
 
 At the moment, data is stored locally in your browser on that device.
