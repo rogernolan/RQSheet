@@ -1555,9 +1555,7 @@ function CombatCard({
   }, [character, onSaveCharacter, weaponDrafts]);
 
   const featuredStrikeRank = character
-    ? (character.weapons.find((weapon) => weapon.isEquipped)?.strikeRank ||
-        character.weapons[0]?.strikeRank ||
-        "-")
+    ? formatMeleeStrikeRankSummary(character.dex, character.siz)
     : "-";
 
   return (
@@ -2981,6 +2979,44 @@ function CompactMetric({
       <span className="text-sm font-semibold tabular-nums">{value}</span>
     </div>
   );
+}
+
+function formatMeleeStrikeRankSummary(dex: number, siz: number): string {
+  const dexStrikeRank = getDexStrikeRank(dex);
+  const sizStrikeRank = getSizStrikeRank(siz);
+  return `DEX ${dexStrikeRank} + SIZ ${sizStrikeRank} = ${dexStrikeRank + sizStrikeRank}`;
+}
+
+function getDexStrikeRank(dex: number): number {
+  if (dex <= 5) {
+    return 5;
+  }
+  if (dex <= 8) {
+    return 4;
+  }
+  if (dex <= 12) {
+    return 3;
+  }
+  if (dex <= 15) {
+    return 2;
+  }
+  if (dex <= 18) {
+    return 1;
+  }
+  return 0;
+}
+
+function getSizStrikeRank(siz: number): number {
+  if (siz <= 6) {
+    return 3;
+  }
+  if (siz <= 14) {
+    return 2;
+  }
+  if (siz <= 21) {
+    return 1;
+  }
+  return 0;
 }
 
 function HeaderSummaryField({
