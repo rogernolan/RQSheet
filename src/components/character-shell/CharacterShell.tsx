@@ -3413,7 +3413,7 @@ function DerivedChanceStack({ value }: { value: number }) {
   return (
     <div className="flex min-h-6 flex-col justify-center text-[10px] leading-3 text-stone-400">
       <span className="tabular-nums">S:{formatTwoDigitNumber(deriveSpecialChance(value))}</span>
-      <span className="tabular-nums">L:{formatTwoDigitNumber(deriveCriticalChance(value))}</span>
+      <span className="tabular-nums">C:{formatTwoDigitNumber(deriveCriticalChance(value))}</span>
     </div>
   );
 }
