@@ -4,6 +4,7 @@ import Image from "next/image";
 import type { ReactNode } from "react";
 import { useEffect, useMemo, useRef, useState } from "react";
 
+import { persistAutosave } from "@/components/character-shell/autosave";
 import {
   getDamageBonusText,
   getDisplayName,
@@ -12,9 +13,9 @@ import {
 } from "@/domain/character";
 import { formatCharacterForBGG } from "@/domain/bgg-export";
 import {
+  formatCharacterBirthDate,
   GLORANTHAN_DAYS,
   GLORANTHAN_SEASONS,
-  formatGloranthanDate,
   getWeeksForSeason,
 } from "@/domain/glorantha-date";
 import { parseTextImport } from "@/domain/import/pipeline";
@@ -190,11 +191,11 @@ export function CharacterShell() {
 
   async function handleSaveCharacter(nextCharacter: Character) {
     try {
-      await repository.saveCharacter(nextCharacter);
+      const savedCharacter = await repository.saveCharacter(nextCharacter);
       setCharacters((current) =>
         sortCharacters(
           current.map((character) =>
-            character.id === nextCharacter.id ? nextCharacter : character,
+            character.id === savedCharacter.id ? savedCharacter : character,
           ),
         ),
       );
@@ -544,10 +545,7 @@ function WorkspaceHeader({
                   birthWeek: parts.week,
                   birthSeason: parts.season,
                   birthYear: parts.year,
-                  dateOfBirth:
-                    parts.day && parts.week && parts.season && parts.year
-                      ? formatGloranthanDate(parts)
-                      : "",
+                  dateOfBirth: formatCharacterBirthDate(parts),
                 })
               }
               value={{
@@ -738,8 +736,12 @@ function IdentityCard({
     }
 
     const timeoutId = window.setTimeout(() => {
-      lastSavedKeyRef.current = saveKey;
-      void onSaveCharacter(nextCharacter);
+      void persistAutosave(
+        () => onSaveCharacter(nextCharacter),
+        () => {
+          lastSavedKeyRef.current = saveKey;
+        },
+      );
     }, 250);
 
     return () => window.clearTimeout(timeoutId);
@@ -783,11 +785,16 @@ function IdentityCard({
     }
 
     const timeoutId = window.setTimeout(() => {
-      lastSavedPassionsRef.current = saveKey;
-      void onSaveCharacter({
-        ...character,
-        passions: nextPassions,
-      });
+      void persistAutosave(
+        () =>
+          onSaveCharacter({
+            ...character,
+            passions: nextPassions,
+          }),
+        () => {
+          lastSavedPassionsRef.current = saveKey;
+        },
+      );
     }, 250);
 
     return () => window.clearTimeout(timeoutId);
@@ -1070,11 +1077,16 @@ function SkillsList({
     }
 
     const timeoutId = window.setTimeout(() => {
-      lastSavedSkillsRef.current = saveKey;
-      void onSaveCharacter({
-        ...character,
-        skills: nextSkills,
-      });
+      void persistAutosave(
+        () =>
+          onSaveCharacter({
+            ...character,
+            skills: nextSkills,
+          }),
+        () => {
+          lastSavedSkillsRef.current = saveKey;
+        },
+      );
     }, 250);
 
     return () => window.clearTimeout(timeoutId);
@@ -1438,11 +1450,16 @@ function CombatCard({
     }
 
     const timeoutId = window.setTimeout(() => {
-      lastSavedHitLocationsRef.current = saveKey;
-      void onSaveCharacter({
-        ...character,
-        hitLocations: nextHitLocations,
-      });
+      void persistAutosave(
+        () =>
+          onSaveCharacter({
+            ...character,
+            hitLocations: nextHitLocations,
+          }),
+        () => {
+          lastSavedHitLocationsRef.current = saveKey;
+        },
+      );
     }, 250);
 
     return () => window.clearTimeout(timeoutId);
@@ -1489,11 +1506,16 @@ function CombatCard({
     }
 
     const timeoutId = window.setTimeout(() => {
-      lastSavedEquipmentRef.current = saveKey;
-      void onSaveCharacter({
-        ...character,
-        equipment: nextEquipment,
-      });
+      void persistAutosave(
+        () =>
+          onSaveCharacter({
+            ...character,
+            equipment: nextEquipment,
+          }),
+        () => {
+          lastSavedEquipmentRef.current = saveKey;
+        },
+      );
     }, 250);
 
     return () => window.clearTimeout(timeoutId);
@@ -1544,11 +1566,16 @@ function CombatCard({
     }
 
     const timeoutId = window.setTimeout(() => {
-      lastSavedWeaponsRef.current = saveKey;
-      void onSaveCharacter({
-        ...character,
-        weapons: nextWeapons,
-      });
+      void persistAutosave(
+        () =>
+          onSaveCharacter({
+            ...character,
+            weapons: nextWeapons,
+          }),
+        () => {
+          lastSavedWeaponsRef.current = saveKey;
+        },
+      );
     }, 250);
 
     return () => window.clearTimeout(timeoutId);
@@ -2214,12 +2241,17 @@ function RunesMagicCard({
     }
 
     const timeoutId = window.setTimeout(() => {
-      lastSavedRunesRef.current = saveKey;
-      void onSaveCharacter({
-        ...character,
-        runePercentages: nextRunePercentages,
-        runeExperienceChecks: nextRuneExperienceChecks,
-      });
+      void persistAutosave(
+        () =>
+          onSaveCharacter({
+            ...character,
+            runePercentages: nextRunePercentages,
+            runeExperienceChecks: nextRuneExperienceChecks,
+          }),
+        () => {
+          lastSavedRunesRef.current = saveKey;
+        },
+      );
     }, 250);
 
     return () => window.clearTimeout(timeoutId);
@@ -2263,13 +2295,18 @@ function RunesMagicCard({
     }
 
     const timeoutId = window.setTimeout(() => {
-      lastSavedMagicRef.current = saveKey;
-      void onSaveCharacter({
-        ...character,
-        magic: nextMagic,
-        currentMagicPoints: nextCurrentMagicPoints,
-        runePoints: nextRunePoints,
-      });
+      void persistAutosave(
+        () =>
+          onSaveCharacter({
+            ...character,
+            magic: nextMagic,
+            currentMagicPoints: nextCurrentMagicPoints,
+            runePoints: nextRunePoints,
+          }),
+        () => {
+          lastSavedMagicRef.current = saveKey;
+        },
+      );
     }, 250);
 
     return () => window.clearTimeout(timeoutId);

@@ -139,4 +139,16 @@ describe("character domain helpers", () => {
       armour: 2,
     });
   });
+
+  it("derives split birth date fields from a stored date string", () => {
+    const character = createCharacter({
+      dateOfBirth: "Windsday, Movement Week, Storm Season, 1604",
+    });
+
+    expect(character.birthDay).toBe("Windsday");
+    expect(character.birthWeek).toBe("Movement Week");
+    expect(character.birthSeason).toBe("Storm Season");
+    expect(character.birthYear).toBe("1604");
+    expect(character.dateOfBirth).toBe("Windsday, Movement Week, Storm Season, 1604");
+  });
 });

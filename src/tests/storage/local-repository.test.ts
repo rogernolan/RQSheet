@@ -118,16 +118,15 @@ describe("local character repository", () => {
       currentMagicPoints: 18,
     });
 
-    await repository.saveCharacter({
+    const saved = await repository.saveCharacter({
       ...created,
       pow: 12,
       currentMagicPoints: 18,
     });
 
-    const saved = await repository.getCharacter(created.id);
-
-    expect(saved?.pow).toBe(12);
-    expect(saved?.currentMagicPoints).toBe(12);
+    expect(saved.pow).toBe(12);
+    expect(saved.currentMagicPoints).toBe(12);
+    expect((await repository.getCharacter(created.id))?.currentMagicPoints).toBe(12);
   });
 
   it("deletes a character", async () => {
@@ -192,11 +191,13 @@ describe("local character repository", () => {
     expect(imported.name).toBe("Selina");
     expect(imported.family).toBe("Lorionaeo");
     expect(imported.worships).toBe("Issaries, Lanbril");
-    expect(imported.dateOfBirth).toBe("Earth season, 1604");
+    expect(imported.dateOfBirth).toBe("Earth Season, 1604");
     expect(imported.reputation).toBe(25);
     expect(imported.sol).toBe("Free");
     expect(imported.income).toBe("40");
     expect(imported.ransom).toBe(1200);
+    expect(imported.birthSeason).toBe("Earth Season");
+    expect(imported.birthYear).toBe("1604");
     expect(imported.dex).toBe(19);
     expect(imported.skills.some((skill) => skill.name === "Dodge")).toBe(true);
     expect(imported.skills.some((skill) => skill.name === "Boat")).toBe(false);

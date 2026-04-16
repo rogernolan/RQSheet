@@ -64,7 +64,9 @@ export function createCharacterRepository(
     },
 
     async saveCharacter(character: Character) {
-      await store.putCharacter(touchCharacter(ensureCharacterId(character)));
+      const savedCharacter = touchCharacter(ensureCharacterId(character));
+      await store.putCharacter(savedCharacter);
+      return savedCharacter;
     },
 
     async deleteCharacter(id: string) {

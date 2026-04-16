@@ -1,3 +1,7 @@
+import {
+  formatCharacterBirthDate,
+  parseCharacterBirthDate,
+} from "@/domain/glorantha-date";
 import { normalizePassions, reconcileHitLocations } from "@/domain/character";
 import { normalizeEquipment } from "@/domain/equipment";
 import { normalizeSkills } from "@/domain/skills";
@@ -19,6 +23,7 @@ export function createBlankCharacter(seed: Partial<Character> = {}): Character {
     Math.max(0, seed.currentMagicPoints ?? pow),
     pow,
   );
+  const normalizedBirthDate = normalizeBirthDateFields(seed);
 
   const baseCharacter = {
     id: seed.id ?? createCharacterId(),
@@ -27,11 +32,7 @@ export function createBlankCharacter(seed: Partial<Character> = {}): Character {
     tribe: seed.tribe ?? "",
     family: seed.family ?? "",
     patron: seed.patron ?? "",
-    dateOfBirth: seed.dateOfBirth ?? "",
-    birthDay: seed.birthDay ?? "",
-    birthWeek: seed.birthWeek ?? "",
-    birthSeason: seed.birthSeason ?? "",
-    birthYear: seed.birthYear ?? "",
+    ...normalizedBirthDate,
     occupation: seed.occupation ?? "",
     reputation: Math.max(0, Math.min(500, seed.reputation ?? 0)),
     sol: seed.sol ?? "",
@@ -66,4 +67,40 @@ export function createBlankCharacter(seed: Partial<Character> = {}): Character {
     ...baseCharacter,
     hitLocations: reconcileHitLocations(baseCharacter, seed.hitLocations),
   };
+}
+
+function normalizeBirthDateFields(
+  seed: Partial<Character>,
+): Pick<Character, "dateOfBirth" | "birthDay" | "birthWeek" | "birthSeason" | "birthYear"> {
+  const parsed =
+    seed.dateOfBirth && seed.dateOfBirth.trim().length > 0
+      ? parseCharacterBirthDate(seed.dateOfBirth)
+      : null;
+
+  const birthDay = preferredBirthField(seed.birthDay, parsed?.day);
+  const birthWeek = preferredBirthField(seed.birthWeek, parsed?.week);
+  const birthSeason = preferredBirthField(seed.birthSeason, parsed?.season);
+  const birthYear = preferredBirthField(seed.birthYear, parsed?.year);
+
+  return {
+    birthDay,
+    birthWeek,
+    birthSeason,
+    birthYear,
+    dateOfBirth: formatCharacterBirthDate({
+      day: birthDay,
+      week: birthWeek,
+      season: birthSeason,
+      year: birthYear,
+    }) || seed.dateOfBirth || "",
+  };
+}
+
+function preferredBirthField(
+  explicitValue: string | undefined,
+  parsedValue: string | undefined,
+): string {
+  return explicitValue && explicitValue.trim().length > 0
+    ? explicitValue
+    : parsedValue ?? "";
 }

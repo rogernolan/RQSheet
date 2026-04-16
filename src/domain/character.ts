@@ -1,5 +1,8 @@
 import type { Character, HitLocation, HitLocationKey } from "@/domain/types";
-import { formatGloranthanDate, parseGloranthanDate } from "@/domain/glorantha-date";
+import {
+  formatCharacterBirthDate,
+  parseCharacterBirthDate,
+} from "@/domain/glorantha-date";
 import { normalizeEquipment } from "@/domain/equipment";
 import { normalizeSkills } from "@/domain/skills";
 import type { ParsedPassionEntry } from "@/domain/import/types";
@@ -89,29 +92,35 @@ function normalizeBirthDateFields(
 ): Pick<Character, "dateOfBirth" | "birthDay" | "birthWeek" | "birthSeason" | "birthYear"> {
   const parsed =
     seed.dateOfBirth && seed.dateOfBirth.trim().length > 0
-      ? parseGloranthanDate(seed.dateOfBirth)
+      ? parseCharacterBirthDate(seed.dateOfBirth)
       : null;
 
-  const birthDay = seed.birthDay ?? parsed?.day ?? "";
-  const birthWeek = seed.birthWeek ?? parsed?.week ?? "";
-  const birthSeason = seed.birthSeason ?? parsed?.season ?? "";
-  const birthYear = seed.birthYear ?? parsed?.year ?? "";
+  const birthDay = preferredBirthField(seed.birthDay, parsed?.day);
+  const birthWeek = preferredBirthField(seed.birthWeek, parsed?.week);
+  const birthSeason = preferredBirthField(seed.birthSeason, parsed?.season);
+  const birthYear = preferredBirthField(seed.birthYear, parsed?.year);
 
   return {
     birthDay,
     birthWeek,
     birthSeason,
     birthYear,
-    dateOfBirth:
-      birthDay && birthWeek && birthSeason && birthYear
-        ? formatGloranthanDate({
-            day: birthDay,
-            week: birthWeek,
-            season: birthSeason,
-            year: birthYear,
-          })
-        : seed.dateOfBirth ?? "",
+    dateOfBirth: formatCharacterBirthDate({
+      day: birthDay,
+      week: birthWeek,
+      season: birthSeason,
+      year: birthYear,
+    }) || seed.dateOfBirth || "",
   };
+}
+
+function preferredBirthField(
+  explicitValue: string | undefined,
+  parsedValue: string | undefined,
+): string {
+  return explicitValue && explicitValue.trim().length > 0
+    ? explicitValue
+    : parsedValue ?? "";
 }
 
 export function normalizePassions(

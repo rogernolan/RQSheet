@@ -76,6 +76,68 @@ export function parseGloranthanDate(value: string): GloranthanDateParts | null {
   return { day, week, season, year };
 }
 
+export function parseCharacterBirthDate(value: string): GloranthanDateParts | null {
+  const parsed = parseGloranthanDate(value);
+  if (parsed) {
+    return parsed;
+  }
+
+  const trimmed = value.trim();
+  if (trimmed.length === 0) {
+    return null;
+  }
+
+  const seasonYearMatch = trimmed.match(/^(.+?),\s*([0-9]+)$/u);
+  if (seasonYearMatch) {
+    const season = canonicalizeSeason(seasonYearMatch[1]);
+    if (season) {
+      return {
+        day: "",
+        week: "",
+        season,
+        year: seasonYearMatch[2],
+      };
+    }
+  }
+
+  const shortYearMatch = trimmed.match(/^([0-9]+)\s*SR$/iu);
+  if (shortYearMatch) {
+    return {
+      day: "",
+      week: "",
+      season: "",
+      year: shortYearMatch[1],
+    };
+  }
+
+  return null;
+}
+
 export function formatGloranthanDate(parts: GloranthanDateParts): string {
   return `${parts.day}, ${parts.week}, ${parts.season}, ${parts.year}`;
+}
+
+export function formatCharacterBirthDate(parts: GloranthanDateParts): string {
+  if (parts.day && parts.week && parts.season && parts.year) {
+    return formatGloranthanDate(parts);
+  }
+
+  if (!parts.day && !parts.week && parts.season && parts.year) {
+    return `${parts.season}, ${parts.year}`;
+  }
+
+  if (!parts.day && !parts.week && !parts.season && parts.year) {
+    return `${parts.year} SR`;
+  }
+
+  return "";
+}
+
+function canonicalizeSeason(value: string): string | null {
+  const normalized = value.trim().toLowerCase();
+  const matchedSeason = GLORANTHAN_SEASONS.find(
+    (season) => season.toLowerCase() === normalized,
+  );
+
+  return matchedSeason ?? null;
 }

@@ -15,7 +15,7 @@ describe("CharacterRepository contract", () => {
         throw new Error("not implemented");
       },
       async saveCharacter() {
-        return undefined;
+        throw new Error("not implemented");
       },
       async deleteCharacter() {
         return undefined;
