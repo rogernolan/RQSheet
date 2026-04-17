@@ -28,6 +28,7 @@ export function createBlankCharacter(seed: Partial<Character> = {}): Character {
   const baseCharacter = {
     id: seed.id ?? createCharacterId(),
     name: seed.name ?? "",
+    portraitDataUrl: seed.portraitDataUrl ?? "",
     worships: seed.worships ?? "",
     tribe: seed.tribe ?? "",
     family: seed.family ?? "",

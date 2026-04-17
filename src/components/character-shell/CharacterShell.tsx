@@ -485,114 +485,138 @@ function WorkspaceHeader({
     });
   }
 
+  async function handlePortraitChange(file: File | null) {
+    if (!character || !file) {
+      return;
+    }
+
+    const portraitDataUrl = await readFileAsDataUrl(file);
+    await onSaveCharacter({
+      ...character,
+      portraitDataUrl,
+    });
+  }
+
   return (
     <header className="ml-12 rounded-[16px] border border-panel-border bg-panel p-3 shadow-sm backdrop-blur">
-      <div className="min-w-0">
-        {isLoading ? (
-          <h2 className="text-2xl font-semibold tracking-tight">Loading...</h2>
-        ) : character ? (
-          <HeaderNameField onBlur={handleSummaryBlur} value={character.name} />
-        ) : (
-          <h2 className="text-2xl font-semibold tracking-tight">
-            No character selected
-          </h2>
-        )}
+      <div className="flex items-stretch justify-between gap-4">
+        <div className="min-w-0 flex-1">
+          {isLoading ? (
+            <h2 className="text-2xl font-semibold tracking-tight">Loading...</h2>
+          ) : character ? (
+            <HeaderNameField onBlur={handleSummaryBlur} value={character.name} />
+          ) : (
+            <h2 className="text-2xl font-semibold tracking-tight">
+              No character selected
+            </h2>
+          )}
+          {character ? (
+            <div className="mt-2 grid gap-x-6 gap-y-1 text-sm text-stone-600 md:grid-cols-2 xl:grid-cols-6 dark:text-stone-300">
+              <HeaderSummaryField
+                className="xl:col-span-1"
+                field="worships"
+                label="Worships"
+                onBlur={handleSummaryBlur}
+                value={character.worships}
+              />
+              <HeaderSummaryField
+                className="xl:col-span-1"
+                field="family"
+                label="Clan"
+                onBlur={handleSummaryBlur}
+                value={character.family}
+              />
+              <HeaderSummaryField
+                className="xl:col-span-2"
+                field="tribe"
+                label="Tribe"
+                onBlur={handleSummaryBlur}
+                value={character.tribe}
+              />
+              <HeaderSummaryField
+                className="xl:col-span-2"
+                field="patron"
+                label="Patron"
+                onBlur={handleSummaryBlur}
+                value={character.patron}
+              />
+              <HeaderSummaryField
+                className="xl:col-span-2"
+                field="occupation"
+                label="Occupation"
+                onBlur={handleSummaryBlur}
+                value={character.occupation}
+              />
+              <HeaderBirthField
+                className="xl:col-span-2"
+                key={`birth-${character.birthDay}-${character.birthWeek}-${character.birthSeason}-${character.birthYear}`}
+                label="Born"
+                onBlur={(parts) =>
+                  onSaveCharacter({
+                    ...character,
+                    birthDay: parts.day,
+                    birthWeek: parts.week,
+                    birthSeason: parts.season,
+                    birthYear: parts.year,
+                    dateOfBirth: formatCharacterBirthDate(parts),
+                  })
+                }
+                value={{
+                  day: character.birthDay,
+                  week: character.birthWeek,
+                  season: character.birthSeason,
+                  year: character.birthYear,
+                }}
+              />
+              <HeaderNumberSummaryField
+                className="xl:col-span-2"
+                field="reputation"
+                label="Reputation"
+                onBlur={handleNumberSummaryBlur}
+                value={character.reputation}
+              />
+              <HeaderSummaryField
+                className="xl:col-span-2"
+                field="sol"
+                label="SoL"
+                onBlur={handleSummaryBlur}
+                value={character.sol}
+              />
+              <HeaderSummaryField
+                className="xl:col-span-2"
+                field="income"
+                label="Income"
+                onBlur={handleSummaryBlur}
+                value={character.income}
+              />
+              <HeaderNumberSummaryField
+                className="xl:col-span-2"
+                field="ransom"
+                label="Ransom"
+                onBlur={handleNumberSummaryBlur}
+                value={character.ransom}
+              />
+            </div>
+          ) : null}
+          {errorMessage.length > 0 ? (
+            <p className="mt-2 text-sm text-red-700 dark:text-red-300">
+              {errorMessage}
+            </p>
+          ) : statusMessage.length > 0 ? (
+            <p className="mt-2 text-sm text-stone-600 dark:text-stone-300">
+              {statusMessage}
+            </p>
+          ) : null}
+        </div>
         {character ? (
-          <div className="mt-2 grid gap-x-6 gap-y-1 text-sm text-stone-600 md:grid-cols-2 xl:grid-cols-6 dark:text-stone-300">
-            <HeaderSummaryField
-              className="xl:col-span-1"
-              field="worships"
-              label="Worships"
-              onBlur={handleSummaryBlur}
-              value={character.worships}
-            />
-            <HeaderSummaryField
-              className="xl:col-span-1"
-              field="family"
-              label="Clan"
-              onBlur={handleSummaryBlur}
-              value={character.family}
-            />
-            <HeaderSummaryField
-              className="xl:col-span-2"
-              field="tribe"
-              label="Tribe"
-              onBlur={handleSummaryBlur}
-              value={character.tribe}
-            />
-            <HeaderSummaryField
-              className="xl:col-span-2"
-              field="patron"
-              label="Patron"
-              onBlur={handleSummaryBlur}
-              value={character.patron}
-            />
-            <HeaderSummaryField
-              className="xl:col-span-2"
-              field="occupation"
-              label="Occupation"
-              onBlur={handleSummaryBlur}
-              value={character.occupation}
-            />
-            <HeaderBirthField
-              className="xl:col-span-2"
-              key={`birth-${character.birthDay}-${character.birthWeek}-${character.birthSeason}-${character.birthYear}`}
-              label="Born"
-              onBlur={(parts) =>
-                onSaveCharacter({
-                  ...character,
-                  birthDay: parts.day,
-                  birthWeek: parts.week,
-                  birthSeason: parts.season,
-                  birthYear: parts.year,
-                  dateOfBirth: formatCharacterBirthDate(parts),
-                })
-              }
-              value={{
-                day: character.birthDay,
-                week: character.birthWeek,
-                season: character.birthSeason,
-                year: character.birthYear,
-              }}
-            />
-            <HeaderNumberSummaryField
-              className="xl:col-span-2"
-              field="reputation"
-              label="Reputation"
-              onBlur={handleNumberSummaryBlur}
-              value={character.reputation}
-            />
-            <HeaderSummaryField
-              className="xl:col-span-2"
-              field="sol"
-              label="SoL"
-              onBlur={handleSummaryBlur}
-              value={character.sol}
-            />
-            <HeaderSummaryField
-              className="xl:col-span-2"
-              field="income"
-              label="Income"
-              onBlur={handleSummaryBlur}
-              value={character.income}
-            />
-            <HeaderNumberSummaryField
-              className="xl:col-span-2"
-              field="ransom"
-              label="Ransom"
-              onBlur={handleNumberSummaryBlur}
-              value={character.ransom}
+          <div className="hidden w-[108px] shrink-0 self-center md:block lg:w-[124px] xl:w-[140px]">
+            <PortraitField
+              className="aspect-square"
+              onChange={handlePortraitChange}
+              sizeClassName="w-full"
+              value={character.portraitDataUrl}
             />
           </div>
-        ) : null}
-        {errorMessage.length > 0 ? (
-          <p className="mt-2 text-sm text-red-700 dark:text-red-300">
-            {errorMessage}
-          </p>
-        ) : statusMessage.length > 0 ? (
-          <p className="mt-2 text-sm text-stone-600 dark:text-stone-300">
-            {statusMessage}
-          </p>
         ) : null}
       </div>
     </header>
@@ -3131,6 +3155,53 @@ function HeaderNameField({
   );
 }
 
+function PortraitField({
+  className,
+  onChange,
+  sizeClassName,
+  value,
+}: {
+  className?: string;
+  onChange: (file: File | null) => void;
+  sizeClassName: string;
+  value: string;
+}) {
+  return (
+    <label
+      className={`group relative flex shrink-0 cursor-pointer items-center justify-center overflow-hidden rounded-[10px] border border-panel-border/50 bg-black/[0.03] p-1 dark:bg-white/[0.03] ${sizeClassName} ${className ?? ""}`}
+    >
+      {value ? (
+        <Image
+          alt="Character portrait"
+          className="h-full w-full rounded-[7px] object-cover"
+          fill
+          sizes="160px"
+          src={value}
+        />
+      ) : (
+        <Image
+          alt=""
+          aria-hidden="true"
+          className="h-[62%] w-[62%] object-contain opacity-20 grayscale"
+          draggable="false"
+          height={96}
+          src="/rune-man.png"
+          width={96}
+        />
+      )}
+      <input
+        accept="image/*"
+        className="sr-only"
+        onChange={(event) => onChange(event.target.files?.[0] ?? null)}
+        type="file"
+      />
+      <span className="pointer-events-none absolute inset-x-0 bottom-0 bg-black/40 px-2 py-1 text-center text-[10px] font-semibold uppercase tracking-[0.12em] text-white opacity-0 transition group-hover:opacity-100">
+        Choose Photo
+      </span>
+    </label>
+  );
+}
+
 function HeaderBirthField({
   className,
   label,
@@ -3619,6 +3690,22 @@ function downloadCharacterExport(name: string, content: string) {
   anchor.click();
   anchor.remove();
   URL.revokeObjectURL(url);
+}
+
+function readFileAsDataUrl(file: File): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => {
+      if (typeof reader.result === "string") {
+        resolve(reader.result);
+        return;
+      }
+      reject(new Error("Unable to read portrait file."));
+    };
+    reader.onerror = () =>
+      reject(reader.error ?? new Error("Unable to read portrait file."));
+    reader.readAsDataURL(file);
+  });
 }
 
 function sanitizeFileName(value: string): string {

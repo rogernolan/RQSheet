@@ -57,6 +57,7 @@ export interface CharacterEquipmentRecord {
 export interface Character {
   id: string;
   name: string;
+  portraitDataUrl: string;
   worships: string;
   tribe: string;
   family: string;

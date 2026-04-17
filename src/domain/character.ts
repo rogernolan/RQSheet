@@ -19,6 +19,7 @@ interface StatisticStripEntry {
 const defaultCharacter: Character = {
   id: "",
   name: "",
+  portraitDataUrl: "",
   worships: "",
   tribe: "",
   family: "",
